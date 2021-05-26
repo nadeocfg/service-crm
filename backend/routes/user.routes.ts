@@ -1,15 +1,21 @@
 import express from 'express';
 import {
-  getAllUsers,
   createUser,
   authUser,
+  getAllActiveUsers,
+  getAllInactiveUsers,
+  updateUser,
+  getUserByToken,
 } from '../controllers/user.controller';
 import { protect } from '../middleware/authMiddleware';
 
 const userRoutes = express.Router();
 
-userRoutes.get('/all', getAllUsers);
+userRoutes.route('/all-active').get(protect, getAllActiveUsers);
+userRoutes.route('/all-inactive').get(protect, getAllInactiveUsers);
+userRoutes.route('/profile').get(protect, getUserByToken);
 userRoutes.route('/auth').post(authUser);
 userRoutes.route('/create').post(protect, createUser);
+userRoutes.route('/update/:id').post(protect, updateUser);
 
 export default userRoutes;

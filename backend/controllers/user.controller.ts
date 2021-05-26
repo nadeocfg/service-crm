@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 import generateJwt from '../utils/generateToken';
+import getSetString from '../utils/queryBuilders';
 
 // @desc   auth user
 // @route  POST /api/users/auth
@@ -53,17 +54,53 @@ const authUser = async (
   }
 };
 
-// @desc   get all users
-// @route  GET /api/users/all
-// @access Public
-const getAllUsers = async (
+// @desc   get active all users
+// @route  GET /api/users/all-active
+// @access Private
+const getAllActiveUsers = async (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
     const allUsers = await db.query(
-      `SELECT * FROM "${process.env.DB_NAME}".users`
+      `
+      SELECT
+        *
+      FROM
+        "${process.env.DB_NAME}".users
+      WHERE
+        "isActive" = true
+      `
+    );
+
+    response.json(allUsers.rows);
+  } catch (error) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+// @desc   get all inactive users
+// @route  GET /api/users/all-inactive
+// @access Private
+const getAllInactiveUsers = async (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const allUsers = await db.query(
+      `
+      SELECT
+        *
+      FROM
+        "${process.env.DB_NAME}".users
+      WHERE
+        "isActive" = false
+      `
     );
 
     response.json(allUsers.rows);
@@ -76,7 +113,7 @@ const getAllUsers = async (
 };
 
 // @desc   create user
-// @route  POST /api/users/all
+// @route  POST /api/users/create
 // @access Private
 const createUser = async (
   request: UserRequest,
@@ -102,15 +139,83 @@ const createUser = async (
     const insertUser = await db.query(
       `
       INSERT INTO
-        "${process.env.DB_NAME}".users(login, password, "firstName", "lastName", "birthDay", phone)
-      VALUES($1, $2, $3, $4, $5, $6)
+        "${process.env.DB_NAME}".users(login, password, "firstName", "lastName", "birthDay", phone, "createdDate", "updatedDate")
+      VALUES($1, $2, $3, $4, $5, $6, NOW(), NOW())
       RETURNING
-        *
+        id, login, "firstName", "lastName", "birthDay", phone, "createdDate", "updatedDate"
       `,
       [login, cryptedPass, firstName, lastName, birthDay, phone]
     );
 
-    response.json(insertUser);
+    response.json(insertUser.rows[0]);
+  } catch (error) {
+    response.status(400).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+// @desc   update user
+// @route  POST /api/users/update
+// @access Private
+const updateUser = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { password } = request.body;
+    const userId = request.params.id;
+    const cryptedPass = password ? SHA256(password).toString() : '';
+
+    if (request.user && !request.user.isAdmin) {
+      return response.status(401).json({
+        message: `Current user don't have permission to this request`,
+      });
+    }
+
+    const values = Object.keys(request.body).map(function (key) {
+      if (key === 'password') {
+        return cryptedPass;
+      }
+
+      if (key !== 'login') {
+        return String(request.body[key]);
+      }
+    });
+    values.push(userId);
+
+    const query = `
+    UPDATE
+      "${process.env.DB_NAME}".users
+    SET
+      ${getSetString(request.body)}
+    RETURNING
+      id,
+      login,
+      "firstName",
+      "lastName",
+      "birthDay",
+      phone,
+      "isAdmin",
+      "isActive"
+    `;
+
+    console.log(query);
+
+    const insertUser = await db.query(
+      query,
+      values.filter((el) => !!el)
+    );
+
+    if (insertUser.rows.length === 0) {
+      return response.status(400).json({
+        message: `Cannot find user with id ${userId}`,
+      });
+    }
+
+    response.json(insertUser.rows[0]);
   } catch (error) {
     response.status(404).json({
       message: error.message,
@@ -119,4 +224,33 @@ const createUser = async (
   }
 };
 
-export { getAllUsers, createUser, authUser };
+// @desc   Get user by token
+// @route  GET /api/users/profile
+// @access Private
+const getUserByToken = (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    response.status(200);
+    response.json({
+      ...request.user,
+      token: generateJwt(JSON.stringify(request.user.id)),
+    });
+  } catch (error) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+export {
+  getAllActiveUsers,
+  getAllInactiveUsers,
+  createUser,
+  authUser,
+  updateUser,
+  getUserByToken,
+};

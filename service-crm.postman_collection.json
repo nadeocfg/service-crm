@@ -1,0 +1,238 @@
+{
+	"info": {
+		"_postman_id": "5bdf2b74-aad0-406f-9fd6-24ec4c30f82f",
+		"name": "service-crm",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "GET /api/users/all-active",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjIwMTU1NDUsImV4cCI6MTYyMjI3NDc0NX0.i6ARZK1mAN9oOiuKRu24fJXH0wnE0j8vaguIfMowT24",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/users/all-active",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"all-active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /api/users/all-inactive",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjIwMTU1NDUsImV4cCI6MTYyMjI3NDc0NX0.i6ARZK1mAN9oOiuKRu24fJXH0wnE0j8vaguIfMowT24",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/users/all-inactive",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"all-inactive"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /api/users/profile",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjIwMjg2NzksImV4cCI6MTYyMjI4Nzg3OX0.s27MnSDHXQU06-JHegMgx9mNKWamzOQ9IA0K8lGjOzw",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/users/profile",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /api/users/auth",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"login\": \"khegay.alexey@mail.ru\",\r\n  \"password\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/users/auth",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /api/users/create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjE5NTQyNDMsImV4cCI6MTYyMjIxMzQ0M30.fHSAYED9uUbHIesU5-CBTSRsPCgriTplfgQZlc96zGo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"login\": \"test3@test.kz\",\r\n  \"password\": \"12345\",\r\n  \"firstName\": \"first\",\r\n  \"lastName\": \"last\",\r\n  \"birthDay\": \"1990-07-16\",\r\n  \"phone\": \"+7 (777) 123-45-65\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/users/create",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /api/users/update",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjE5NTQyNDMsImV4cCI6MTYyMjIxMzQ0M30.fHSAYED9uUbHIesU5-CBTSRsPCgriTplfgQZlc96zGo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"login\": \"test7447@test.kz\",\r\n  \"password\": \"12345\",\r\n  \"firstName\": \"first1\",\r\n  \"lastName\": \"last2\",\r\n  \"birthDay\": \"1990-07-16\",\r\n  \"phone\": \"+7 (777) 123-45-65\",\r\n  \"isActive\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/users/update/7",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"update",
+								"7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "check api",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "localhost:5000"
+		}
+	]
+}

@@ -1,32 +1,40 @@
-import axios from 'axios';
+import { useSnackbar } from 'notistack';
 import { useEffect } from 'react';
-import './App.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, Switch } from 'react-router';
+import { snackbarModel } from './models/snackbarModel';
+import SingIn from './pages/SignIn';
+import { getCurrentUser } from './store/actions/userActions';
 
 function App() {
-  useEffect(() => {
-    checkApi();
-  }, []);
+  const dispatch = useDispatch();
 
-  const checkApi = () => {
-    axios.get('/api');
-  };
+  const snackbarStore: snackbarModel = useSelector(
+    (state: any) => state.snackbarStore
+  );
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (snackbarStore.message) {
+      enqueueSnackbar(snackbarStore.message, {
+        variant: snackbarStore.type,
+        autoHideDuration: 3000,
+        anchorOrigin: { horizontal: 'right', vertical: 'top' },
+        preventDuplicate: false,
+      });
+    }
+  }, [snackbarStore.message, snackbarStore.type, enqueueSnackbar]);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <main>
+        <Switch>
+          <Route exact path="/">
+            <SingIn />
+          </Route>
+        </Switch>
+      </main>
+    </>
   );
 }
 

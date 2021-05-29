@@ -1,0 +1,15 @@
+$primary-color: #1665d8;
+$secondary-color: #3f51b5;
+$text-color: #3a3b3f;
+$light-grey-color: #9ea0a5;
+$grey-color: #66788a;
+
+$success-color: #26a69a;
+$danger-color: #ec4c47;
+$warning-color: #f7d154;
+
+:export {
+  successColor: $success-color;
+  dangerColor: $danger-color;
+  warningColor: $warning-color;
+}

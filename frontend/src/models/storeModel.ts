@@ -1,17 +1,33 @@
+import { VariantType } from 'notistack';
+
 export interface StoreModel {
   userStore: UserStoreModel;
-  snackbarStore: SnackbarStoreModel;
+  snackbarStore: NotificationsStoreModel;
 }
 
 export interface UserStoreModel {
-  userDataResponse: any;
-  inputUserData: {
-    login: string;
-    password: string;
+  authResponse: {
+    birthDay?: string;
+    createdDate?: string;
+    firstName?: string;
+    id?: number;
+    isAdmin?: boolean;
+    lastName?: string;
+    login?: string;
+    phone?: string;
+    token?: string;
+    updatedDate?: string;
   };
+  isAuthorized: boolean;
 }
 
-export interface SnackbarStoreModel {
+export interface NotificationsStoreModel {
+  notifications: NotificationItemModel[];
+}
+
+export interface NotificationItemModel {
+  id: number;
   message: string;
-  type: string;
+  type: VariantType;
+  isShown: boolean;
 }

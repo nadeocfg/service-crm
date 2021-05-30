@@ -1,11 +1,10 @@
 import { Container, Grid, TextField } from '@material-ui/core';
-import { useDispatch, useSelector } from 'react-redux';
-import signInBg from '../../assets/images/signin-bg.jpeg';
-import { SET_INPUT_USER_DATA } from '../../store/storeConstants/userConstants';
+import { useDispatch } from 'react-redux';
+import signInBg from '../../assets/images/signin-bg.jpg';
 import Btn from '../../components/Btn';
-import { StoreModel } from '../../models/storeModel';
 import { useState } from 'react';
-import { SET_SNACKBAR } from '../../store/storeConstants/snackbarConstants';
+import { addNotify } from '../../store/actions/snackbarActions';
+import { userSignIn } from '../../store/actions/userActions';
 
 export default function SignIn() {
   const dispatch = useDispatch();
@@ -20,34 +19,22 @@ export default function SignIn() {
 
   const signIn = () => {
     if (!fields.login || !fields.password) {
-      dispatch({
-        type: SET_SNACKBAR,
-        payload: {
-          message: 'test',
-          type: 'error',
-        },
-      });
+      return dispatch(addNotify('Заполните логин пароль', 'warning'));
     }
 
-    dispatch({
-      type: SET_INPUT_USER_DATA,
-      payload: { name: 'login', value: fields.login },
-    });
-    dispatch({
-      type: SET_INPUT_USER_DATA,
-      payload: { name: 'password', value: fields.password },
-    });
+    dispatch(userSignIn(fields.login, fields.password));
   };
 
   return (
-    <Container maxWidth="md">
-      <Grid container>
-        <Grid item xs={12} md={6}>
+    <Container maxWidth="md" className="sign-in-page">
+      <Grid container className="sign-in-form">
+        <Grid item xs={12} md={6} className="sign-in-form__form">
           <h1>Войти</h1>
           <p>Для смены пароля, попоросите администратора</p>
 
           <div className="form">
             <TextField
+              className="input"
               label="Логин"
               variant="outlined"
               onChange={handleChange('login')}
@@ -55,6 +42,7 @@ export default function SignIn() {
             />
 
             <TextField
+              className="input"
               label="Пароль"
               variant="outlined"
               onChange={handleChange('password')}
@@ -62,12 +50,12 @@ export default function SignIn() {
               value={fields.password}
             />
 
-            <Btn classes="btn btn-primary" onClick={signIn}>
+            <Btn classes="btn btn_primary" onClick={signIn}>
               Войти
             </Btn>
           </div>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} className="sign-in-form__bg">
           <img src={signInBg} alt="service center" />
         </Grid>
       </Grid>

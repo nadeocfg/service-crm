@@ -3,3 +3,13 @@
 
 // typography
 @import './constants/typography';
+
+// override material components
+@import './overrides/input';
+
+body {
+  font-family: 'Roboto', 'Arial', sans-serif;
+  font-size: 16px;
+  color: var(--text-color);
+  background: var(--bg-color);
+}

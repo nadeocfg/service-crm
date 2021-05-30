@@ -1,1 +1,60 @@
+.sign-in-page {
+  margin-top: calc(50vh - 200px);
 
+  .sign-in-form {
+    background: var(--white-color);
+
+    &__form {
+      padding: 24px;
+
+      h1 {
+        margin-bottom: 4px;
+      }
+
+      p {
+        margin-top: 0;
+        margin-bottom: 40px;
+        color: var(--light-grey-color);
+      }
+
+      .form {
+        display: flex;
+        flex-direction: column;
+
+        .input {
+          margin-bottom: 26px;
+        }
+      }
+    }
+
+    &__bg {
+      display: none;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+}
+
+@media (min-width: 960px) {
+  .sign-in-page {
+    .sign-in-form {
+      &__bg {
+        display: block;
+      }
+    }
+  }
+}
+
+@media (min-width: 600px) {
+  .sign-in-page {
+    .sign-in-form {
+      &__form {
+        padding: 55px 64px;
+      }
+    }
+  }
+}

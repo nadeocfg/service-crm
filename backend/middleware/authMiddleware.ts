@@ -28,9 +28,9 @@ const protect = async (
           "lastName",
           "birthDay",
           phone,
-          "isActive",
           "isAdmin",
-          "updatedDate"
+          "updatedDate",
+          "createdDate"
         FROM
           "${process.env.DB_NAME}".users
         WHERE

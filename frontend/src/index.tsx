@@ -15,7 +15,7 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <Router history={history}>
-        <SnackbarProvider maxSnack={3}>
+        <SnackbarProvider maxSnack={5}>
           <App />
         </SnackbarProvider>
       </Router>

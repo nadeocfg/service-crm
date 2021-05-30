@@ -27,7 +27,8 @@ const authUser = async (
         "birthDay",
         phone,
         "isAdmin",
-        "updatedDate"
+        "updatedDate",
+        "createdDate"
       FROM
         "${process.env.DB_NAME}".users
       WHERE

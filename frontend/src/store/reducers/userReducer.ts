@@ -1,17 +1,13 @@
 import { ReduxActionModel } from '../../models/reduxModel';
 import { UserStoreModel } from '../../models/storeModel';
 import {
-  SET_CURRENT_USER_RESPONSE,
-  SET_INPUT_USER_DATA,
+  SET_AUTH_RESPONSE,
   CLEAR_STORE,
 } from '../storeConstants/userConstants';
 
 const initialState = {
-  userDataResponse: {},
-  inputUserData: {
-    login: '',
-    password: '',
-  },
+  authResponse: {},
+  isAuthorized: false,
 };
 
 const userReducer = (
@@ -19,19 +15,11 @@ const userReducer = (
   action: ReduxActionModel
 ) => {
   switch (action.type) {
-    case SET_INPUT_USER_DATA:
+    case SET_AUTH_RESPONSE:
       return {
         ...state,
-        inputUserData: {
-          ...state.inputUserData,
-          [action.payload.name]: action.payload.value,
-        },
-      };
-
-    case SET_CURRENT_USER_RESPONSE:
-      return {
-        ...state,
-        currentUser: action.payload,
+        authResponse: action.payload,
+        isAuthorized: true,
       };
 
     case CLEAR_STORE:

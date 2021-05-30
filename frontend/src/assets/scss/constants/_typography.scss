@@ -9,6 +9,7 @@
   src: local('Roboto'), url('../../fonts/Roboto-Bold.ttf') format('opentype');
 }
 
-body {
-  font-family: 'Roboto', 'Arial', sans-serif;
+h1 {
+  font-size: 24px;
+  font-weight: 500;
 }

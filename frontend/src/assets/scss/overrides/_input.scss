@@ -1,0 +1,12 @@
+.input {
+  .MuiInputBase-root,
+  .MuiFormLabel-root {
+    &.Mui-focused {
+      color: var(--primary-color);
+
+      .MuiOutlinedInput-notchedOutline {
+        border-color: var(--primary-color);
+      }
+    }
+  }
+}

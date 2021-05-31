@@ -108,3 +108,9 @@ export const getUserByToken =
       });
     }
   };
+
+export const logout = () => async (dispatch: Dispatch<any>) => {
+  dispatch({
+    type: CLEAR_STORE,
+  });
+};

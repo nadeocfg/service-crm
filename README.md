@@ -1,2 +1,10 @@
 # service-crm
-CRM for service industry
+
+CRM for service center industry
+
+# PERN Stack
+
+- PostgreSQL
+- Express
+- React
+- Node

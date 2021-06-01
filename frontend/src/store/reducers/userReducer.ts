@@ -1,9 +1,7 @@
 import { ReduxActionModel } from '../../models/reduxModel';
 import { UserStoreModel } from '../../models/storeModel';
-import {
-  SET_AUTH_RESPONSE,
-  CLEAR_STORE,
-} from '../storeConstants/userConstants';
+import { CLEAR_STORE } from '../storeConstants/mainConstants';
+import { SET_AUTH_RESPONSE } from '../storeConstants/userConstants';
 
 const initialState = {
   authResponse: {},

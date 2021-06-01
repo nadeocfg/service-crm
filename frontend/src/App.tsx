@@ -6,11 +6,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserByToken } from './store/actions/userActions';
 import { StoreModel } from './models/storeModel';
 import Home from './pages/Home';
+import Loader from './components/Loader';
 
 const App = () => {
   const dispatch = useDispatch();
   const isAuthorized = useSelector(
     (store: StoreModel) => store.userStore.isAuthorized
+  );
+  const isLoading = useSelector(
+    (store: StoreModel) => store.mainStore.isLoading
   );
 
   useEffect(() => {
@@ -30,6 +34,8 @@ const App = () => {
               <SingIn />
             </Route>
           </Switch>
+
+          {isLoading && <Loader />}
         </main>
       ) : (
         <main>
@@ -38,6 +44,8 @@ const App = () => {
               <Home />
             </Route>
           </Switch>
+
+          {isLoading && <Loader />}
         </main>
       )}
       <Snackbar />

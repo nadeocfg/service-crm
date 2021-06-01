@@ -1,2 +1,1 @@
 export const SET_AUTH_RESPONSE = 'SET_AUTH_RESPONSE';
-export const CLEAR_STORE = 'CLEAR_STORE';

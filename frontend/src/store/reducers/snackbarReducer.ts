@@ -1,10 +1,10 @@
 import { ReduxActionModel } from '../../models/reduxModel';
-import { CLEAR_STORE } from '../storeConstants/userConstants';
 import { ADD_NOTIFY, REMOVE_NOTIFY } from '../storeConstants/snackbarConstants';
 import {
   NotificationItemModel,
   NotificationsStoreModel,
 } from '../../models/storeModel';
+import { CLEAR_STORE } from '../storeConstants/mainConstants';
 
 const initialState: NotificationsStoreModel = {
   notifications: [],

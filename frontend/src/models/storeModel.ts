@@ -1,8 +1,13 @@
 import { VariantType } from 'notistack';
 
 export interface StoreModel {
+  mainStore: MainStoreModel;
   userStore: UserStoreModel;
   snackbarStore: NotificationsStoreModel;
+}
+
+export interface MainStoreModel {
+  isLoading: boolean;
 }
 
 export interface UserStoreModel {

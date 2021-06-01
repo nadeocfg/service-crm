@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { Dispatch } from 'react';
+import { CLEAR_STORE } from '../storeConstants/mainConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
-import {
-  CLEAR_STORE,
-  SET_AUTH_RESPONSE,
-} from '../storeConstants/userConstants';
+import { SET_AUTH_RESPONSE } from '../storeConstants/userConstants';
+import { setLoader } from './mainActions';
 
 export const userSignIn =
   (login: string, password: string) => async (dispatch: Dispatch<any>) => {
     try {
+      dispatch(setLoader(true));
+
       const data = {
         login,
         password,
@@ -38,6 +39,9 @@ export const userSignIn =
           dispatch({
             type: CLEAR_STORE,
           });
+        })
+        .finally(() => {
+          dispatch(setLoader(false));
         });
     } catch (error) {
       dispatch({
@@ -54,6 +58,8 @@ export const userSignIn =
       dispatch({
         type: CLEAR_STORE,
       });
+
+      dispatch(setLoader(false));
     }
   };
 
@@ -90,6 +96,9 @@ export const getUserByToken =
           });
 
           window.localStorage.removeItem('AUTH_DATA');
+        })
+        .finally(() => {
+          dispatch(setLoader(false));
         });
     } catch (error) {
       dispatch({
@@ -106,6 +115,8 @@ export const getUserByToken =
       dispatch({
         type: CLEAR_STORE,
       });
+
+      dispatch(setLoader(false));
     }
   };
 

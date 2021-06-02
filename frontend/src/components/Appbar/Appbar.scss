@@ -1,0 +1,31 @@
+.appbar {
+  padding: 0 16px;
+
+  .open-drawer-btn {
+    margin-right: 16px;
+  }
+
+  .right-side {
+    margin-left: auto;
+  }
+}
+
+.drawer {
+  &.drawer_open {
+    & ~ main {
+      padding-left: 290px;
+      transition: all 225ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+    }
+  }
+
+  .MuiDrawer-paper {
+    width: 270px;
+    margin-top: 64px;
+  }
+
+  .logo {
+    height: auto;
+    width: 100%;
+    padding: 16px;
+  }
+}

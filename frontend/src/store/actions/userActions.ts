@@ -121,6 +121,8 @@ export const getUserByToken =
   };
 
 export const logout = () => async (dispatch: Dispatch<any>) => {
+  window.localStorage.removeItem('AUTH_DATA');
+
   dispatch({
     type: CLEAR_STORE,
   });

@@ -1,9 +1,14 @@
 import { ReduxActionModel } from '../../models/reduxModel';
 import { MainStoreModel } from '../../models/storeModel';
-import { SET_LOADER, CLEAR_STORE } from '../storeConstants/mainConstants';
+import {
+  SET_LOADER,
+  CLEAR_STORE,
+  SET_DRAWER,
+} from '../storeConstants/mainConstants';
 
 const initialState: MainStoreModel = {
-  isLoading: false,
+  isLoading: true,
+  isDrawerOpen: window.innerWidth > 960,
 };
 
 const mainReducer = (state = initialState, action: ReduxActionModel) => {
@@ -12,6 +17,12 @@ const mainReducer = (state = initialState, action: ReduxActionModel) => {
       return {
         ...state,
         isLoading: action.payload,
+      };
+
+    case SET_DRAWER:
+      return {
+        ...state,
+        isDrawerOpen: action.payload,
       };
 
     case CLEAR_STORE:

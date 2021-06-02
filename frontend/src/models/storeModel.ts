@@ -8,6 +8,7 @@ export interface StoreModel {
 
 export interface MainStoreModel {
   isLoading: boolean;
+  isDrawerOpen: boolean;
 }
 
 export interface UserStoreModel {

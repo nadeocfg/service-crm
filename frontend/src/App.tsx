@@ -1,4 +1,4 @@
-import { Route, Switch } from 'react-router';
+import { Route, Switch, useLocation } from 'react-router';
 import SingIn from './pages/SignIn';
 import Snackbar from './components/Snackbar';
 import { useEffect } from 'react';
@@ -7,9 +7,12 @@ import { getUserByToken } from './store/actions/userActions';
 import { StoreModel } from './models/storeModel';
 import Home from './pages/Home';
 import Loader from './components/Loader';
+import Appbar from './components/Appbar';
+import { changeDrawer } from './store/actions/mainActions';
 
 const App = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const isAuthorized = useSelector(
     (store: StoreModel) => store.userStore.isAuthorized
   );
@@ -25,6 +28,10 @@ const App = () => {
     }
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(changeDrawer(window.innerWidth > 960));
+  }, [location, dispatch]);
+
   return (
     <>
       {!isAuthorized ? (
@@ -34,20 +41,23 @@ const App = () => {
               <SingIn />
             </Route>
           </Switch>
-
-          {isLoading && <Loader />}
         </main>
       ) : (
-        <main>
-          <Switch>
-            <Route exact path="/">
-              <Home />
-            </Route>
-          </Switch>
+        <>
+          <Appbar />
 
-          {isLoading && <Loader />}
-        </main>
+          <main>
+            <Switch>
+              <Route exact path="/">
+                <Home />
+              </Route>
+            </Switch>
+          </main>
+        </>
       )}
+
+      {isLoading && <Loader />}
+
       <Snackbar />
     </>
   );

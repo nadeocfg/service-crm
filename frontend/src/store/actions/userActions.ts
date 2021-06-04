@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { Dispatch } from 'react';
+import api from '../../utils/axiosMiddleware';
 import { CLEAR_STORE } from '../storeConstants/mainConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import { SET_AUTH_RESPONSE } from '../storeConstants/userConstants';
@@ -15,7 +15,7 @@ export const userSignIn =
         password,
       };
 
-      axios
+      api
         .post('/api/users/auth', data)
         .then((res) => {
           dispatch({
@@ -66,12 +66,8 @@ export const userSignIn =
 export const getUserByToken =
   (token: string) => async (dispatch: Dispatch<any>) => {
     try {
-      axios
-        .get(`/api/users/profile`, {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        })
+      api
+        .get(`/api/users/profile`)
         .then((res) => {
           dispatch({
             type: SET_AUTH_RESPONSE,

@@ -13,17 +13,21 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import Logo from '../../assets/images/logo.png';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/actions/userActions';
 import { changeDrawer } from '../../store/actions/mainActions';
 import { StoreModel } from '../../models/storeModel';
 import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
 import { useHistory } from 'react-router';
+import { routes } from '../../utils/routes';
 
 const Appbar = () => {
   const open = useSelector((state: StoreModel) => state.mainStore.isDrawerOpen);
   const dispatch = useDispatch();
   const history = useHistory();
+
+  console.log();
 
   const handleChange = () => {
     dispatch(changeDrawer(!open));
@@ -78,13 +82,26 @@ const Appbar = () => {
 
         <Divider />
 
-        <List>
-          <ListItem button onClick={() => navigateTo('users')}>
-            <ListItemIcon>
-              <PeopleAltOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Пользователи'} />
-          </ListItem>
+        <List className="menu">
+          {routes.map((route, index) => (
+            <ListItem
+              key={index}
+              button
+              onClick={() => navigateTo(route.path)}
+              selected={history.location.pathname === route.path}
+              className={
+                history.location.pathname === route.path
+                  ? 'menu__item menu__item_selected'
+                  : 'menu__item'
+              }
+            >
+              <ListItemIcon>
+                {route.code === 'home' && <HomeOutlinedIcon />}
+                {route.code === 'users' && <PeopleAltOutlinedIcon />}
+              </ListItemIcon>
+              <ListItemText primary={route.name} />
+            </ListItem>
+          ))}
         </List>
       </Drawer>
     </>

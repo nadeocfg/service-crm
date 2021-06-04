@@ -3,6 +3,7 @@ import { VariantType } from 'notistack';
 export interface StoreModel {
   mainStore: MainStoreModel;
   userStore: UserStoreModel;
+  usersStore: UsersStoreModel;
   snackbarStore: NotificationsStoreModel;
 }
 
@@ -36,4 +37,22 @@ export interface NotificationItemModel {
   message: string;
   type: VariantType;
   isShown: boolean;
+}
+
+export interface UsersStoreModel {
+  usersList: UsersItemModel[];
+}
+
+export interface UsersItemModel {
+  id: number;
+  login: string;
+  firstName: string;
+  lastName: string;
+  birthDay: string;
+  password: string;
+  phone: string;
+  isActive: boolean;
+  createdDate: string;
+  updatedDate: string;
+  isAdmin: boolean;
 }

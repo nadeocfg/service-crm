@@ -8,7 +8,9 @@ import { StoreModel } from './models/storeModel';
 import Home from './pages/Home';
 import Loader from './components/Loader';
 import Appbar from './components/Appbar';
-import { changeDrawer } from './store/actions/mainActions';
+import { changeDrawer, setLoader } from './store/actions/mainActions';
+import Users from './pages/Users';
+import { getUsers } from './store/actions/usersPageActions';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -25,7 +27,11 @@ const App = () => {
       dispatch(
         getUserByToken(JSON.parse(window.localStorage['AUTH_DATA']).token)
       );
+    } else {
+      dispatch(setLoader(false));
     }
+
+    dispatch(getUsers());
   }, [dispatch]);
 
   useEffect(() => {
@@ -50,6 +56,9 @@ const App = () => {
             <Switch>
               <Route exact path="/">
                 <Home />
+              </Route>
+              <Route exact path="/users">
+                <Users />
               </Route>
             </Switch>
           </main>

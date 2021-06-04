@@ -1,8 +1,11 @@
 // main colors
-@import './constants/colors';
+@import './utils/colors';
 
 // typography
-@import './constants/typography';
+@import './utils/typography';
+
+// mixins
+@import './utils/mixins';
 
 // override material components
 @import './overrides/input';

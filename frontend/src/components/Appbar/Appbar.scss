@@ -1,3 +1,9 @@
+#root {
+  .appbar {
+    background: var(--secondary-color);
+  }
+}
+
 .appbar {
   padding: 0 16px;
 
@@ -27,5 +33,21 @@
     height: auto;
     width: 100%;
     padding: 16px;
+  }
+}
+
+.menu {
+  .menu__item {
+    border-right: 4px solid transparent;
+    transition: all 500ms linear;
+
+    &.menu__item_selected {
+      border-right: 4px solid var(--primary-color);
+      background: transparent;
+
+      .MuiSvgIcon-root {
+        fill: var(--primary-color);
+      }
+    }
   }
 }

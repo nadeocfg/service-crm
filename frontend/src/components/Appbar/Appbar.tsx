@@ -19,15 +19,14 @@ import { logout } from '../../store/actions/userActions';
 import { changeDrawer } from '../../store/actions/mainActions';
 import { StoreModel } from '../../models/storeModel';
 import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { routes } from '../../utils/routes';
 
 const Appbar = () => {
   const open = useSelector((state: StoreModel) => state.mainStore.isDrawerOpen);
   const dispatch = useDispatch();
   const history = useHistory();
-
-  console.log();
+  const location = useLocation();
 
   const handleChange = () => {
     dispatch(changeDrawer(!open));
@@ -88,9 +87,9 @@ const Appbar = () => {
               key={index}
               button
               onClick={() => navigateTo(route.path)}
-              selected={history.location.pathname === route.path}
+              selected={location.pathname === route.path}
               className={
-                history.location.pathname === route.path
+                location.pathname === route.path
                   ? 'menu__item menu__item_selected'
                   : 'menu__item'
               }

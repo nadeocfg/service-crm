@@ -7,7 +7,6 @@ api.interceptors.request.use(function (config) {
   const authDataParse = authData ? JSON.parse(authData) : '';
 
   const { token } = authDataParse;
-  console.log(token);
 
   if (token) {
     config.headers.authorization = `Bearer ${token}`;

@@ -247,6 +247,72 @@ const getUserByToken = (
   }
 };
 
+// @desc   Get users with serach params
+// @route  POST /api/users/find
+// @access Private
+const findUsers = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { page, count, searchValue } = request.body;
+
+    let field = '';
+    if (!searchValue) {
+      field = '';
+    } else {
+      field = searchValue;
+    }
+
+    const users = await db.query(
+      `
+      SELECT
+        id, login, "firstName", "lastName", "birthDay", phone, "createdDate", "updatedDate", "isActive"
+      FROM
+        "${process.env.DB_NAME}".users
+      WHERE
+        login LIKE $1 OR
+        "firstName" LIKE $1 OR
+        "lastName" LIKE $1 OR
+        phone LIKE $1
+      ORDER BY
+        id
+      LIMIT
+        $2
+      OFFSET
+        $3
+      `,
+      [`%${field}%`, count, page * count]
+    );
+
+    const total = await db.query(
+      `
+      SELECT
+        count(*) AS total
+      FROM
+        "${process.env.DB_NAME}".users
+      WHERE
+        login LIKE $1 OR
+        'firstName' LIKE $1 OR
+        'lastName' LIKE $1 OR
+        phone LIKE $1
+      `,
+      [`%${field}%`]
+    );
+
+    response.json({
+      users: users.rows,
+      total: +total.rows[0].total,
+    });
+  } catch (error) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
 export {
   getAllActiveUsers,
   getAllInactiveUsers,
@@ -254,4 +320,5 @@ export {
   authUser,
   updateUser,
   getUserByToken,
+  findUsers,
 };

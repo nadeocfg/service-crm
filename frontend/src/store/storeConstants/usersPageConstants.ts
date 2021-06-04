@@ -1,1 +1,2 @@
 export const SET_USERS_LIST = 'SET_USERS_LIST';
+export const SET_SEARCH_FIELD = 'SET_SEARCH_FIELD';

@@ -1,4 +1,4 @@
-import { Route, Switch, useLocation } from 'react-router';
+import { Route, Switch, useHistory } from 'react-router';
 import SingIn from './pages/SignIn';
 import Snackbar from './components/Snackbar';
 import { useEffect } from 'react';
@@ -10,11 +10,10 @@ import Loader from './components/Loader';
 import Appbar from './components/Appbar';
 import { changeDrawer, setLoader } from './store/actions/mainActions';
 import Users from './pages/Users';
-import { getUsers } from './store/actions/usersPageActions';
 
 const App = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
+  const history = useHistory();
   const isAuthorized = useSelector(
     (store: StoreModel) => store.userStore.isAuthorized
   );
@@ -29,14 +28,13 @@ const App = () => {
       );
     } else {
       dispatch(setLoader(false));
+      history.push('/');
     }
-
-    dispatch(getUsers());
-  }, [dispatch]);
+  }, [dispatch, history]);
 
   useEffect(() => {
     dispatch(changeDrawer(window.innerWidth > 960));
-  }, [location, dispatch]);
+  }, [dispatch]);
 
   return (
     <>
@@ -54,7 +52,7 @@ const App = () => {
 
           <main>
             <Switch>
-              <Route exact path="/">
+              <Route exact path="/dashboard">
                 <Home />
               </Route>
               <Route exact path="/users">

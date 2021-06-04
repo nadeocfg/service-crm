@@ -2,15 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router } from 'react-router';
 import { Provider } from 'react-redux';
-import { createBrowserHistory } from 'history';
 import App from './App';
 import { SnackbarProvider } from 'notistack';
 import { CssBaseline } from '@material-ui/core';
 
 import './assets/scss/main.scss';
 import store from './store';
-
-const history = createBrowserHistory();
+import history from './utils/history';
 
 ReactDOM.render(
   <React.StrictMode>

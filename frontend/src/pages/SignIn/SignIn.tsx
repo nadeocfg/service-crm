@@ -50,7 +50,7 @@ export default function SignIn() {
               value={fields.password}
             />
 
-            <Btn classes="btn btn_primary" onClick={signIn}>
+            <Btn classes="btn btn_primary btn_big" onClick={signIn}>
               Войти
             </Btn>
           </div>

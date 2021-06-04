@@ -1,6 +1,7 @@
 import { Dispatch } from 'react';
 import api from '../../utils/axiosMiddleware';
-import { CLEAR_STORE } from '../storeConstants/mainConstants';
+import history from '../../utils/history';
+import { CLEAR_STORE, SET_LOADER } from '../storeConstants/mainConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import { SET_AUTH_RESPONSE } from '../storeConstants/userConstants';
 import { setLoader } from './mainActions';
@@ -119,7 +120,14 @@ export const getUserByToken =
 export const logout = () => async (dispatch: Dispatch<any>) => {
   window.localStorage.removeItem('AUTH_DATA');
 
+  history.push('/');
+
   dispatch({
     type: CLEAR_STORE,
+  });
+
+  dispatch({
+    type: SET_LOADER,
+    payload: false,
   });
 };

@@ -41,6 +41,8 @@ export interface NotificationItemModel {
 
 export interface UsersStoreModel {
   usersList: UsersItemModel[];
+  usersTotal: number;
+  searchField: string;
 }
 
 export interface UsersItemModel {
@@ -49,10 +51,8 @@ export interface UsersItemModel {
   firstName: string;
   lastName: string;
   birthDay: string;
-  password: string;
   phone: string;
-  isActive: boolean;
   createdDate: string;
   updatedDate: string;
-  isAdmin: boolean;
+  isActive: boolean;
 }

@@ -188,6 +188,40 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "POST /api/users/find",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjI4MTI3MzAsImV4cCI6MTYyMzA3MTkzMH0.oRhwKuHTOum0OklsSB2OS4jAEsDJ8DDMGkBtD2uBSdM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"page\": 2,\r\n  \"count\": 2,\r\n  \"searchValue\": \"a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/users/find",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"find"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

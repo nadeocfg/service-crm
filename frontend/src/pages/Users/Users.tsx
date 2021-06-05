@@ -14,9 +14,9 @@ import { StoreModel, UsersItemModel } from '../../models/storeModel';
 import { getUsers, setSearchField } from '../../store/actions/usersPageActions';
 import SearchIcon from '@material-ui/icons/Search';
 import Btn from '../../components/Btn';
-import AddIcon from '@material-ui/icons/Add';
 import { formatDate } from '../../utils/formatDate';
 import React, { useEffect, useState } from 'react';
+import CreateUserModal from '../../components/CreateUserModal';
 
 const Users = () => {
   const dispatch = useDispatch();
@@ -88,10 +88,7 @@ const Users = () => {
           inputProps={{ 'aria-label': 'Введите параметры поиска' }}
         />
 
-        <Btn classes="btn btn_primary" onClick={handleSearch}>
-          <AddIcon />
-          Создать
-        </Btn>
+        <CreateUserModal />
       </div>
 
       <TableContainer component={Paper}>

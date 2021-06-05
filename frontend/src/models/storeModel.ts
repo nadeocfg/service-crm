@@ -43,6 +43,16 @@ export interface UsersStoreModel {
   usersList: UsersItemModel[];
   usersTotal: number;
   searchField: string;
+  createData: CreateUserDataModel;
+}
+
+export interface CreateUserDataModel {
+  login?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  birthDay?: string;
+  phone?: string;
 }
 
 export interface UsersItemModel {

@@ -22,13 +22,15 @@ const authUser = async (
       SELECT
         id,
         login,
-        "firstName",
-        "lastName",
+        "fullName",
         "birthDay",
         phone,
-        "isAdmin",
+        "roleId",
         "updatedDate",
-        "createdDate"
+        "createdDate",
+        "percentFromJob",
+        "percentFromParts",
+        "percentFromVisit"
       FROM
         "${process.env.DB_NAME}".users
       WHERE
@@ -67,7 +69,17 @@ const getAllActiveUsers = async (
     const allUsers = await db.query(
       `
       SELECT
-        *
+        id,
+        login,
+        "fullName",
+        "birthDay",
+        phone,
+        "roleId",
+        "updatedDate",
+        "createdDate",
+        "percentFromJob",
+        "percentFromParts",
+        "percentFromVisit"
       FROM
         "${process.env.DB_NAME}".users
       WHERE
@@ -96,7 +108,17 @@ const getAllInactiveUsers = async (
     const allUsers = await db.query(
       `
       SELECT
-        *
+        id,
+        login,
+        "fullName",
+        "birthDay",
+        phone,
+        "roleId",
+        "updatedDate",
+        "createdDate",
+        "percentFromJob",
+        "percentFromParts",
+        "percentFromVisit"
       FROM
         "${process.env.DB_NAME}".users
       WHERE
@@ -122,16 +144,25 @@ const createUser = async (
   next: NextFunction
 ) => {
   try {
-    const { login, password, firstName, lastName, birthDay, phone } =
-      request.body;
+    const {
+      login,
+      birthDay,
+      password,
+      phone,
+      fullName,
+      roleId,
+      percentFromJob,
+      percentFromParts,
+      percentFromVisit,
+    } = request.body;
     const cryptedPass = password ? SHA256(password).toString() : '';
 
     const findExistingUser = await db.query(
-      `SELECT 1 FROM "${process.env.DB_NAME}".users WHERE login = $1`,
+      `SELECT id FROM "${process.env.DB_NAME}".users WHERE login = $1`,
       [login]
     );
 
-    if (findExistingUser.rows.length > 0) {
+    if (findExistingUser.rowCount === 0) {
       return response.status(400).json({
         message: `User with login ${login}, already exist`,
       });
@@ -140,12 +171,32 @@ const createUser = async (
     const insertUser = await db.query(
       `
       INSERT INTO
-        "${process.env.DB_NAME}".users(login, password, "firstName", "lastName", "birthDay", phone, "createdDate", "updatedDate")
-      VALUES($1, $2, $3, $4, $5, $6, NOW(), NOW())
+        "${process.env.DB_NAME}".users(login, "birthDay", password, phone, "createdDate", "updatedDate", "fullName", "roleId", "percentFromJob", "percentFromParts", "percentFromVisit")
+      VALUES($1, $2, $3, $4, NOW(), NOW(), $5, $6, $7, $8, $9)
       RETURNING
-        id, login, "firstName", "lastName", "birthDay", phone, "createdDate", "updatedDate"
+        id,
+        login,
+        "birthDay",
+        phone,
+        "createdDate",
+        "updatedDate",
+        "fullName",
+        "roleId",
+        "percentFromJob",
+        "percentFromParts",
+        "percentFromVisit"
       `,
-      [login, cryptedPass, firstName, lastName, birthDay, phone]
+      [
+        login,
+        birthDay,
+        cryptedPass,
+        phone,
+        fullName,
+        roleId,
+        percentFromJob,
+        percentFromParts,
+        percentFromVisit,
+      ]
     );
 
     response.json(insertUser.rows[0]);
@@ -170,21 +221,30 @@ const updateUser = async (
     const userId = request.params.id;
     const cryptedPass = password ? SHA256(password).toString() : '';
 
-    if (request.user && !request.user.isAdmin) {
+    if (request.user && ![1, 2].includes(request.user.roleId)) {
       return response.status(401).json({
         message: `Current user don't have permission to this request`,
       });
     }
 
-    const values = Object.keys(request.body).map(function (key) {
-      if (key === 'password') {
-        return cryptedPass;
-      }
+    const values: (string | boolean)[] = Object.keys(request.body).map(
+      function (key) {
+        if (
+          key === 'id' ||
+          key === 'createdDate' ||
+          key === 'updatedDate' ||
+          key === 'login'
+        ) {
+          return false;
+        }
 
-      if (key !== 'login') {
+        if (key === 'password') {
+          return cryptedPass;
+        }
+
         return String(request.body[key]);
       }
-    });
+    );
     values.push(userId);
 
     const query = `
@@ -195,15 +255,16 @@ const updateUser = async (
     RETURNING
       id,
       login,
-      "firstName",
-      "lastName",
       "birthDay",
       phone,
-      "isAdmin",
-      "isActive"
+      "createdDate",
+      "updatedDate",
+      "fullName",
+      "roleId",
+      "percentFromJob",
+      "percentFromParts",
+      "percentFromVisit"
     `;
-
-    console.log(query);
 
     const insertUser = await db.query(
       query,
@@ -258,32 +319,57 @@ const findUsers = async (
   try {
     const { page, count, searchValue } = request.body;
 
-    let field = '';
-    if (!searchValue) {
-      field = '';
-    } else {
-      field = searchValue;
-    }
-
     const users = await db.query(
       `
       SELECT
-        id, login, "firstName", "lastName", "birthDay", phone, "createdDate", "updatedDate", "isActive"
+        id,
+        login,
+        "birthDay",
+        phone,
+        "createdDate",
+        "updatedDate",
+        "fullName",
+        "roleId",
+        "percentFromJob",
+        "percentFromParts",
+        "percentFromVisit",
+        "roleName",
+        "roleCode"
       FROM
-        "${process.env.DB_NAME}".users
+        (
+        SELECT
+          users.id,
+          users.login,
+          users."birthDay",
+          users.phone,
+          users."createdDate",
+          users."updatedDate",
+          users."fullName",
+          users."roleId",
+          users."percentFromJob",
+          users."percentFromParts",
+          users."percentFromVisit",
+          roles.name as "roleName",
+          roles.code as "roleCode"
+        FROM
+          "${process.env.DB_NAME}".users as users
+        LEFT JOIN
+          "${process.env.DB_NAME}"."dictRoles" as roles
+        ON
+          users."roleId" = roles.id
+        ) as Users
       WHERE
         login LIKE $1 OR
-        "firstName" LIKE $1 OR
-        "lastName" LIKE $1 OR
+        "fullName" LIKE $1 OR
         phone LIKE $1
       ORDER BY
         id
       LIMIT
         $2
       OFFSET
-        $3
+        $3;
       `,
-      [`%${field}%`, count, page * count]
+      [`%${searchValue || ''}%`, count, page * count]
     );
 
     const total = await db.query(
@@ -294,11 +380,10 @@ const findUsers = async (
         "${process.env.DB_NAME}".users
       WHERE
         login LIKE $1 OR
-        'firstName' LIKE $1 OR
-        'lastName' LIKE $1 OR
+        "fullName" LIKE $1 OR
         phone LIKE $1
       `,
-      [`%${field}%`]
+      [`%${searchValue || ''}%`]
     );
 
     response.json({

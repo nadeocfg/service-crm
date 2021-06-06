@@ -18,7 +18,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjIwMTU1NDUsImV4cCI6MTYyMjI3NDc0NX0.i6ARZK1mAN9oOiuKRu24fJXH0wnE0j8vaguIfMowT24",
+								"value": "{{token}}",
 								"type": "text"
 							}
 						],
@@ -46,7 +46,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjIwMTU1NDUsImV4cCI6MTYyMjI3NDc0NX0.i6ARZK1mAN9oOiuKRu24fJXH0wnE0j8vaguIfMowT24",
+								"value": "{{token}}",
 								"type": "text"
 							}
 						],
@@ -74,7 +74,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjIwMjg2NzksImV4cCI6MTYyMjI4Nzg3OX0.s27MnSDHXQU06-JHegMgx9mNKWamzOQ9IA0K8lGjOzw",
+								"value": "{{token}}",
 								"type": "text"
 							}
 						],
@@ -127,13 +127,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjE5NTQyNDMsImV4cCI6MTYyMjIxMzQ0M30.fHSAYED9uUbHIesU5-CBTSRsPCgriTplfgQZlc96zGo",
+								"value": "{{token}}",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"login\": \"test3@test.kz\",\r\n  \"password\": \"12345\",\r\n  \"firstName\": \"first\",\r\n  \"lastName\": \"last\",\r\n  \"birthDay\": \"1990-07-16\",\r\n  \"phone\": \"+7 (777) 123-45-65\"\r\n}",
+							"raw": "{\r\n  \"login\": \"test13@test.kz\",\r\n  \"birthDay\": \"1990-07-16\",\r\n  \"password\": \"12345\",\r\n  \"phone\": \"+7 (777) 123-45-65\",\r\n  \"fullName\": \"Test Name\",\r\n  \"roleId\": 2,\r\n  \"percentFromJob\": \"30\",\r\n  \"percentFromParts\": \"20\",\r\n  \"percentFromVisit\": \"50\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -161,13 +161,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjE5NTQyNDMsImV4cCI6MTYyMjIxMzQ0M30.fHSAYED9uUbHIesU5-CBTSRsPCgriTplfgQZlc96zGo",
+								"value": "{{token}}",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"login\": \"test7447@test.kz\",\r\n  \"password\": \"12345\",\r\n  \"firstName\": \"first1\",\r\n  \"lastName\": \"last2\",\r\n  \"birthDay\": \"1990-07-16\",\r\n  \"phone\": \"+7 (777) 123-45-65\",\r\n  \"isActive\": false\r\n}",
+							"raw": "{\r\n  \"password\": \"12345\",\r\n  \"percentFromJob\": 30,\r\n  \"percentFromParts\": 42,\r\n  \"percentFromVisit\": 53,\r\n  \"roleId\": 3,\r\n  \"id\": 555\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -175,7 +175,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/api/users/update/7",
+							"raw": "{{URL}}/api/users/update/200",
 							"host": [
 								"{{URL}}"
 							],
@@ -183,7 +183,7 @@
 								"api",
 								"users",
 								"update",
-								"7"
+								"200"
 							]
 						}
 					},
@@ -196,7 +196,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjI4MTI3MzAsImV4cCI6MTYyMzA3MTkzMH0.oRhwKuHTOum0OklsSB2OS4jAEsDJ8DDMGkBtD2uBSdM",
+								"value": "{{token}}",
 								"type": "text"
 							}
 						],
@@ -267,6 +267,10 @@
 		{
 			"key": "URL",
 			"value": "localhost:5000"
+		},
+		{
+			"key": "token",
+			"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE2MjI5OTQxNTcsImV4cCI6MTYyMzI1MzM1N30.fIRM8TwkNDD51Z8NHBB-QM-8KVXkTt4XDV95HF2Kuco"
 		}
 	]
 }

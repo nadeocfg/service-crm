@@ -24,13 +24,15 @@ const protect = async (
         SELECT
           id,
           login,
-          "firstName",
-          "lastName",
+          "fullName",
           "birthDay",
           phone,
-          "isAdmin",
+          "roleId",
           "updatedDate",
-          "createdDate"
+          "createdDate",
+          "percentFromJob",
+          "percentFromParts",
+          "percentFromVisit"
         FROM
           "${process.env.DB_NAME}".users
         WHERE

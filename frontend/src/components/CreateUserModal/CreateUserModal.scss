@@ -1,0 +1,49 @@
+#create-form {
+  .form {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    &__field {
+      flex-basis: 100%;
+      margin-bottom: 8px;
+    }
+  }
+
+  .btn-container {
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 0 24px 16px 24px;
+
+    .btn {
+      width: 100%;
+      margin-left: 0;
+      margin-bottom: 8px;
+    }
+  }
+}
+
+@media (min-width: 600px) {
+  #create-form {
+    .form {
+      &__field {
+        flex-basis: 40%;
+        flex-grow: 1;
+        margin: 0 8px 16px 8px;
+      }
+    }
+
+    .btn-container {
+      flex-direction: row;
+      padding: 0 32px 16px 32px;
+
+      .btn {
+        width: auto;
+
+        & + .btn {
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+}

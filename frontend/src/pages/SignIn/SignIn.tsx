@@ -17,9 +17,11 @@ export default function SignIn() {
     });
   };
 
-  const signIn = () => {
+  const signIn = (event: any) => {
+    event.preventDefault();
+
     if (!fields.login || !fields.password) {
-      return dispatch(addNotify('Заполните логин пароль', 'warning'));
+      return dispatch(addNotify('Заполните логин и пароль', 'warning'));
     }
 
     dispatch(userSignIn(fields.login, fields.password));
@@ -32,7 +34,7 @@ export default function SignIn() {
           <h1>Войти</h1>
           <p>Для смены пароля, попоросите администратора</p>
 
-          <div className="form">
+          <form action="" onSubmit={signIn} className="form">
             <TextField
               className="input"
               label="Логин"
@@ -50,10 +52,10 @@ export default function SignIn() {
               value={fields.password}
             />
 
-            <Btn classes="btn btn_primary btn_big" onClick={signIn}>
+            <Btn classes="btn btn_primary btn_big" type="submit">
               Войти
             </Btn>
-          </div>
+          </form>
         </Grid>
         <Grid item xs={12} md={6} className="sign-in-form__bg">
           <img src={signInBg} alt="service center" />

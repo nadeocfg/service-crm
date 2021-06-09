@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { Dispatch } from 'react';
 import { CreateUserDataModel } from '../../models/storeModel';
 import api from '../../utils/axiosMiddleware';
@@ -74,6 +75,24 @@ export const createUser =
   (createData: CreateUserDataModel) => async (dispatch: Dispatch<any>) => {
     try {
       dispatch(setLoader(true));
+
+      const date = moment(createData.birthDay, 'DD/MM/YYYY').isValid();
+
+      if (!date) {
+        dispatch(setLoader(false));
+
+        return dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: 'Неправильная дата',
+            type: 'error',
+          },
+        });
+      }
+
+      createData.birthDay = moment(createData.birthDay, 'DD/MM/YYYY').format(
+        'YYYY-MM-DD'
+      );
 
       api
         .post(`/api/users/create`, createData)

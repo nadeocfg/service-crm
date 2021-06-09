@@ -99,6 +99,7 @@ const Users = () => {
               <TableCell>Имя</TableCell>
               <TableCell>Логин</TableCell>
               <TableCell>Телефон</TableCell>
+              <TableCell>Роль</TableCell>
               <TableCell>Дата обновления</TableCell>
             </TableRow>
           </TableHead>
@@ -106,9 +107,10 @@ const Users = () => {
             {usersList.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>{user.id}</TableCell>
-                <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
+                <TableCell>{user.fullName}</TableCell>
                 <TableCell>{user.login}</TableCell>
                 <TableCell>{user.phone}</TableCell>
+                <TableCell>{user.roleName}</TableCell>
                 <TableCell>{formatDate(user.updatedDate, true)}</TableCell>
               </TableRow>
             ))}

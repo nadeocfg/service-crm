@@ -162,7 +162,7 @@ const createUser = async (
       [login]
     );
 
-    if (findExistingUser.rowCount === 0) {
+    if (findExistingUser.rowCount > 0) {
       return response.status(400).json({
         message: `User with login ${login}, already exist`,
       });

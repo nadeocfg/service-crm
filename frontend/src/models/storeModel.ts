@@ -48,21 +48,28 @@ export interface UsersStoreModel {
 
 export interface CreateUserDataModel {
   login?: string;
-  password?: string;
-  firstName?: string;
-  lastName?: string;
   birthDay?: string;
+  password?: string;
   phone?: string;
+  fullName?: string;
+  roleId?: number;
+  percentFromJob?: number | null;
+  percentFromParts?: number | null;
+  percentFromVisit?: number | null;
 }
 
 export interface UsersItemModel {
   id: number;
   login: string;
-  firstName: string;
-  lastName: string;
   birthDay: string;
   phone: string;
   createdDate: string;
   updatedDate: string;
-  isActive: boolean;
+  fullName: string;
+  roleId: number;
+  percentFromJob: number;
+  percentFromParts: number;
+  percentFromVisit: number;
+  roleName: string;
+  roleCode: string;
 }

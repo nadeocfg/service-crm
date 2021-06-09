@@ -5,6 +5,8 @@ import { Provider } from 'react-redux';
 import App from './App';
 import { SnackbarProvider } from 'notistack';
 import { CssBaseline } from '@material-ui/core';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
 
 import './assets/scss/main.scss';
 import store from './store';
@@ -17,7 +19,9 @@ ReactDOM.render(
     <Provider store={store}>
       <Router history={history}>
         <SnackbarProvider maxSnack={5}>
-          <App />
+          <MuiPickersUtilsProvider utils={MomentUtils}>
+            <App />
+          </MuiPickersUtilsProvider>
         </SnackbarProvider>
       </Router>
     </Provider>

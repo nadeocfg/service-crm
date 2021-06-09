@@ -11,7 +11,17 @@ const initialState = {
   usersList: [],
   usersTotal: 0,
   searchField: '',
-  createData: {},
+  createData: {
+    login: '',
+    birthDay: '',
+    password: '',
+    phone: '',
+    fullName: '',
+    roleId: 3,
+    percentFromJob: null,
+    percentFromParts: null,
+    percentFromVisit: null,
+  },
 };
 
 const usersPageReducer = (

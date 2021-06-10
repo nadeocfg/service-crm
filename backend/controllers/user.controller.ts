@@ -39,16 +39,30 @@ const authUser = async (
       [login, cryptedPass]
     );
 
-    if (currentUser.rows.length > 0) {
-      response.json({
-        ...currentUser.rows[0],
-        token: generateJwt(JSON.stringify(currentUser.rows[0].id)),
-      });
-    } else {
+    if (currentUser.rowCount === 0) {
       response.status(404).json({
         message: `Incorrect login or password`,
       });
     }
+
+    const userRole = await db.query(
+      `
+      SELECT
+        code as "roleCode",
+        name as "roleName"
+      FROM
+        "${process.env.DB_NAME}"."dictRoles"
+      WHERE
+        id = $1
+    `,
+      [currentUser.rows[0].roleId]
+    );
+
+    response.json({
+      ...currentUser.rows[0],
+      ...userRole.rows[0],
+      token: generateJwt(JSON.stringify(currentUser.rows[0].id)),
+    });
   } catch (error) {
     response.status(404).json({
       message: error.message,
@@ -221,14 +235,18 @@ const updateUser = async (
     const userId = request.params.id;
     const cryptedPass = password ? SHA256(password).toString() : '';
 
-    if (request.user && ![1, 2].includes(request.user.roleId)) {
+    if (
+      request.user &&
+      request.user.roleCode !== 'ADMIN' &&
+      request.user.roleCode !== 'SUPER_ADMIN'
+    ) {
       return response.status(401).json({
         message: `Current user don't have permission to this request`,
       });
     }
 
     const values: (string | boolean)[] = Object.keys(request.body).map(
-      function (key) {
+      (key: string) => {
         if (
           key === 'id' ||
           key === 'createdDate' ||
@@ -238,8 +256,17 @@ const updateUser = async (
           return false;
         }
 
+        if (
+          (key === 'percentFromJob' ||
+            key === 'percentFromParts' ||
+            key === 'percentFromVisit') &&
+          !request.body[key]
+        ) {
+          return false;
+        }
+
         if (key === 'password') {
-          return cryptedPass;
+          return cryptedPass ? cryptedPass : false;
         }
 
         return String(request.body[key]);
@@ -289,7 +316,7 @@ const updateUser = async (
 // @desc   Get user by token
 // @route  GET /api/users/profile
 // @access Private
-const getUserByToken = (
+const getUserByToken = async (
   request: UserRequest,
   response: Response,
   next: NextFunction
@@ -298,7 +325,7 @@ const getUserByToken = (
     response.status(200);
     response.json({
       ...request.user,
-      token: generateJwt(JSON.stringify(request.user.id)),
+      token: generateJwt(JSON.stringify(request.user?.id || '')),
     });
   } catch (error) {
     response.status(404).json({
@@ -398,6 +425,54 @@ const findUsers = async (
   }
 };
 
+// @desc   Get users with serach params
+// @route  GET /api/users/:id
+// @access Private
+const getUserById = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = request.params;
+
+    const findUser = await db.query(
+      `
+        SELECT
+          id,
+          login,
+          "fullName",
+          "birthDay",
+          phone,
+          "roleId",
+          "percentFromJob",
+          "percentFromParts",
+          "percentFromVisit"
+        FROM
+          "${process.env.DB_NAME}".users
+        WHERE
+          id = $1
+      `,
+      [id]
+    );
+
+    if (findUser.rowCount === 0) {
+      return response.status(400).json({
+        message: `Cannot find user with id ${id}`,
+      });
+    }
+
+    response.json({
+      ...findUser.rows[0],
+    });
+  } catch (error) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
 export {
   getAllActiveUsers,
   getAllInactiveUsers,
@@ -406,4 +481,5 @@ export {
   updateUser,
   getUserByToken,
   findUsers,
+  getUserById,
 };

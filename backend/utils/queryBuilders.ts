@@ -1,6 +1,7 @@
 const getSetString = (body: any) => {
   let queryStr = '';
-  var queryArr: any[] = [];
+  let counter = 0;
+  let queryArr: any[] = [];
   Object.keys(body).forEach((key, i) => {
     if (
       key === 'id' ||
@@ -11,12 +12,27 @@ const getSetString = (body: any) => {
       return false;
     }
 
-    return queryArr.push(`"${key}" = $${i + 1}`);
+    if (key === 'password' && !body[key]) {
+      return false;
+    }
+
+    if (
+      (key === 'percentFromJob' ||
+        key === 'percentFromParts' ||
+        key === 'percentFromVisit') &&
+      !body[key]
+    ) {
+      return queryArr.push(`"${key}" = 0`);
+    }
+
+    counter += 1;
+
+    return queryArr.push(`"${key}" = $${counter}`);
   });
 
   queryStr += queryArr.join(', ');
   queryStr += ', "updatedDate" = NOW() ';
-  queryStr += `WHERE id = $${Object.keys(body).length}`;
+  queryStr += `WHERE id = $${(counter += 1)}`;
 
   return queryStr;
 };

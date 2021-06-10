@@ -14,8 +14,11 @@ import Btn from '../Btn';
 import Transition from '../Transition';
 import AddIcon from '@material-ui/icons/Add';
 import { useDispatch, useSelector } from 'react-redux';
-import { StoreModel } from '../../models/storeModel';
-import { SET_CREATE_DATA } from '../../store/storeConstants/usersPageConstants';
+import { RoleItemModel, StoreModel } from '../../models/storeModel';
+import {
+  CLEAR_CREATE_DATA,
+  SET_CREATE_DATA,
+} from '../../store/storeConstants/usersPageConstants';
 import ReactInputMask from 'react-input-mask';
 import { createUser } from '../../store/actions/usersPageActions';
 
@@ -23,6 +26,9 @@ const CreateUserModal = () => {
   const [open, setOpen] = useState(false);
   const createData = useSelector(
     (store: StoreModel) => store.usersStore.createData
+  );
+  const roleList = useSelector(
+    (store: StoreModel) => store.usersStore.roleList
   );
   const dispatch = useDispatch();
 
@@ -40,10 +46,18 @@ const CreateUserModal = () => {
     });
   };
 
-  const submit = (event: any) => {
+  const submit = async (event: any) => {
     event.preventDefault();
 
-    dispatch(createUser(createData));
+    const createResult = await dispatch(createUser(createData));
+
+    if (typeof createResult === 'boolean' && createResult) {
+      dispatch({
+        type: CLEAR_CREATE_DATA,
+      });
+
+      handleChangeModal();
+    }
   };
 
   return (
@@ -71,6 +85,7 @@ const CreateUserModal = () => {
               value={createData.login}
               onChange={handleChange('login')}
               autoComplete="off"
+              required
             />
 
             <TextField
@@ -81,6 +96,7 @@ const CreateUserModal = () => {
               onChange={handleChange('password')}
               value={createData.password}
               autoComplete="new-password"
+              required
             />
 
             <TextField
@@ -89,6 +105,7 @@ const CreateUserModal = () => {
               variant="outlined"
               onChange={handleChange('fullName')}
               value={createData.fullName}
+              required
             />
 
             <ReactInputMask
@@ -100,6 +117,7 @@ const CreateUserModal = () => {
                 className="input form__field"
                 label="Телефон"
                 variant="outlined"
+                required
               />
             </ReactInputMask>
 
@@ -112,6 +130,7 @@ const CreateUserModal = () => {
                 className="input form__field"
                 label="Дата рождения"
                 variant="outlined"
+                required
               />
             </ReactInputMask>
 
@@ -142,19 +161,23 @@ const CreateUserModal = () => {
               value={createData.percentFromVisit}
             />
 
-            <FormControl variant="outlined" className="input form__field">
+            <FormControl
+              variant="outlined"
+              className="input form__field"
+              required
+            >
               <InputLabel>Роль</InputLabel>
               <Select
                 value={createData.roleId}
                 onChange={handleChange('roleId')}
                 label="Роль"
+                required
               >
-                <MenuItem value={0}>
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                {roleList.map((role: RoleItemModel) => (
+                  <MenuItem value={role.id} key={role.id}>
+                    {role.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </DialogContent>

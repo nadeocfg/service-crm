@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import colors from 'colors';
 import userRoutes from './routes/user.routes';
 import { errorHandler, notFound } from './middleware/errorMiddleware';
+import dictRoutes from './routes/dict.routes';
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -16,6 +17,7 @@ app.get('/', (request: express.Request, response: express.Response) => {
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/dicts', dictRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

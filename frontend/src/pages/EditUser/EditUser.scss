@@ -1,23 +1,27 @@
-#create-form {
+#edit-user-form {
+  h1 {
+    margin: 16px 24px;
+  }
+
   .form {
     display: flex;
-    align-items: flex-start;
     flex-wrap: wrap;
 
     &__field {
       flex-basis: 100%;
-      margin: 8px 0;
+      flex-grow: 1;
+      margin: 8px;
     }
   }
 }
 
 @media (min-width: 600px) {
-  #create-form {
+  #edit-user-form {
     .form {
       &__field {
-        flex-basis: 40%;
+        flex-basis: 30%;
         flex-grow: 1;
-        margin: 0 8px 16px 8px;
+        margin: 8px;
       }
     }
   }

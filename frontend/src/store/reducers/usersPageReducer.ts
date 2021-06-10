@@ -5,6 +5,8 @@ import {
   SET_USERS_LIST,
   SET_SEARCH_FIELD,
   SET_CREATE_DATA,
+  SET_ROLE_LIST,
+  CLEAR_CREATE_DATA,
 } from '../storeConstants/usersPageConstants';
 
 const initialState = {
@@ -18,10 +20,11 @@ const initialState = {
     phone: '',
     fullName: '',
     roleId: 3,
-    percentFromJob: null,
-    percentFromParts: null,
-    percentFromVisit: null,
+    percentFromJob: 0,
+    percentFromParts: 0,
+    percentFromVisit: 0,
   },
+  roleList: [],
 };
 
 const usersPageReducer = (
@@ -49,6 +52,29 @@ const usersPageReducer = (
           ...state.createData,
           [action.payload.name]: action.payload.value,
         },
+      };
+
+    case CLEAR_CREATE_DATA:
+      return {
+        ...state,
+        createData: {
+          ...state.createData,
+          login: '',
+          birthDay: '',
+          password: '',
+          phone: '',
+          fullName: '',
+          roleId: 3,
+          percentFromJob: null,
+          percentFromParts: null,
+          percentFromVisit: null,
+        },
+      };
+
+    case SET_ROLE_LIST:
+      return {
+        ...state,
+        roleList: action.payload,
       };
 
     case CLEAR_STORE:

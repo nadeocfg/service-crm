@@ -5,6 +5,7 @@ export interface StoreModel {
   userStore: UserStoreModel;
   usersStore: UsersStoreModel;
   snackbarStore: NotificationsStoreModel;
+  editUserStore: EditUserStoreModel;
 }
 
 export interface MainStoreModel {
@@ -16,12 +17,16 @@ export interface UserStoreModel {
   authResponse: {
     birthDay?: string;
     createdDate?: string;
-    firstName?: string;
+    fullName?: string;
     id?: number;
-    isAdmin?: boolean;
-    lastName?: string;
     login?: string;
+    percentFromJob?: number;
+    percentFromParts?: number;
+    percentFromVisit?: number;
     phone?: string;
+    roleCode?: string;
+    roleId?: number;
+    roleName?: string;
     token?: string;
     updatedDate?: string;
   };
@@ -44,6 +49,7 @@ export interface UsersStoreModel {
   usersTotal: number;
   searchField: string;
   createData: CreateUserDataModel;
+  roleList: RoleItemModel[];
 }
 
 export interface CreateUserDataModel {
@@ -53,9 +59,9 @@ export interface CreateUserDataModel {
   phone?: string;
   fullName?: string;
   roleId?: number;
-  percentFromJob?: number | null;
-  percentFromParts?: number | null;
-  percentFromVisit?: number | null;
+  percentFromJob?: number;
+  percentFromParts?: number;
+  percentFromVisit?: number;
 }
 
 export interface UsersItemModel {
@@ -72,4 +78,29 @@ export interface UsersItemModel {
   percentFromVisit: number;
   roleName: string;
   roleCode: string;
+}
+
+export interface RoleItemModel {
+  id: number;
+  code: string;
+  name: string;
+  createdDate: string;
+  updatedDate: string;
+}
+
+export interface EditUserStoreModel {
+  user: EditUserResponse;
+}
+
+export interface EditUserResponse {
+  id?: number;
+  login?: string;
+  password?: string;
+  fullName?: string;
+  birthDay?: string;
+  phone?: string;
+  roleId?: number;
+  percentFromJob?: number | null;
+  percentFromParts?: number | null;
+  percentFromVisit?: number | null;
 }

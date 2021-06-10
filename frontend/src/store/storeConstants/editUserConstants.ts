@@ -1,0 +1,2 @@
+export const SET_USER_RESPONSE = 'SET_USER_RESPONSE';
+export const SET_USER_DATA = 'SET_USER_DATA';

@@ -10,6 +10,7 @@ import Loader from './components/Loader';
 import Appbar from './components/Appbar';
 import { changeDrawer, setLoader } from './store/actions/mainActions';
 import Users from './pages/Users';
+import EditUser from './pages/EditUser';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -57,6 +58,9 @@ const App = () => {
               </Route>
               <Route exact path="/users">
                 <Users />
+              </Route>
+              <Route exact path="/edit-user/:id">
+                <EditUser />
               </Route>
             </Switch>
           </main>

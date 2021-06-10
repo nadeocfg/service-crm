@@ -1,4 +1,5 @@
 import {
+  IconButton,
   InputBase,
   Paper,
   Table,
@@ -13,10 +14,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StoreModel, UsersItemModel } from '../../models/storeModel';
 import { getUsers, setSearchField } from '../../store/actions/usersPageActions';
 import SearchIcon from '@material-ui/icons/Search';
+import EditIcon from '@material-ui/icons/Edit';
 import Btn from '../../components/Btn';
 import { formatDate } from '../../utils/formatDate';
 import React, { useEffect, useState } from 'react';
 import CreateUserModal from '../../components/CreateUserModal';
+import history from '../../utils/history';
 
 const Users = () => {
   const dispatch = useDispatch();
@@ -26,8 +29,11 @@ const Users = () => {
   const total: number = useSelector(
     (store: StoreModel) => store.usersStore.usersTotal
   );
-  const serachField: string = useSelector(
+  const searchField: string = useSelector(
     (store: StoreModel) => store.usersStore.searchField
+  );
+  const userRoleCode = useSelector(
+    (store: StoreModel) => store.userStore.authResponse.roleCode
   );
   const [pagination, setPagination] = useState({
     currentPage: 0,
@@ -50,7 +56,7 @@ const Users = () => {
     });
 
     dispatch(
-      getUsers(pagination.currentPage, +event.target.value, serachField)
+      getUsers(pagination.currentPage, +event.target.value, searchField)
     );
   };
 
@@ -60,17 +66,21 @@ const Users = () => {
       currentPage: page,
     });
 
-    dispatch(getUsers(page, pagination.rowsPerPage, serachField));
+    dispatch(getUsers(page, pagination.rowsPerPage, searchField));
   };
 
   const handleSearch = () => {
     dispatch(
-      getUsers(pagination.currentPage, pagination.rowsPerPage, serachField)
+      getUsers(pagination.currentPage, pagination.rowsPerPage, searchField)
     );
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setSearchField(event.target.value));
+  };
+
+  const editUser = (id: number) => {
+    history.push(`/edit-user/${id}`);
   };
 
   return (
@@ -82,13 +92,15 @@ const Users = () => {
         </Btn>
 
         <InputBase
-          value={serachField}
+          value={searchField}
           onChange={handleSearchChange}
           placeholder="Введите параметры поиска"
           inputProps={{ 'aria-label': 'Введите параметры поиска' }}
         />
 
-        <CreateUserModal />
+        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
+          <CreateUserModal />
+        )}
       </div>
 
       <TableContainer component={Paper}>
@@ -101,6 +113,7 @@ const Users = () => {
               <TableCell>Телефон</TableCell>
               <TableCell>Роль</TableCell>
               <TableCell>Дата обновления</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -112,6 +125,17 @@ const Users = () => {
                 <TableCell>{user.phone}</TableCell>
                 <TableCell>{user.roleName}</TableCell>
                 <TableCell>{formatDate(user.updatedDate, true)}</TableCell>
+                {(userRoleCode === 'SUPER_ADMIN' ||
+                  userRoleCode === 'ADMIN') && (
+                  <TableCell>
+                    <IconButton
+                      aria-label="edit"
+                      onClick={() => editUser(user.id)}
+                    >
+                      <EditIcon fontSize="inherit" />
+                    </IconButton>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

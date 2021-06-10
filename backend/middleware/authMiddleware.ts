@@ -41,7 +41,23 @@ const protect = async (
         [decoded.id]
       );
 
-      request.user = findUser.rows[0];
+      const userRole = await db.query(
+        `
+        SELECT
+          code as "roleCode",
+          name as "roleName"
+        FROM
+          "${process.env.DB_NAME}"."dictRoles"
+        WHERE
+          id = $1
+      `,
+        [findUser.rows[0].roleId]
+      );
+
+      request.user = {
+        ...findUser.rows[0],
+        ...userRole.rows[0],
+      };
     } catch {
       response.status(401);
       next(new Error('Invalid or expired token'));

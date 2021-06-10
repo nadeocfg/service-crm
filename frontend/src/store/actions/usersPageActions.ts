@@ -5,6 +5,7 @@ import api from '../../utils/axiosMiddleware';
 import history from '../../utils/history';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import {
+  SET_ROLE_LIST,
   SET_SEARCH_FIELD,
   SET_USERS_LIST,
 } from '../storeConstants/usersPageConstants';
@@ -81,20 +82,22 @@ export const createUser =
       if (!date) {
         dispatch(setLoader(false));
 
-        return dispatch({
+        dispatch({
           type: ADD_NOTIFY,
           payload: {
             message: 'Неправильная дата',
             type: 'error',
           },
         });
+
+        return false;
       }
 
       createData.birthDay = moment(createData.birthDay, 'DD/MM/YYYY').format(
         'YYYY-MM-DD'
       );
 
-      api
+      return api
         .post(`/api/users/create`, createData)
         .then((res) => {
           dispatch({
@@ -106,7 +109,8 @@ export const createUser =
           });
 
           dispatch(getUsers());
-          history.push('/users');
+
+          return true;
         })
         .catch((err) => {
           dispatch({
@@ -118,6 +122,8 @@ export const createUser =
               type: 'error',
             },
           });
+
+          return false;
         })
         .finally(() => {
           dispatch(setLoader(false));
@@ -135,5 +141,45 @@ export const createUser =
       });
 
       dispatch(setLoader(false));
+
+      return false;
     }
   };
+
+export const getAllRoles = () => async (dispatch: Dispatch<any>) => {
+  try {
+    api
+      .get(`/api/dicts/roles`)
+      .then((res) => {
+        dispatch({
+          type: SET_ROLE_LIST,
+          payload: res.data,
+        });
+
+        dispatch(getUsers());
+        history.push('/users');
+      })
+      .catch((err) => {
+        dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: err.response?.data?.message
+              ? err.response.data.message
+              : 'Ошибка',
+            type: 'error',
+          },
+        });
+      });
+  } catch (error) {
+    dispatch({
+      type: ADD_NOTIFY,
+      payload: {
+        message:
+          error.response && error.response.data
+            ? error.response.data.message
+            : 'Ошибка',
+        type: 'error',
+      },
+    });
+  }
+};

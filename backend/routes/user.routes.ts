@@ -7,6 +7,7 @@ import {
   updateUser,
   getUserByToken,
   findUsers,
+  getUserById,
 } from '../controllers/user.controller';
 import { protect } from '../middleware/authMiddleware';
 
@@ -15,6 +16,7 @@ const userRoutes = express.Router();
 userRoutes.route('/all-active').get(protect, getAllActiveUsers);
 userRoutes.route('/all-inactive').get(protect, getAllInactiveUsers);
 userRoutes.route('/profile').get(protect, getUserByToken);
+userRoutes.route('/:id').get(protect, getUserById);
 userRoutes.route('/auth').post(authUser);
 userRoutes.route('/create').post(protect, createUser);
 userRoutes.route('/update/:id').post(protect, updateUser);

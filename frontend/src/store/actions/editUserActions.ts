@@ -1,86 +1,29 @@
+import moment from 'moment';
 import { Dispatch } from 'react';
+import { EditUserResponse } from '../../models/storeModel';
 import api from '../../utils/axiosMiddleware';
-import history from '../../utils/history';
-import { CLEAR_STORE, SET_LOADER } from '../storeConstants/mainConstants';
+import { SET_USER_RESPONSE } from '../storeConstants/editUserConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
-import { SET_AUTH_RESPONSE } from '../storeConstants/userConstants';
 import { setLoader } from './mainActions';
-import { getAllRoles } from './usersPageActions';
 
-export const userSignIn =
-  (login: string, password: string) => async (dispatch: Dispatch<any>) => {
+export const getUserById =
+  (id: number | string) => async (dispatch: Dispatch<any>) => {
     try {
       dispatch(setLoader(true));
 
-      const data = {
-        login,
-        password,
-      };
-
       api
-        .post('/api/users/auth', data)
+        .get(`/api/users/${id}`)
         .then((res) => {
-          dispatch({
-            type: SET_AUTH_RESPONSE,
-            payload: res.data,
-          });
+          const birthDay = moment(res.data.birthDay).format('DD/MM/YYYY');
 
-          dispatch(getAllRoles());
-
-          window.localStorage.setItem('AUTH_DATA', JSON.stringify(res.data));
-        })
-        .catch((err) => {
           dispatch({
-            type: ADD_NOTIFY,
+            type: SET_USER_RESPONSE,
             payload: {
-              message: err.response?.data?.message
-                ? err.response.data.message
-                : 'Ошибка при авторизации',
-              type: 'error',
+              ...res.data,
+              birthDay,
+              password: '',
             },
           });
-
-          dispatch({
-            type: CLEAR_STORE,
-          });
-        })
-        .finally(() => {
-          dispatch(setLoader(false));
-        });
-    } catch (error) {
-      dispatch({
-        type: ADD_NOTIFY,
-        payload: {
-          message:
-            error.response && error.response.data
-              ? error.response.data.message
-              : 'Ошибка при авторизации',
-          type: 'error',
-        },
-      });
-
-      dispatch({
-        type: CLEAR_STORE,
-      });
-
-      dispatch(setLoader(false));
-    }
-  };
-
-export const getUserByToken =
-  (token: string) => async (dispatch: Dispatch<any>) => {
-    try {
-      api
-        .get(`/api/users/profile`)
-        .then((res) => {
-          dispatch({
-            type: SET_AUTH_RESPONSE,
-            payload: res.data,
-          });
-
-          dispatch(getAllRoles());
-
-          window.localStorage.setItem('AUTH_DATA', JSON.stringify(res.data));
         })
         .catch((err) => {
           dispatch({
@@ -92,12 +35,6 @@ export const getUserByToken =
               type: 'error',
             },
           });
-
-          dispatch({
-            type: CLEAR_STORE,
-          });
-
-          window.localStorage.removeItem('AUTH_DATA');
         })
         .finally(() => {
           dispatch(setLoader(false));
@@ -114,25 +51,57 @@ export const getUserByToken =
         },
       });
 
+      dispatch(setLoader(false));
+    }
+  };
+
+export const updateUser =
+  (data: EditUserResponse) => async (dispatch: Dispatch<any>) => {
+    try {
+      dispatch(setLoader(true));
+
+      const birthDay = moment(data.birthDay, 'DD/MM/YYYY').format('YYYY-MM-DD');
+
+      api
+        .post(`/api/users/update/${data.id}`, {
+          ...data,
+          birthDay,
+        })
+        .then((res) => {
+          dispatch({
+            type: ADD_NOTIFY,
+            payload: {
+              message: 'Пользователь успешно сохранен',
+              type: 'success',
+            },
+          });
+        })
+        .catch((err) => {
+          dispatch({
+            type: ADD_NOTIFY,
+            payload: {
+              message: err.response?.data?.message
+                ? err.response.data.message
+                : 'Ошибка',
+              type: 'error',
+            },
+          });
+        })
+        .finally(() => {
+          dispatch(setLoader(false));
+        });
+    } catch (error) {
       dispatch({
-        type: CLEAR_STORE,
+        type: ADD_NOTIFY,
+        payload: {
+          message:
+            error.response && error.response.data
+              ? error.response.data.message
+              : 'Ошибка',
+          type: 'error',
+        },
       });
 
       dispatch(setLoader(false));
     }
   };
-
-export const logout = () => async (dispatch: Dispatch<any>) => {
-  window.localStorage.removeItem('AUTH_DATA');
-
-  history.push('/');
-
-  dispatch({
-    type: CLEAR_STORE,
-  });
-
-  dispatch({
-    type: SET_LOADER,
-    payload: false,
-  });
-};

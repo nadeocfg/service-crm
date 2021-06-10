@@ -6,6 +6,7 @@ export interface StoreModel {
   usersStore: UsersStoreModel;
   snackbarStore: NotificationsStoreModel;
   editUserStore: EditUserStoreModel;
+  dictsStore: DictsStoreModel;
 }
 
 export interface MainStoreModel {
@@ -49,7 +50,6 @@ export interface UsersStoreModel {
   usersTotal: number;
   searchField: string;
   createData: CreateUserDataModel;
-  roleList: RoleItemModel[];
 }
 
 export interface CreateUserDataModel {
@@ -103,4 +103,10 @@ export interface EditUserResponse {
   percentFromJob?: number | null;
   percentFromParts?: number | null;
   percentFromVisit?: number | null;
+}
+
+export interface DictsStoreModel {
+  dictRoles: {
+    roles: RoleItemModel[];
+  };
 }

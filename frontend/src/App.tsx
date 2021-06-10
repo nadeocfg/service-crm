@@ -11,6 +11,10 @@ import Appbar from './components/Appbar';
 import { changeDrawer, setLoader } from './store/actions/mainActions';
 import Users from './pages/Users';
 import EditUser from './pages/EditUser';
+import DictRoles from './pages/administration/DictRoles';
+import DictWorkTypes from './pages/administration/DictBoilers';
+import DictBoilers from './pages/administration/DictWorkTypes';
+import DictParts from './pages/administration/DictParts';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -61,6 +65,19 @@ const App = () => {
               </Route>
               <Route exact path="/edit-user/:id">
                 <EditUser />
+              </Route>
+
+              <Route exact path="/administration/roles">
+                <DictRoles />
+              </Route>
+              <Route exact path="/administration/work-types">
+                <DictWorkTypes />
+              </Route>
+              <Route exact path="/administration/boilers">
+                <DictBoilers />
+              </Route>
+              <Route exact path="/administration/parts">
+                <DictParts />
               </Route>
             </Switch>
           </main>

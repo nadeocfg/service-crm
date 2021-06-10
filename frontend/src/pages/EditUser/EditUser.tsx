@@ -23,7 +23,7 @@ const EditUser = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: StoreModel) => state.editUserStore.user);
   const roleList = useSelector(
-    (store: StoreModel) => store.usersStore.roleList
+    (store: StoreModel) => store.dictsStore.dictRoles.roles
   );
 
   useEffect(() => {

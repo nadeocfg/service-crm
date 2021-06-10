@@ -28,7 +28,7 @@ const CreateUserModal = () => {
     (store: StoreModel) => store.usersStore.createData
   );
   const roleList = useSelector(
-    (store: StoreModel) => store.usersStore.roleList
+    (store: StoreModel) => store.dictsStore.dictRoles.roles
   );
   const dispatch = useDispatch();
 

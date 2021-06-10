@@ -4,8 +4,8 @@ import history from '../../utils/history';
 import { CLEAR_STORE, SET_LOADER } from '../storeConstants/mainConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import { SET_AUTH_RESPONSE } from '../storeConstants/userConstants';
+import { getAllRoles } from './dictsActions';
 import { setLoader } from './mainActions';
-import { getAllRoles } from './usersPageActions';
 
 export const userSignIn =
   (login: string, password: string) => async (dispatch: Dispatch<any>) => {

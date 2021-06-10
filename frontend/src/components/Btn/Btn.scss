@@ -43,4 +43,30 @@
       margin-right: 12px;
     }
   }
+
+  &__icon {
+    &_danger {
+      .MuiIconButton-label {
+        svg {
+          fill: var(--danger-color);
+        }
+      }
+    }
+
+    &_success {
+      .MuiIconButton-label {
+        svg {
+          fill: var(--success-color);
+        }
+      }
+    }
+
+    &_warning {
+      .MuiIconButton-label {
+        svg {
+          fill: var(--warning-color);
+        }
+      }
+    }
+  }
 }

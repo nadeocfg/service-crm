@@ -2,10 +2,8 @@ import moment from 'moment';
 import { Dispatch } from 'react';
 import { CreateUserDataModel } from '../../models/storeModel';
 import api from '../../utils/axiosMiddleware';
-import history from '../../utils/history';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import {
-  SET_ROLE_LIST,
   SET_SEARCH_FIELD,
   SET_USERS_LIST,
 } from '../storeConstants/usersPageConstants';
@@ -145,41 +143,3 @@ export const createUser =
       return false;
     }
   };
-
-export const getAllRoles = () => async (dispatch: Dispatch<any>) => {
-  try {
-    api
-      .get(`/api/dicts/roles`)
-      .then((res) => {
-        dispatch({
-          type: SET_ROLE_LIST,
-          payload: res.data,
-        });
-
-        dispatch(getUsers());
-        history.push('/users');
-      })
-      .catch((err) => {
-        dispatch({
-          type: ADD_NOTIFY,
-          payload: {
-            message: err.response?.data?.message
-              ? err.response.data.message
-              : 'Ошибка',
-            type: 'error',
-          },
-        });
-      });
-  } catch (error) {
-    dispatch({
-      type: ADD_NOTIFY,
-      payload: {
-        message:
-          error.response && error.response.data
-            ? error.response.data.message
-            : 'Ошибка',
-        type: 'error',
-      },
-    });
-  }
-};

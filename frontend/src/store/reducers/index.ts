@@ -4,6 +4,7 @@ import snackbarStore from './snackbarReducer';
 import mainStore from './mainReducer';
 import usersStore from './usersPageReducer';
 import editUserStore from './editUserReducer';
+import dictsStore from './dictsReducer';
 
 const rootReducer = combineReducers({
   mainStore,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   snackbarStore,
   usersStore,
   editUserStore,
+  dictsStore,
 });
 
 export default rootReducer;

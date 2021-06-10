@@ -1,0 +1,27 @@
+.search-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#role-form {
+  .form {
+    display: flex;
+    flex-wrap: wrap;
+
+    &__field {
+      flex-basis: 100%;
+      flex-grow: 1;
+      margin: 8px;
+    }
+  }
+}
+
+@media (min-width: 600px) {
+  #role-form {
+    .form {
+      &__field {
+        flex-basis: 40%;
+      }
+    }
+  }
+}

@@ -5,7 +5,6 @@ import {
   SET_USERS_LIST,
   SET_SEARCH_FIELD,
   SET_CREATE_DATA,
-  SET_ROLE_LIST,
   CLEAR_CREATE_DATA,
 } from '../storeConstants/usersPageConstants';
 
@@ -24,7 +23,6 @@ const initialState = {
     percentFromParts: 0,
     percentFromVisit: 0,
   },
-  roleList: [],
 };
 
 const usersPageReducer = (
@@ -69,12 +67,6 @@ const usersPageReducer = (
           percentFromParts: null,
           percentFromVisit: null,
         },
-      };
-
-    case SET_ROLE_LIST:
-      return {
-        ...state,
-        roleList: action.payload,
       };
 
     case CLEAR_STORE:

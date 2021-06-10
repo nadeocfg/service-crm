@@ -19,7 +19,7 @@
 .drawer {
   &.drawer_open {
     & ~ main {
-      padding-left: 290px;
+      padding-left: 0;
       transition: all 225ms cubic-bezier(0, 0, 0.2, 1) 0ms;
     }
   }
@@ -47,6 +47,30 @@
 
       .MuiSvgIcon-root {
         fill: var(--primary-color);
+      }
+    }
+  }
+
+  .MuiListItemIcon-root {
+    min-width: 36px;
+  }
+
+  &__nested {
+    .MuiListItem-root {
+      padding: 4px 16px 4px 32px;
+
+      .MuiTypography-root {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (min-width: 600px) {
+  .drawer {
+    &.drawer_open {
+      & ~ main {
+        padding-left: 290px;
       }
     }
   }

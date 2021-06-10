@@ -1,5 +1,6 @@
 import {
   AppBar,
+  Collapse,
   Divider,
   Drawer,
   IconButton,
@@ -20,13 +21,26 @@ import { changeDrawer } from '../../store/actions/mainActions';
 import { StoreModel } from '../../models/storeModel';
 import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
 import { useHistory, useLocation } from 'react-router';
-import { routes } from '../../utils/routes';
+import { routes, subRoutes } from '../../utils/routes';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import { useState } from 'react';
+import SettingsIcon from '@material-ui/icons/Settings';
+import GroupIcon from '@material-ui/icons/Group';
+import WorkIcon from '@material-ui/icons/Work';
+import BathtubIcon from '@material-ui/icons/Bathtub';
+import ExtensionIcon from '@material-ui/icons/Extension';
 
 const Appbar = () => {
   const open = useSelector((state: StoreModel) => state.mainStore.isDrawerOpen);
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
+  const [openSubMenu, setOpenSubMenu] = useState(false);
+
+  const handleOpenSubmenu = () => {
+    setOpenSubMenu(!openSubMenu);
+  };
 
   const handleChange = () => {
     dispatch(changeDrawer(!open));
@@ -101,6 +115,39 @@ const Appbar = () => {
               <ListItemText primary={route.name} />
             </ListItem>
           ))}
+
+          <ListItem button onClick={handleOpenSubmenu}>
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Администрирование" />
+            {openSubMenu ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={openSubMenu} unmountOnExit>
+            <List component="div" disablePadding className="menu__nested">
+              {subRoutes.map((route, index) => (
+                <ListItem
+                  key={index}
+                  button
+                  onClick={() => navigateTo(route.path)}
+                  selected={location.pathname === route.path}
+                  className={
+                    location.pathname === route.path
+                      ? 'menu__item menu__item_selected'
+                      : 'menu__item'
+                  }
+                >
+                  <ListItemIcon>
+                    {route.code === 'dictRoles' && <GroupIcon />}
+                    {route.code === 'dictWorkTypes' && <WorkIcon />}
+                    {route.code === 'dictBoilers' && <BathtubIcon />}
+                    {route.code === 'dictParts' && <ExtensionIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={route.name} />
+                </ListItem>
+              ))}
+            </List>
+          </Collapse>
         </List>
       </Drawer>
     </>

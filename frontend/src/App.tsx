@@ -12,9 +12,9 @@ import { changeDrawer, setLoader } from './store/actions/mainActions';
 import Users from './pages/Users';
 import EditUser from './pages/EditUser';
 import DictRoles from './pages/administration/DictRoles';
-import DictWorkTypes from './pages/administration/DictBoilers';
-import DictBoilers from './pages/administration/DictWorkTypes';
+import DictBoilers from './pages/administration/DictJobTypes';
 import DictParts from './pages/administration/DictParts';
+import DictJobTypes from './pages/administration/DictJobTypes';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -37,9 +37,9 @@ const App = () => {
     }
   }, [dispatch, history]);
 
-  useEffect(() => {
+  history.listen(() => {
     dispatch(changeDrawer(window.innerWidth > 960));
-  }, [dispatch]);
+  });
 
   return (
     <>
@@ -70,8 +70,8 @@ const App = () => {
               <Route exact path="/administration/roles">
                 <DictRoles />
               </Route>
-              <Route exact path="/administration/work-types">
-                <DictWorkTypes />
+              <Route exact path="/administration/job-types">
+                <DictJobTypes />
               </Route>
               <Route exact path="/administration/boilers">
                 <DictBoilers />

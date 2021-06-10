@@ -18,8 +18,8 @@ export const subRoutes = [
     name: 'Роли',
   },
   {
-    path: '/administration/work-types',
-    code: 'dictWorkTypes',
+    path: '/administration/job-types',
+    code: 'dictJobTypes',
     name: 'Виды работ',
   },
   {

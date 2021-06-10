@@ -80,14 +80,6 @@ export interface UsersItemModel {
   roleCode: string;
 }
 
-export interface RoleItemModel {
-  id: number;
-  code: string;
-  name: string;
-  createdDate: string;
-  updatedDate: string;
-}
-
 export interface EditUserStoreModel {
   user: EditUserResponse;
 }
@@ -109,4 +101,30 @@ export interface DictsStoreModel {
   dictRoles: {
     roles: RoleItemModel[];
   };
+  dictJobTypes: {
+    jobTypes: JobItemModel[];
+    total: number;
+  };
+}
+
+export interface RoleItemModel {
+  id: number;
+  code: string;
+  name: string;
+  createdDate: string;
+  updatedDate: string;
+}
+
+export interface JobItemModel {
+  code?: string;
+  createdBy?: number;
+  createdDate?: string;
+  id?: number;
+  monthsOfGuarantee?: number;
+  name?: string;
+  price?: number;
+  price1?: number;
+  price2?: number;
+  price3?: number;
+  updatedDate?: string;
 }

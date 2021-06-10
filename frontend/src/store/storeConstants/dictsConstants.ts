@@ -1,1 +1,2 @@
 export const SET_ROLE_LIST = 'SET_ROLE_LIST';
+export const SET_JOB_TYPES_LIST = 'SET_JOB_TYPES_LIST';

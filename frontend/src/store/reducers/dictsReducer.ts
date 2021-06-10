@@ -1,11 +1,18 @@
 import { ReduxActionModel } from '../../models/reduxModel';
 import { DictsStoreModel } from '../../models/storeModel';
-import { SET_ROLE_LIST } from '../storeConstants/dictsConstants';
+import {
+  SET_JOB_TYPES_LIST,
+  SET_ROLE_LIST,
+} from '../storeConstants/dictsConstants';
 import { CLEAR_STORE } from '../storeConstants/mainConstants';
 
 const initialState: DictsStoreModel = {
   dictRoles: {
     roles: [],
+  },
+  dictJobTypes: {
+    jobTypes: [],
+    total: 0,
   },
 };
 
@@ -17,6 +24,16 @@ const dictsReducer = (state = initialState, action: ReduxActionModel) => {
         dictRoles: {
           ...state.dictRoles,
           roles: action.payload,
+        },
+      };
+
+    case SET_JOB_TYPES_LIST:
+      return {
+        ...state,
+        dictJobTypes: {
+          ...state.dictJobTypes,
+          jobTypes: action.payload.jobTypes,
+          total: action.payload.total,
         },
       };
 

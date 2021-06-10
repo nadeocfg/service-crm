@@ -10,6 +10,15 @@
   }
 }
 
+.search-row {
+  display: flex;
+  flex-direction: column;
+
+  h1 {
+    margin: 16px 0;
+  }
+}
+
 @media (min-width: 600px) {
   .btn-container {
     flex-direction: row;
@@ -22,5 +31,11 @@
         margin-left: 8px;
       }
     }
+  }
+
+  .search-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
 }

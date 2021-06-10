@@ -114,4 +114,13 @@ RETURNING
   "roleId",
   "percentFromJob",
   "percentFromParts",
-  "percentFromVisit"
+  "percentFromVisit";
+
+INSERT INTO "service-crm"."dictRoles" (code, name, "createdDate", "updatedDate")
+VALUES($1, $2, NOW(), NOW())
+RETURNING
+  id,
+  code,
+  name,
+  "createdDate",
+  "updatedDate";

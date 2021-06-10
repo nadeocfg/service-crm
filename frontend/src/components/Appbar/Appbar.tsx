@@ -139,7 +139,7 @@ const Appbar = () => {
                 >
                   <ListItemIcon>
                     {route.code === 'dictRoles' && <GroupIcon />}
-                    {route.code === 'dictWorkTypes' && <WorkIcon />}
+                    {route.code === 'dictJobTypes' && <WorkIcon />}
                     {route.code === 'dictBoilers' && <BathtubIcon />}
                     {route.code === 'dictParts' && <ExtensionIcon />}
                   </ListItemIcon>

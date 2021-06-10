@@ -4,15 +4,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
 } from '@material-ui/core';
 import Btn from '../Btn';
 import Transition from '../Transition';
 import AddIcon from '@material-ui/icons/Add';
+import api from '../../utils/axiosMiddleware';
+import { useDispatch } from 'react-redux';
+import { ADD_NOTIFY } from '../../store/storeConstants/snackbarConstants';
+import { getAllRoles } from '../../store/actions/dictsActions';
 
 const CreateRoleModal = () => {
   const [open, setOpen] = useState(false);
@@ -20,6 +20,7 @@ const CreateRoleModal = () => {
     code: '',
     name: '',
   });
+  const dispatch = useDispatch();
 
   const handleChangeModal = () => {
     setOpen(!open);
@@ -32,8 +33,45 @@ const CreateRoleModal = () => {
     });
   };
 
-  const submit = () => {
-    console.log(roleData);
+  const submit = (event: React.FormEvent<any>) => {
+    event.preventDefault();
+
+    if (!roleData.code || !roleData.name) {
+      return dispatch({
+        type: ADD_NOTIFY,
+        payload: {
+          message: 'Заполните все поля формы',
+          type: 'error',
+        },
+      });
+    }
+
+    api
+      .post(`/api/dicts/roles/create`, roleData)
+      .then((res) => {
+        dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: 'Роль успешно добавлена',
+            type: 'success',
+          },
+        });
+
+        dispatch(getAllRoles());
+
+        handleChangeModal();
+      })
+      .catch((err) => {
+        dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: err.response?.data?.message
+              ? err.response.data.message
+              : 'Ошибка',
+            type: 'error',
+          },
+        });
+      });
   };
 
   return (

@@ -105,6 +105,14 @@ export interface DictsStoreModel {
     jobTypes: JobItemModel[];
     total: number;
   };
+  dictBoilers: {
+    boilers: BoilerItemModel[];
+    total: number;
+  };
+  dictParts: {
+    parts: PartItemModel[];
+    total: number;
+  };
 }
 
 export interface RoleItemModel {
@@ -127,4 +135,36 @@ export interface JobItemModel {
   price2?: number;
   price3?: number;
   updatedDate?: string;
+}
+
+export interface BoilerItemModel {
+  id?: number;
+  article?: string;
+  name?: string;
+  price?: number;
+  monthsOfGuarantee?: number;
+  quantity?: number;
+  price1?: number;
+  price2?: number;
+  price3?: number;
+  createdDate?: string;
+  updatedDate?: string;
+  createdBy?: number;
+  isActive?: boolean;
+}
+
+export interface PartItemModel {
+  id?: number;
+  article?: string;
+  name?: string;
+  price?: number;
+  monthsOfGuarantee?: number;
+  quantity?: number;
+  price1?: number;
+  price2?: number;
+  price3?: number;
+  createdDate?: string;
+  updatedDate?: string;
+  createdBy?: number;
+  isActive?: boolean;
 }

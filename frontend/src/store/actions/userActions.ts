@@ -4,7 +4,12 @@ import history from '../../utils/history';
 import { CLEAR_STORE, SET_LOADER } from '../storeConstants/mainConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import { SET_AUTH_RESPONSE } from '../storeConstants/userConstants';
-import { getAllJobTypes, getAllRoles } from './dictsActions';
+import {
+  getAllBoilers,
+  getAllJobTypes,
+  getAllParts,
+  getAllRoles,
+} from './dictsActions';
 import { setLoader } from './mainActions';
 
 export const userSignIn =
@@ -27,6 +32,8 @@ export const userSignIn =
 
           dispatch(getAllRoles());
           dispatch(getAllJobTypes());
+          dispatch(getAllBoilers());
+          dispatch(getAllParts());
 
           window.localStorage.setItem('AUTH_DATA', JSON.stringify(res.data));
         })
@@ -81,6 +88,8 @@ export const getUserByToken =
 
           dispatch(getAllRoles());
           dispatch(getAllJobTypes());
+          dispatch(getAllBoilers());
+          dispatch(getAllParts());
 
           window.localStorage.setItem('AUTH_DATA', JSON.stringify(res.data));
         })

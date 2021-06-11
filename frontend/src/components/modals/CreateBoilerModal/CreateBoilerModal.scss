@@ -1,0 +1,30 @@
+#job-type-form,
+#edit-job-type-form {
+  .form {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    &__field {
+      flex-basis: 100%;
+      margin: 8px 0;
+
+      &_checkbox {
+        padding: 7px 0;
+      }
+    }
+  }
+}
+
+@media (min-width: 600px) {
+  #job-type-form,
+  #edit-job-type-form {
+    .form {
+      &__field {
+        flex-basis: 40%;
+        flex-grow: 1;
+        margin: 0 8px 16px 8px;
+      }
+    }
+  }
+}

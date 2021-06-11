@@ -5,6 +5,7 @@ import {
   SET_JOB_TYPES_LIST,
   SET_ROLE_LIST,
   SET_PART_LIST,
+  SET_ORDER_STATUS_LIST,
 } from '../storeConstants/dictsConstants';
 import { CLEAR_STORE } from '../storeConstants/mainConstants';
 
@@ -23,6 +24,9 @@ const initialState: DictsStoreModel = {
   dictParts: {
     parts: [],
     total: 0,
+  },
+  dictOrderStatuses: {
+    statuses: [],
   },
 };
 
@@ -64,6 +68,15 @@ const dictsReducer = (state = initialState, action: ReduxActionModel) => {
           ...state.dictParts,
           parts: action.payload.parts,
           total: action.payload.total,
+        },
+      };
+
+    case SET_ORDER_STATUS_LIST:
+      return {
+        ...state,
+        dictOrderStatuses: {
+          ...state.dictOrderStatuses,
+          statuses: action.payload,
         },
       };
 

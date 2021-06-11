@@ -1,4 +1,4 @@
-import { Route, Switch, useHistory } from 'react-router';
+import { Redirect, Route, Switch, useHistory } from 'react-router';
 import SingIn from './pages/SignIn';
 import Snackbar from './components/Snackbar';
 import { useEffect } from 'react';
@@ -15,6 +15,9 @@ import DictRoles from './pages/administration/DictRoles';
 import DictParts from './pages/administration/DictParts';
 import DictJobTypes from './pages/administration/DictJobTypes';
 import DictBoilers from './pages/administration/DictBoilers';
+import Orders from './pages/Orders';
+import CreateOrder from './pages/CreateOrder';
+import DictOrderStatuses from './pages/administration/DictOrderStatuses';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -66,6 +69,12 @@ const App = () => {
               <Route exact path="/edit-user/:id">
                 <EditUser />
               </Route>
+              <Route exact path="/orders/">
+                <Orders />
+              </Route>
+              <Route exact path="/orders/create">
+                <CreateOrder />
+              </Route>
 
               <Route exact path="/administration/roles">
                 <DictRoles />
@@ -79,6 +88,11 @@ const App = () => {
               <Route exact path="/administration/parts">
                 <DictParts />
               </Route>
+              <Route exact path="/administration/order-statuses">
+                <DictOrderStatuses />
+              </Route>
+
+              <Redirect to="/" />
             </Switch>
           </main>
         </>

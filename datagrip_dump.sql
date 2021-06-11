@@ -55,15 +55,6 @@ CREATE SCHEMA "service-crm";
 
 ALTER SCHEMA "service-crm" OWNER TO postgres;
 
---
--- Name: users; Type: SCHEMA; Schema: -; Owner: postgres
---
-
-CREATE SCHEMA users;
-
-
-ALTER SCHEMA users OWNER TO postgres;
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -81,7 +72,8 @@ CREATE TABLE "service-crm".customers (
     "createdBy" integer NOT NULL,
     "fullName" text NOT NULL,
     phone text NOT NULL,
-    phone2 text
+    phone2 text,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -125,7 +117,8 @@ CREATE TABLE "service-crm"."dictBoilers" (
     price3 integer,
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
     "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
-    "createdBy" integer NOT NULL
+    "createdBy" integer NOT NULL,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -175,7 +168,8 @@ CREATE TABLE "service-crm"."dictJobTypes" (
     "monthsOfGuarantee" integer DEFAULT 0 NOT NULL,
     price1 integer,
     price2 integer,
-    price3 integer
+    price3 integer,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -219,7 +213,8 @@ CREATE TABLE "service-crm"."dictOrderStatuses" (
     code text NOT NULL,
     name text NOT NULL,
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
-    "updatedDate" timestamp with time zone DEFAULT now() NOT NULL
+    "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -263,7 +258,8 @@ CREATE TABLE "service-crm"."dictParts" (
     price1 integer DEFAULT 0 NOT NULL,
     price2 integer DEFAULT 0 NOT NULL,
     price3 integer DEFAULT 0 NOT NULL,
-    "createdBy" integer
+    "createdBy" integer,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -307,7 +303,8 @@ CREATE TABLE "service-crm"."dictRoles" (
     code text NOT NULL,
     name text NOT NULL,
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
-    "updatedDate" timestamp with time zone DEFAULT now() NOT NULL
+    "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -341,14 +338,15 @@ ALTER SEQUENCE "service-crm".dict_roles_id_seq OWNED BY "service-crm"."dictRoles
 
 CREATE TABLE "service-crm".orders (
     id integer NOT NULL,
-    "clientId" integer NOT NULL,
+    "customerId" integer NOT NULL,
     "createdBy" integer NOT NULL,
     address text NOT NULL,
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
     "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
     status integer NOT NULL,
     "serviceManId" integer NOT NULL,
-    comment text
+    comment text,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -391,7 +389,8 @@ CREATE TABLE "service-crm"."soldBoilers" (
     "launchDate" date,
     "monthsOfGuarantee" integer DEFAULT 0 NOT NULL,
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
-    "updatedDate" timestamp with time zone DEFAULT now() NOT NULL
+    "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -440,7 +439,8 @@ CREATE TABLE "service-crm"."soldJobTypes" (
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
     "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
     column_9 integer,
-    "monthsOfGuarantee" integer
+    "monthsOfGuarantee" integer,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -488,7 +488,8 @@ CREATE TABLE "service-crm"."soldParts" (
     "partId" integer NOT NULL,
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
     "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
-    "monthsOfGuarantee" integer DEFAULT 0 NOT NULL
+    "monthsOfGuarantee" integer DEFAULT 0 NOT NULL,
+    "isActive" boolean DEFAULT true NOT NULL
 );
 
 
@@ -649,7 +650,7 @@ ALTER TABLE ONLY "service-crm".users ALTER COLUMN id SET DEFAULT nextval('"servi
 -- Data for Name: customers; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm".customers (id, address, email, "createdDate", "updatedDate", "createdBy", "fullName", phone, phone2) FROM stdin;
+COPY "service-crm".customers (id, address, email, "createdDate", "updatedDate", "createdBy", "fullName", phone, phone2, "isActive") FROM stdin;
 \.
 
 
@@ -657,7 +658,9 @@ COPY "service-crm".customers (id, address, email, "createdDate", "updatedDate", 
 -- Data for Name: dictBoilers; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."dictBoilers" (id, article, name, price, "monthsOfGuarantee", quantity, price1, price2, price3, "createdDate", "updatedDate", "createdBy") FROM stdin;
+COPY "service-crm"."dictBoilers" (id, article, name, price, "monthsOfGuarantee", quantity, price1, price2, price3, "createdDate", "updatedDate", "createdBy", "isActive") FROM stdin;
+1	art00122	test boiler	100000	36	12	90000	80000	0	2021-06-11 15:45:46.160449+06	2021-06-11 16:37:32.844866+06	1	t
+2	part001	Запчасть	8000	12	12	7500	5000	2000	2021-06-11 17:11:02.922124+06	2021-06-11 17:14:26.700078+06	1	t
 \.
 
 
@@ -665,7 +668,32 @@ COPY "service-crm"."dictBoilers" (id, article, name, price, "monthsOfGuarantee",
 -- Data for Name: dictJobTypes; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."dictJobTypes" (id, code, name, "createdDate", "updatedDate", price, "createdBy", "monthsOfGuarantee", price1, price2, price3) FROM stdin;
+COPY "service-crm"."dictJobTypes" (id, code, name, "createdDate", "updatedDate", price, "createdBy", "monthsOfGuarantee", price1, price2, price3, "isActive") FROM stdin;
+3	DIAGNOSTIC1	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:24:14.644045+06	5000	1	36	4000	3000	2000	t
+1	DIAGNOSTIC	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+6	DIAGNOSTIC4	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+7	DIAGNOSTIC5	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+8	DIAGNOSTIC6	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+9	DIAGNOSTIC7	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+10	DIAGNOSTIC8	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+11	DIAGNOSTIC9	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+12	DIAGNOSTIC10	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+13	DIAGNOSTIC11	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+14	DIAGNOSTIC12	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+15	DIAGNOSTIC13	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+16	DIAGNOSTIC14	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+17	DIAGNOSTIC15	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+18	DIAGNOSTIC16	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+19	DIAGNOSTIC17	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+20	DIAGNOSTIC18	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+21	DIAGNOSTIC19	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+22	DIAGNOSTIC20	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+23	DIAGNOSTIC21	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+24	DIAGNOSTIC22	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+25	WORK	Диагностика неисправности	2021-06-11 11:46:03.168458+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+26	WORK1	Диагностика неисправности	2021-06-11 11:46:42.299217+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
+4	DIAGNOSTIC2	Диагностика неисправности 123321	2021-06-10 23:24:44.58152+06	2021-06-11 12:24:23.721113+06	5000	1	12	4000	3000	2000	f
+5	DIAGNOSTIC3	Диагностика неисправности 555	2021-06-10 23:24:44.58152+06	2021-06-11 12:24:38.534493+06	5000	1	12	4000	3000	2000	t
 \.
 
 
@@ -673,11 +701,12 @@ COPY "service-crm"."dictJobTypes" (id, code, name, "createdDate", "updatedDate",
 -- Data for Name: dictOrderStatuses; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."dictOrderStatuses" (id, code, name, "createdDate", "updatedDate") FROM stdin;
-1	CREATED	Создан	2021-06-05 22:35:29.872593+06	2021-06-05 22:35:29.872593+06
-2	IN_PROGRESS	В работе	2021-06-05 22:35:29.872593+06	2021-06-05 22:35:29.872593+06
-3	CANCELED	Отменен	2021-06-05 22:35:29.872593+06	2021-06-05 22:35:29.872593+06
-4	DONE	Завершен	2021-06-05 22:35:29.872593+06	2021-06-05 22:35:29.872593+06
+COPY "service-crm"."dictOrderStatuses" (id, code, name, "createdDate", "updatedDate", "isActive") FROM stdin;
+1	CREATED	Создан	2021-06-05 22:35:29.872593+06	2021-06-05 22:35:29.872593+06	t
+2	IN_PROGRESS	В работе	2021-06-05 22:35:29.872593+06	2021-06-05 22:35:29.872593+06	t
+3	CANCELED	Отменен	2021-06-05 22:35:29.872593+06	2021-06-05 22:35:29.872593+06	t
+4	DONE	Завершен	2021-06-05 22:35:29.872593+06	2021-06-05 22:35:29.872593+06	t
+5	TEST	123	2021-06-11 23:50:22.655438+06	2021-06-11 23:50:22.655438+06	t
 \.
 
 
@@ -685,7 +714,8 @@ COPY "service-crm"."dictOrderStatuses" (id, code, name, "createdDate", "updatedD
 -- Data for Name: dictParts; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."dictParts" (id, article, name, price, "createdDate", "updatedDate", "monthsOfGuarantee", quantity, price1, price2, price3, "createdBy") FROM stdin;
+COPY "service-crm"."dictParts" (id, article, name, price, "createdDate", "updatedDate", "monthsOfGuarantee", quantity, price1, price2, price3, "createdBy", "isActive") FROM stdin;
+1	part002	Запчасть	8000	2021-06-11 17:11:27.226079+06	2021-06-11 17:14:32.619224+06	20	17	7500	5000	2000	1	t
 \.
 
 
@@ -693,10 +723,12 @@ COPY "service-crm"."dictParts" (id, article, name, price, "createdDate", "update
 -- Data for Name: dictRoles; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."dictRoles" (id, code, name, "createdDate", "updatedDate") FROM stdin;
-1	SUPER_ADMIN	Супер админ	2021-06-05 22:26:42.956451+06	2021-06-05 22:26:42.956451+06
-2	ADMIN	Администратор	2021-06-05 22:26:42.956451+06	2021-06-05 22:26:42.956451+06
-3	SERVICE_MAN	Специалист по ремонту	2021-06-05 22:26:42.956451+06	2021-06-05 22:26:42.956451+06
+COPY "service-crm"."dictRoles" (id, code, name, "createdDate", "updatedDate", "isActive") FROM stdin;
+1	SUPER_ADMIN	Супер админ	2021-06-05 22:26:42.956451+06	2021-06-05 22:26:42.956451+06	t
+2	ADMIN	Администратор	2021-06-05 22:26:42.956451+06	2021-06-05 22:26:42.956451+06	t
+3	SERVICE_MAN	Специалист по ремонту	2021-06-05 22:26:42.956451+06	2021-06-05 22:26:42.956451+06	t
+4	ADMIN123	Тестовая роль	2021-06-10 22:45:48.709149+06	2021-06-10 22:45:48.709149+06	t
+5	TEST_ROLE	Тестовая роль 2	2021-06-10 22:46:30.49368+06	2021-06-10 22:46:30.49368+06	t
 \.
 
 
@@ -704,7 +736,7 @@ COPY "service-crm"."dictRoles" (id, code, name, "createdDate", "updatedDate") FR
 -- Data for Name: orders; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm".orders (id, "clientId", "createdBy", address, "createdDate", "updatedDate", status, "serviceManId", comment) FROM stdin;
+COPY "service-crm".orders (id, "customerId", "createdBy", address, "createdDate", "updatedDate", status, "serviceManId", comment, "isActive") FROM stdin;
 \.
 
 
@@ -712,7 +744,7 @@ COPY "service-crm".orders (id, "clientId", "createdBy", address, "createdDate", 
 -- Data for Name: soldBoilers; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."soldBoilers" (id, "boilerId", price, "serialNumber", quantity, sum, "orderId", "launchDate", "monthsOfGuarantee", "createdDate", "updatedDate") FROM stdin;
+COPY "service-crm"."soldBoilers" (id, "boilerId", price, "serialNumber", quantity, sum, "orderId", "launchDate", "monthsOfGuarantee", "createdDate", "updatedDate", "isActive") FROM stdin;
 \.
 
 
@@ -720,7 +752,7 @@ COPY "service-crm"."soldBoilers" (id, "boilerId", price, "serialNumber", quantit
 -- Data for Name: soldJobTypes; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."soldJobTypes" (id, "jobTypeId", price, quantity, sum, "orderId", "createdDate", "updatedDate", column_9, "monthsOfGuarantee") FROM stdin;
+COPY "service-crm"."soldJobTypes" (id, "jobTypeId", price, quantity, sum, "orderId", "createdDate", "updatedDate", column_9, "monthsOfGuarantee", "isActive") FROM stdin;
 \.
 
 
@@ -728,7 +760,7 @@ COPY "service-crm"."soldJobTypes" (id, "jobTypeId", price, quantity, sum, "order
 -- Data for Name: soldParts; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."soldParts" (id, price, quantity, sum, "orderId", "partId", "createdDate", "updatedDate", "monthsOfGuarantee") FROM stdin;
+COPY "service-crm"."soldParts" (id, price, quantity, sum, "orderId", "partId", "createdDate", "updatedDate", "monthsOfGuarantee", "isActive") FROM stdin;
 \.
 
 
@@ -737,18 +769,14 @@ COPY "service-crm"."soldParts" (id, price, quantity, sum, "orderId", "partId", "
 --
 
 COPY "service-crm".users (id, login, "birthDay", password, phone, "isActive", "createdDate", "updatedDate", "fullName", "roleId", "percentFromJob", "percentFromParts", "percentFromVisit") FROM stdin;
-1	khegay.alexey@mail.ru	2021-07-16	8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918	+7 (705) 577-88-52	t	2021-05-25 06:00:00+06	2021-05-25 06:00:00+06	Full name	1	\N	\N	\N
 6	test2@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 13:57:20.019479+06	2021-05-26 13:57:20.019479+06	Full name	2	\N	\N	\N
-5	test1@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 13:55:45.490726+06	2021-05-26 13:55:45.490726+06	Full name	2	\N	\N	\N
 22	asd@asd.sd	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (722) 575-61-23	t	2021-06-05 12:30:14.678466+06	2021-06-05 12:30:14.678466+06	Full name	3	\N	\N	\N
-2	test@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	f	2021-05-26 13:57:20.019479+06	2021-05-26 13:57:20.019479+06	Full name	3	\N	\N	\N
 10	test3@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 17:19:24.768093+06	2021-05-26 17:19:24.768093+06	Full name	3	\N	\N	\N
 15	test7@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 17:19:24.768093+06	2021-05-26 17:19:24.768093+06	Full name	3	\N	\N	\N
 14	test6@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 17:19:24.768093+06	2021-05-26 17:19:24.768093+06	Full name	3	\N	\N	\N
 13	test5@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 17:19:24.768093+06	2021-05-26 17:19:24.768093+06	Full name	3	\N	\N	\N
 12	test4@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 17:19:24.768093+06	2021-05-26 17:19:24.768093+06	Full name	3	\N	\N	\N
 19	test11@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 17:19:24.768093+06	2021-05-26 17:19:24.768093+06	Full name	3	\N	\N	\N
-200	test77@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	f	2021-05-26 13:58:04.938165+06	2021-06-06 22:42:29.982197+06	first1	3	30	42	53
 17	test9@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 17:19:24.768093+06	2021-05-26 17:19:24.768093+06	Full name	3	\N	\N	\N
 16	test8@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 17:19:24.768093+06	2021-05-26 17:19:24.768093+06	Full name	3	\N	\N	\N
 21	test33@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-06-05 00:18:16.155231+06	2021-06-05 00:18:16.155231+06	Full name	3	\N	\N	\N
@@ -756,6 +784,16 @@ COPY "service-crm".users (id, login, "birthDay", password, phone, "isActive", "c
 23	asd1@asd.sd	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (722) 575-61-23	t	2021-06-05 12:31:34.635994+06	2021-06-05 12:31:34.635994+06	Full name	3	\N	\N	\N
 18	test10@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 17:19:24.768093+06	2021-05-26 17:19:24.768093+06	Full name	3	\N	\N	\N
 24	test13@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-06-06 21:48:17.870373+06	2021-06-06 21:48:17.870373+06	Test Name	2	30	20	50
+26	asd@asd.ff	1990-04-23	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (888) 777-74-44	t	2021-06-09 22:20:23.274377+06	2021-06-09 22:20:23.274377+06	Name	3	20	20	50
+27	test@aas.hh	1950-07-12	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (555) 555-55-55	t	2021-06-10 10:51:43.777588+06	2021-06-10 10:51:43.777588+06	test	3	\N	\N	\N
+28	asd@asd.kk	1212-12-12	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (123) 123-12-31	t	2021-06-10 10:55:38.201555+06	2021-06-10 10:55:38.201555+06	asd bkb	3	\N	\N	\N
+29	asd@asd.kk1	2012-12-20	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (123) 123-12-31	t	2021-06-10 11:21:09.76712+06	2021-06-10 11:21:09.76712+06	asd bkb	3	\N	\N	\N
+30	asd@asd.kk13	2012-12-20	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (123) 123-12-31	t	2021-06-10 11:23:48.944152+06	2021-06-10 11:23:48.944152+06	asd bkb	3	\N	\N	\N
+31	test@test.hhh	2200-12-12	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (235) 435-46-57	t	2021-06-10 11:28:39.546572+06	2021-06-10 11:28:39.546572+06	name	3	\N	\N	\N
+2	test@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	f	2021-05-26 13:57:20.019479+06	2021-06-10 15:26:12.031236+06	Full name 111	3	20	30	50
+5	test1@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	t	2021-05-26 13:55:45.490726+06	2021-06-10 15:28:03.072978+06	Full name	3	0	0	0
+1	khegay.alexey@mail.ru	2021-07-16	8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918	+7 (705) 577-88-52	t	2021-05-25 06:00:00+06	2021-06-10 15:48:10.601766+06	Full name	1	0	0	0
+200	test77@test.kz	1990-07-16	5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5	+7 (777) 123-45-65	f	2021-05-26 13:58:04.938165+06	2021-06-10 14:54:03.65469+06	first1	3	30	42	53
 \.
 
 
@@ -770,35 +808,35 @@ SELECT pg_catalog.setval('"service-crm".customers_id_seq', 1, false);
 -- Name: dictBoilers_id_seq; Type: SEQUENCE SET; Schema: service-crm; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"service-crm"."dictBoilers_id_seq"', 1, false);
+SELECT pg_catalog.setval('"service-crm"."dictBoilers_id_seq"', 2, true);
 
 
 --
 -- Name: dictJobTypes_id_seq; Type: SEQUENCE SET; Schema: service-crm; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"service-crm"."dictJobTypes_id_seq"', 1, false);
+SELECT pg_catalog.setval('"service-crm"."dictJobTypes_id_seq"', 27, true);
 
 
 --
 -- Name: dictOrderStatuses_id_seq; Type: SEQUENCE SET; Schema: service-crm; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"service-crm"."dictOrderStatuses_id_seq"', 4, true);
+SELECT pg_catalog.setval('"service-crm"."dictOrderStatuses_id_seq"', 5, true);
 
 
 --
 -- Name: dictParts_id_seq; Type: SEQUENCE SET; Schema: service-crm; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"service-crm"."dictParts_id_seq"', 1, false);
+SELECT pg_catalog.setval('"service-crm"."dictParts_id_seq"', 1, true);
 
 
 --
 -- Name: dict_roles_id_seq; Type: SEQUENCE SET; Schema: service-crm; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"service-crm".dict_roles_id_seq', 3, true);
+SELECT pg_catalog.setval('"service-crm".dict_roles_id_seq', 5, true);
 
 
 --
@@ -833,7 +871,7 @@ SELECT pg_catalog.setval('"service-crm"."soldParts_id_seq"', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: service-crm; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"service-crm".users_id_seq', 24, true);
+SELECT pg_catalog.setval('"service-crm".users_id_seq', 31, true);
 
 
 --
@@ -1094,7 +1132,7 @@ ALTER TABLE ONLY "service-crm"."dictParts"
 --
 
 ALTER TABLE ONLY "service-crm".orders
-    ADD CONSTRAINT orders_customers__fk FOREIGN KEY ("clientId") REFERENCES "service-crm".customers(id);
+    ADD CONSTRAINT orders_customers__fk FOREIGN KEY ("customerId") REFERENCES "service-crm".customers(id);
 
 
 --

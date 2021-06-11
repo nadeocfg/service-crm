@@ -21,7 +21,7 @@ import { changeDrawer } from '../../store/actions/mainActions';
 import { StoreModel } from '../../models/storeModel';
 import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
 import { useHistory, useLocation } from 'react-router';
-import { routes, subRoutes } from '../../utils/routes';
+import { adminRoutes, routes } from '../../utils/routes';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { useState } from 'react';
@@ -30,6 +30,8 @@ import GroupIcon from '@material-ui/icons/Group';
 import WorkIcon from '@material-ui/icons/Work';
 import BathtubIcon from '@material-ui/icons/Bathtub';
 import ExtensionIcon from '@material-ui/icons/Extension';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
 
 const Appbar = () => {
   const open = useSelector((state: StoreModel) => state.mainStore.isDrawerOpen);
@@ -111,6 +113,7 @@ const Appbar = () => {
               <ListItemIcon>
                 {route.code === 'home' && <HomeOutlinedIcon />}
                 {route.code === 'users' && <PeopleAltOutlinedIcon />}
+                {route.code === 'orders' && <ShoppingCartIcon />}
               </ListItemIcon>
               <ListItemText primary={route.name} />
             </ListItem>
@@ -125,7 +128,7 @@ const Appbar = () => {
           </ListItem>
           <Collapse in={openSubMenu} unmountOnExit>
             <List component="div" disablePadding className="menu__nested">
-              {subRoutes.map((route, index) => (
+              {adminRoutes.map((route, index) => (
                 <ListItem
                   key={index}
                   button
@@ -142,6 +145,9 @@ const Appbar = () => {
                     {route.code === 'dictJobTypes' && <WorkIcon />}
                     {route.code === 'dictBoilers' && <BathtubIcon />}
                     {route.code === 'dictParts' && <ExtensionIcon />}
+                    {route.code === 'dictOrderStatuses' && (
+                      <PlaylistAddCheckIcon />
+                    )}
                   </ListItemIcon>
                   <ListItemText primary={route.name} />
                 </ListItem>

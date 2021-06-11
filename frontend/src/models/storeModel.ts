@@ -7,6 +7,7 @@ export interface StoreModel {
   snackbarStore: NotificationsStoreModel;
   editUserStore: EditUserStoreModel;
   dictsStore: DictsStoreModel;
+  ordersStore: OrdersStoreModel;
 }
 
 export interface MainStoreModel {
@@ -113,6 +114,9 @@ export interface DictsStoreModel {
     parts: PartItemModel[];
     total: number;
   };
+  dictOrderStatuses: {
+    statuses: OrderStatusItemModel[];
+  };
 }
 
 export interface RoleItemModel {
@@ -166,5 +170,19 @@ export interface PartItemModel {
   createdDate?: string;
   updatedDate?: string;
   createdBy?: number;
+  isActive?: boolean;
+}
+
+export interface OrdersStoreModel {
+  orders: any[];
+  total: number;
+}
+
+export interface OrderStatusItemModel {
+  id?: number;
+  code?: string;
+  name?: string;
+  updatedDate?: string;
+  createdDate?: string;
   isActive?: boolean;
 }

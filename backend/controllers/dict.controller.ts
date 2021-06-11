@@ -650,6 +650,87 @@ const updatePart = async (
   }
 };
 
+// @desc   get all order statuses
+// @route  GET /api/dicts/order-statuses
+// @access Private
+const getOrderStatuses = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const allStatuses = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."dictOrderStatuses"
+        WHERE
+          "isActive" = true;
+      `
+    );
+
+    response.json(allStatuses.rows);
+  } catch (error) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+// @desc   create order status
+// @route  POST /api/dicts/order-statuses/create
+// @access Private
+const createOrderStatus = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { code, name }: { code: string; name: string } = request.body;
+
+    if (!code || !name) {
+      return response.status(400).json({
+        message: `Missing values, code or name`,
+      });
+    }
+
+    const findExistingStatus = await db.query(
+      `SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = $1;`,
+      [code.toUpperCase()]
+    );
+
+    if (findExistingStatus.rowCount > 0) {
+      return response.status(400).json({
+        message: `Role with code: ${code}, already exist`,
+      });
+    }
+
+    const insertOrderStatus = await db.query(
+      `
+        INSERT INTO
+          "${process.env.DB_NAME}"."dictOrderStatuses" (code, name, "createdDate", "updatedDate")
+        VALUES($1, $2, NOW(), NOW())
+        RETURNING
+          id,
+          code,
+          name,
+          "createdDate",
+          "updatedDate";
+      `,
+      [code.toUpperCase(), name]
+    );
+
+    response.json(insertOrderStatus.rows[0]);
+  } catch (error) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
 export {
   getDictRoles,
   createRole,
@@ -662,4 +743,6 @@ export {
   getParts,
   createPart,
   updatePart,
+  getOrderStatuses,
+  createOrderStatus,
 };

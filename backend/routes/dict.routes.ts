@@ -12,12 +12,17 @@ import {
   getParts,
   createPart,
   updatePart,
+  getOrderStatuses,
+  createOrderStatus,
 } from '../controllers/dict.controller';
 
 const dictRoutes = express.Router();
 
 dictRoutes.route('/roles').get(protect, getDictRoles);
 dictRoutes.route('/roles/create').post(protect, createRole);
+
+dictRoutes.route('/order-statuses').get(protect, getOrderStatuses);
+dictRoutes.route('/order-statuses/create').post(protect, createOrderStatus);
 
 dictRoutes.route('/job-types').get(protect, getJobTypes);
 dictRoutes.route('/job-types/create').post(protect, createJobType);

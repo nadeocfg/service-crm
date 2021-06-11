@@ -7,6 +7,7 @@ import { SET_AUTH_RESPONSE } from '../storeConstants/userConstants';
 import {
   getAllBoilers,
   getAllJobTypes,
+  getAllOrderStatuses,
   getAllParts,
   getAllRoles,
 } from './dictsActions';
@@ -34,6 +35,7 @@ export const userSignIn =
           dispatch(getAllJobTypes());
           dispatch(getAllBoilers());
           dispatch(getAllParts());
+          dispatch(getAllOrderStatuses());
 
           window.localStorage.setItem('AUTH_DATA', JSON.stringify(res.data));
         })
@@ -90,6 +92,7 @@ export const getUserByToken =
           dispatch(getAllJobTypes());
           dispatch(getAllBoilers());
           dispatch(getAllParts());
+          dispatch(getAllOrderStatuses());
 
           window.localStorage.setItem('AUTH_DATA', JSON.stringify(res.data));
         })

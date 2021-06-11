@@ -2,3 +2,4 @@ export const SET_ROLE_LIST = 'SET_ROLE_LIST';
 export const SET_JOB_TYPES_LIST = 'SET_JOB_TYPES_LIST';
 export const SET_BOILER_LIST = 'SET_BOILER_LIST';
 export const SET_PART_LIST = 'SET_PART_LIST';
+export const SET_ORDER_STATUS_LIST = 'SET_ORDER_STATUS_LIST';

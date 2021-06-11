@@ -3,6 +3,7 @@ import api from '../../utils/axiosMiddleware';
 import {
   SET_BOILER_LIST,
   SET_JOB_TYPES_LIST,
+  SET_ORDER_STATUS_LIST,
   SET_PART_LIST,
   SET_ROLE_LIST,
 } from '../storeConstants/dictsConstants';
@@ -182,3 +183,45 @@ export const getAllParts =
       dispatch(setLoader(false));
     }
   };
+
+export const getAllOrderStatuses = () => async (dispatch: Dispatch<any>) => {
+  try {
+    dispatch(setLoader(true));
+
+    api
+      .get(`/api/dicts/order-statuses`)
+      .then((res) => {
+        dispatch({
+          type: SET_ORDER_STATUS_LIST,
+          payload: res.data,
+        });
+      })
+      .catch((err) => {
+        dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: err.response?.data?.message
+              ? err.response.data.message
+              : 'Ошибка',
+            type: 'error',
+          },
+        });
+      })
+      .finally(() => {
+        dispatch(setLoader(false));
+      });
+  } catch (error) {
+    dispatch({
+      type: ADD_NOTIFY,
+      payload: {
+        message:
+          error.response && error.response.data
+            ? error.response.data.message
+            : 'Ошибка',
+        type: 'error',
+      },
+    });
+
+    dispatch(setLoader(false));
+  }
+};

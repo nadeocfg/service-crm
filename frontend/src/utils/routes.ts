@@ -9,9 +9,14 @@ export const routes = [
     code: 'users',
     name: 'Пользователи',
   },
+  {
+    path: '/orders',
+    code: 'orders',
+    name: 'Заказы',
+  },
 ];
 
-export const subRoutes = [
+export const adminRoutes = [
   {
     path: '/administration/roles',
     code: 'dictRoles',
@@ -31,5 +36,10 @@ export const subRoutes = [
     path: '/administration/parts',
     code: 'dictParts',
     name: 'Запчасти',
+  },
+  {
+    path: '/administration/order-statuses',
+    code: 'dictOrderStatuses',
+    name: 'Статусы заказов',
   },
 ];

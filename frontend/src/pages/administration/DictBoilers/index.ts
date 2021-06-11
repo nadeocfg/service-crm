@@ -1,4 +1,4 @@
-import DictWorkTypes from './DictWorkTypes';
-import './DictWorkTypes.scss';
+import DictBoilers from './DictBoilers';
+import './DictBoilers.scss';
 
-export default DictWorkTypes;
+export default DictBoilers;

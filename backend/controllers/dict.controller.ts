@@ -1,21 +1,24 @@
 import { NextFunction, Request, Response } from 'express';
+import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 
 // @desc   get all roles
 // @route  GET /api/dicts/roles
 // @access Private
 const getDictRoles = async (
-  request: Request,
+  request: UserRequest,
   response: Response,
   next: NextFunction
 ) => {
   try {
     const allRoles = await db.query(
       `
-      SELECT
-        *
-      FROM
-        "${process.env.DB_NAME}"."dictRoles"
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."dictRoles"
+        WHERE
+          "isActive" = true;
       `
     );
 
@@ -32,7 +35,7 @@ const getDictRoles = async (
 // @route  POST /api/dicts/roles/create
 // @access Private
 const createRole = async (
-  request: Request,
+  request: UserRequest,
   response: Response,
   next: NextFunction
 ) => {
@@ -46,7 +49,7 @@ const createRole = async (
     }
 
     const findExistingRole = await db.query(
-      `SELECT id FROM "${process.env.DB_NAME}"."dictRoles" WHERE code = $1`,
+      `SELECT id FROM "${process.env.DB_NAME}"."dictRoles" WHERE code = $1;`,
       [code.toUpperCase()]
     );
 
@@ -66,7 +69,7 @@ const createRole = async (
           code,
           name,
           "createdDate",
-          "updatedDate"
+          "updatedDate";
       `,
       [code.toUpperCase(), name]
     );
@@ -84,7 +87,7 @@ const createRole = async (
 // @route  GET /api/dicts/job-types
 // @access Private
 const getJobTypes = async (
-  request: Request,
+  request: UserRequest,
   response: Response,
   next: NextFunction
 ) => {
@@ -96,7 +99,7 @@ const getJobTypes = async (
     if (page && count) {
       offset = Number(page) * Number(count);
     } else {
-      response.status(400).json({
+      return response.status(400).json({
         message: 'Wrong GET params',
       });
     }
@@ -107,6 +110,8 @@ const getJobTypes = async (
           *
         FROM
           "${process.env.DB_NAME}"."dictJobTypes"
+        WHERE
+          "isActive" = true
         ORDER BY
           id
         LIMIT
@@ -119,14 +124,16 @@ const getJobTypes = async (
 
     const total = await db.query(
       `
-      SELECT
-        count(*) AS total
-      FROM
-        "${process.env.DB_NAME}"."dictJobTypes"
+        SELECT
+          count(*) AS total
+        FROM
+          "${process.env.DB_NAME}"."dictJobTypes"
+        WHERE
+          "isActive" = true;
       `
     );
 
-    response.json({
+    response.status(200).json({
       jobTypes: allJobs.rows,
       total: +total.rows[0].total,
     });
@@ -137,4 +144,122 @@ const getJobTypes = async (
     next(`Error: ${error.message}`);
   }
 };
-export { getDictRoles, createRole, getJobTypes };
+
+// @desc   create job type
+// @route  POST /api/dicts/job-types/create
+// @access Private
+const createJobType = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { code, name, monthsOfGuarantee, price, price1, price2, price3 } =
+      request.body;
+    const createdBy = request.user?.id;
+
+    if (!createdBy) {
+      return response.status(400).json({
+        message: `Cannot find created user id`,
+      });
+    }
+
+    const insertJobType = await db.query(
+      `
+        INSERT INTO
+          "${process.env.DB_NAME}"."dictJobTypes" (code, name, price, "createdBy", "monthsOfGuarantee", price1, price2, price3, "createdDate", "updatedDate")
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+        RETURNING
+          id,
+          code,
+          name,
+          "monthsOfGuarantee",
+          price,
+          price1,
+          price2,
+          price3,
+          "createdBy",
+          "createdDate",
+          "updatedDate";
+      `,
+      [
+        code.toUpperCase(),
+        name,
+        price,
+        createdBy,
+        monthsOfGuarantee,
+        price1 || 0,
+        price2 || 0,
+        price3 || 0,
+      ]
+    );
+
+    response.json(insertJobType.rows[0]);
+  } catch (error) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+// @desc   update job type
+// @route  POST /api/dicts/job-types/update
+// @access Private
+const updateJobType = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const {
+      name,
+      price,
+      price1,
+      price2,
+      price3,
+      monthsOfGuarantee,
+      isActive,
+      id,
+    } = request.body;
+
+    const updateQuery = await db.query(
+      `
+        UPDATE
+          "${process.env.DB_NAME}"."dictJobTypes"
+        SET
+          name = $1,
+          price = $2,
+          price1 = $3,
+          price2 = $4,
+          price3 = $5,
+          "monthsOfGuarantee" = $6,
+          "isActive" = $7,
+          "updatedDate" = NOW()
+        WHERE
+          id = $8
+        RETURNING
+          *
+      `,
+      [
+        name,
+        price,
+        price1 || 0,
+        price2 || 0,
+        price3 || 0,
+        monthsOfGuarantee,
+        isActive,
+        id,
+      ]
+    );
+
+    response.json(updateQuery.rows[0]);
+  } catch (error) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+export { getDictRoles, createRole, getJobTypes, createJobType, updateJobType };

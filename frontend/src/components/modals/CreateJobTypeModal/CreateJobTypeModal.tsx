@@ -6,19 +6,24 @@ import {
   DialogTitle,
   TextField,
 } from '@material-ui/core';
-import Btn from '../Btn';
-import Transition from '../Transition';
+import Btn from '../../Btn';
+import Transition from '../../Transition';
 import AddIcon from '@material-ui/icons/Add';
-import api from '../../utils/axiosMiddleware';
 import { useDispatch } from 'react-redux';
-import { ADD_NOTIFY } from '../../store/storeConstants/snackbarConstants';
-import { getAllRoles } from '../../store/actions/dictsActions';
+import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
+import api from '../../../utils/axiosMiddleware';
+import { getAllJobTypes } from '../../../store/actions/dictsActions';
 
-const CreateRoleModal = () => {
+const CreateJobTypeModal = () => {
   const [open, setOpen] = useState(false);
-  const [roleData, setRoleData] = useState({
+  const [jobTypeData, setJobTypeData] = useState({
     code: '',
     name: '',
+    monthsOfGuarantee: 0,
+    price: 0,
+    price1: 0,
+    price2: 0,
+    price3: 0,
   });
   const dispatch = useDispatch();
 
@@ -27,8 +32,8 @@ const CreateRoleModal = () => {
   };
 
   const handleChange = (name: string) => (event: any) => {
-    setRoleData({
-      ...roleData,
+    setJobTypeData({
+      ...jobTypeData,
       [name]: event.target.value,
     });
   };
@@ -36,18 +41,8 @@ const CreateRoleModal = () => {
   const submit = (event: React.FormEvent<any>) => {
     event.preventDefault();
 
-    if (!roleData.code || !roleData.name) {
-      return dispatch({
-        type: ADD_NOTIFY,
-        payload: {
-          message: 'Заполните все поля формы',
-          type: 'error',
-        },
-      });
-    }
-
     api
-      .post(`/api/dicts/roles/create`, roleData)
+      .post(`/api/dicts/job-types/create`, jobTypeData)
       .then((res) => {
         dispatch({
           type: ADD_NOTIFY,
@@ -57,9 +52,8 @@ const CreateRoleModal = () => {
           },
         });
 
-        dispatch(getAllRoles());
-
         handleChangeModal();
+        dispatch(getAllJobTypes());
       })
       .catch((err) => {
         dispatch({
@@ -87,14 +81,14 @@ const CreateRoleModal = () => {
         keepMounted
         onClose={handleChangeModal}
       >
-        <DialogTitle>Добавить роль</DialogTitle>
-        <form id="role-form" action="" onSubmit={submit}>
+        <DialogTitle>Добавить вид работы</DialogTitle>
+        <form id="job-type-form" action="" onSubmit={submit}>
           <DialogContent className="form">
             <TextField
               className="input form__field"
               label="Код"
               variant="outlined"
-              value={roleData.code}
+              value={jobTypeData.code}
               onChange={handleChange('code')}
               required
             />
@@ -103,9 +97,56 @@ const CreateRoleModal = () => {
               className="input form__field"
               label="Наименование"
               variant="outlined"
-              value={roleData.name}
+              value={jobTypeData.name}
               onChange={handleChange('name')}
               required
+            />
+
+            <TextField
+              className="input form__field"
+              label="Гарантия (мес.)"
+              variant="outlined"
+              value={jobTypeData.monthsOfGuarantee}
+              onChange={handleChange('monthsOfGuarantee')}
+              type="number"
+              required
+            />
+
+            <TextField
+              className="input form__field"
+              label="Цена"
+              variant="outlined"
+              value={jobTypeData.price}
+              onChange={handleChange('price')}
+              type="number"
+              required
+            />
+
+            <TextField
+              className="input form__field"
+              label="Цена 1"
+              variant="outlined"
+              value={jobTypeData.price1}
+              onChange={handleChange('price1')}
+              type="number"
+            />
+
+            <TextField
+              className="input form__field"
+              label="Цена 2"
+              variant="outlined"
+              value={jobTypeData.price2}
+              onChange={handleChange('price2')}
+              type="number"
+            />
+
+            <TextField
+              className="input form__field"
+              label="Цена 3"
+              variant="outlined"
+              value={jobTypeData.price3}
+              onChange={handleChange('price3')}
+              type="number"
             />
           </DialogContent>
           <DialogActions className="btn-container">
@@ -122,4 +163,4 @@ const CreateRoleModal = () => {
   );
 };
 
-export default CreateRoleModal;
+export default CreateJobTypeModal;

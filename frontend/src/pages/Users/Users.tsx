@@ -18,7 +18,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import Btn from '../../components/Btn';
 import { formatDate } from '../../utils/formatDate';
 import React, { useEffect, useState } from 'react';
-import CreateUserModal from '../../components/CreateUserModal';
+import CreateUserModal from '../../components/modals/CreateUserModal';
 import history from '../../utils/history';
 
 const Users = () => {

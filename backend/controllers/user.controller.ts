@@ -19,42 +19,49 @@ const authUser = async (
 
     const currentUser = await db.query(
       `
-      SELECT
-        id,
-        login,
-        "fullName",
-        "birthDay",
-        phone,
-        "roleId",
-        "updatedDate",
-        "createdDate",
-        "percentFromJob",
-        "percentFromParts",
-        "percentFromVisit"
-      FROM
-        "${process.env.DB_NAME}".users
-      WHERE
-        login = $1 AND password = $2
+        SELECT
+          id,
+          login,
+          "fullName",
+          "birthDay",
+          phone,
+          "roleId",
+          "updatedDate",
+          "createdDate",
+          "percentFromJob",
+          "percentFromParts",
+          "percentFromVisit",
+          "isActive"
+        FROM
+          "${process.env.DB_NAME}".users
+        WHERE
+          login = $1 AND password = $2
       `,
       [login, cryptedPass]
     );
 
+    if (currentUser.rowCount > 0 && currentUser.rows[0].isActive === false) {
+      return response.status(400).json({
+        message: `User is not active`,
+      });
+    }
+
     if (currentUser.rowCount === 0) {
-      response.status(404).json({
+      return response.status(404).json({
         message: `Incorrect login or password`,
       });
     }
 
     const userRole = await db.query(
       `
-      SELECT
-        code as "roleCode",
-        name as "roleName"
-      FROM
-        "${process.env.DB_NAME}"."dictRoles"
-      WHERE
-        id = $1
-    `,
+        SELECT
+          code as "roleCode",
+          name as "roleName"
+        FROM
+          "${process.env.DB_NAME}"."dictRoles"
+        WHERE
+          id = $1
+      `,
       [currentUser.rows[0].roleId]
     );
 
@@ -82,22 +89,22 @@ const getAllActiveUsers = async (
   try {
     const allUsers = await db.query(
       `
-      SELECT
-        id,
-        login,
-        "fullName",
-        "birthDay",
-        phone,
-        "roleId",
-        "updatedDate",
-        "createdDate",
-        "percentFromJob",
-        "percentFromParts",
-        "percentFromVisit"
-      FROM
-        "${process.env.DB_NAME}".users
-      WHERE
-        "isActive" = true
+        SELECT
+          id,
+          login,
+          "fullName",
+          "birthDay",
+          phone,
+          "roleId",
+          "updatedDate",
+          "createdDate",
+          "percentFromJob",
+          "percentFromParts",
+          "percentFromVisit"
+        FROM
+          "${process.env.DB_NAME}".users
+        WHERE
+          "isActive" = true
       `
     );
 
@@ -121,22 +128,22 @@ const getAllInactiveUsers = async (
   try {
     const allUsers = await db.query(
       `
-      SELECT
-        id,
-        login,
-        "fullName",
-        "birthDay",
-        phone,
-        "roleId",
-        "updatedDate",
-        "createdDate",
-        "percentFromJob",
-        "percentFromParts",
-        "percentFromVisit"
-      FROM
-        "${process.env.DB_NAME}".users
-      WHERE
-        "isActive" = false
+        SELECT
+          id,
+          login,
+          "fullName",
+          "birthDay",
+          phone,
+          "roleId",
+          "updatedDate",
+          "createdDate",
+          "percentFromJob",
+          "percentFromParts",
+          "percentFromVisit"
+        FROM
+          "${process.env.DB_NAME}".users
+        WHERE
+          "isActive" = false
       `
     );
 
@@ -275,22 +282,22 @@ const updateUser = async (
     values.push(userId);
 
     const query = `
-    UPDATE
-      "${process.env.DB_NAME}".users
-    SET
-      ${getSetString(request.body)}
-    RETURNING
-      id,
-      login,
-      "birthDay",
-      phone,
-      "createdDate",
-      "updatedDate",
-      "fullName",
-      "roleId",
-      "percentFromJob",
-      "percentFromParts",
-      "percentFromVisit"
+      UPDATE
+        "${process.env.DB_NAME}".users
+      SET
+        ${getSetString(request.body)}
+      RETURNING
+        id,
+        login,
+        "birthDay",
+        phone,
+        "createdDate",
+        "updatedDate",
+        "fullName",
+        "roleId",
+        "percentFromJob",
+        "percentFromParts",
+        "percentFromVisit"
     `;
 
     const insertUser = await db.query(
@@ -348,67 +355,70 @@ const findUsers = async (
 
     const users = await db.query(
       `
-      SELECT
-        id,
-        login,
-        "birthDay",
-        phone,
-        "createdDate",
-        "updatedDate",
-        "fullName",
-        "roleId",
-        "percentFromJob",
-        "percentFromParts",
-        "percentFromVisit",
-        "roleName",
-        "roleCode"
-      FROM
-        (
         SELECT
-          users.id,
-          users.login,
-          users."birthDay",
-          users.phone,
-          users."createdDate",
-          users."updatedDate",
-          users."fullName",
-          users."roleId",
-          users."percentFromJob",
-          users."percentFromParts",
-          users."percentFromVisit",
-          roles.name as "roleName",
-          roles.code as "roleCode"
+          id,
+          login,
+          "birthDay",
+          phone,
+          "createdDate",
+          "updatedDate",
+          "fullName",
+          "roleId",
+          "percentFromJob",
+          "percentFromParts",
+          "percentFromVisit",
+          "isActive",
+          "roleName",
+          "roleCode"
         FROM
-          "${process.env.DB_NAME}".users as users
-        LEFT JOIN
-          "${process.env.DB_NAME}"."dictRoles" as roles
-        ON
-          users."roleId" = roles.id
-        ) as Users
-      WHERE
-        login LIKE $1 OR
-        "fullName" LIKE $1 OR
-        phone LIKE $1
-      ORDER BY
-        id
-      LIMIT
-        $2
-      OFFSET
-        $3;
+          (
+          SELECT
+            users.id,
+            users.login,
+            users."birthDay",
+            users.phone,
+            users."createdDate",
+            users."updatedDate",
+            users."fullName",
+            users."roleId",
+            users."percentFromJob",
+            users."percentFromParts",
+            users."percentFromVisit",
+            users."isActive",
+            roles.name as "roleName",
+            roles.code as "roleCode"
+          FROM
+            "${process.env.DB_NAME}".users as users
+          LEFT JOIN
+            "${process.env.DB_NAME}"."dictRoles" as roles
+          ON
+            users."roleId" = roles.id
+          ) as Users
+        WHERE
+          login LIKE $1 OR
+          "fullName" LIKE $1 OR
+          phone LIKE $1
+        ORDER BY
+          "isActive" DESC,
+          id
+        LIMIT
+          $2
+        OFFSET
+          $3;
       `,
       [`%${searchValue || ''}%`, count, page * count]
     );
 
     const total = await db.query(
       `
-      SELECT
-        count(*) AS total
-      FROM
-        "${process.env.DB_NAME}".users
-      WHERE
-        login LIKE $1 OR
-        "fullName" LIKE $1 OR
-        phone LIKE $1
+        SELECT
+          count(*) AS total
+        FROM
+          "${process.env.DB_NAME}".users
+        WHERE
+          login LIKE $1 OR
+          "fullName" LIKE $1 OR
+          phone LIKE $1
       `,
       [`%${searchValue || ''}%`]
     );
@@ -445,6 +455,7 @@ const getUserById = async (
           "birthDay",
           phone,
           "roleId",
+          "isActive",
           "percentFromJob",
           "percentFromParts",
           "percentFromVisit"

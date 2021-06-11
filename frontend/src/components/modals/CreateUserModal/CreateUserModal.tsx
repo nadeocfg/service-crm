@@ -10,17 +10,17 @@ import {
   TextField,
 } from '@material-ui/core';
 import { useState } from 'react';
-import Btn from '../Btn';
-import Transition from '../Transition';
+import Btn from '../../Btn';
+import Transition from '../../Transition';
 import AddIcon from '@material-ui/icons/Add';
 import { useDispatch, useSelector } from 'react-redux';
-import { RoleItemModel, StoreModel } from '../../models/storeModel';
+import { RoleItemModel, StoreModel } from '../../../models/storeModel';
 import {
   CLEAR_CREATE_DATA,
   SET_CREATE_DATA,
-} from '../../store/storeConstants/usersPageConstants';
+} from '../../../store/storeConstants/usersPageConstants';
 import ReactInputMask from 'react-input-mask';
-import { createUser } from '../../store/actions/usersPageActions';
+import { createUser } from '../../../store/actions/usersPageActions';
 
 const CreateUserModal = () => {
   const [open, setOpen] = useState(false);

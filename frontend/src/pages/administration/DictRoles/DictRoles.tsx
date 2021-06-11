@@ -10,7 +10,7 @@ import {
 import { useSelector } from 'react-redux';
 import { formatDate } from '../../../utils/formatDate';
 import { StoreModel } from '../../../models/storeModel';
-import CreateRoleModal from '../../../components/CreateRoleModal';
+import CreateRoleModal from '../../../components/modals/CreateRoleModal';
 
 const DictRoles = () => {
   const roles = useSelector(

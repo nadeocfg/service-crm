@@ -12,9 +12,9 @@ import { changeDrawer, setLoader } from './store/actions/mainActions';
 import Users from './pages/Users';
 import EditUser from './pages/EditUser';
 import DictRoles from './pages/administration/DictRoles';
-import DictBoilers from './pages/administration/DictJobTypes';
 import DictParts from './pages/administration/DictParts';
 import DictJobTypes from './pages/administration/DictJobTypes';
+import DictBoilers from './pages/administration/DictBoilers';
 
 const App = () => {
   const dispatch = useDispatch();

@@ -32,6 +32,7 @@ import BathtubIcon from '@material-ui/icons/Bathtub';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
+import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 
 const Appbar = () => {
   const open = useSelector((state: StoreModel) => state.mainStore.isDrawerOpen);
@@ -114,6 +115,7 @@ const Appbar = () => {
                 {route.code === 'home' && <HomeOutlinedIcon />}
                 {route.code === 'users' && <PeopleAltOutlinedIcon />}
                 {route.code === 'orders' && <ShoppingCartIcon />}
+                {route.code === 'customers' && <EmojiPeopleIcon />}
               </ListItemIcon>
               <ListItemText primary={route.name} />
             </ListItem>

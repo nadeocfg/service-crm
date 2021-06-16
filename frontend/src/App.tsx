@@ -18,6 +18,7 @@ import DictBoilers from './pages/administration/DictBoilers';
 import Orders from './pages/Orders';
 import CreateOrder from './pages/CreateOrder';
 import DictOrderStatuses from './pages/administration/DictOrderStatuses';
+import Customers from './pages/Customers';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -68,6 +69,9 @@ const App = () => {
               </Route>
               <Route exact path="/edit-user/:id">
                 <EditUser />
+              </Route>
+              <Route exact path="/customers">
+                <Customers />
               </Route>
               <Route exact path="/orders/">
                 <Orders />

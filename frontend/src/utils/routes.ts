@@ -10,6 +10,11 @@ export const routes = [
     name: 'Пользователи',
   },
   {
+    path: '/customers',
+    code: 'customers',
+    name: 'Клиенты',
+  },
+  {
     path: '/orders',
     code: 'orders',
     name: 'Заказы',

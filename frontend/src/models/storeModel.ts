@@ -8,6 +8,7 @@ export interface StoreModel {
   editUserStore: EditUserStoreModel;
   dictsStore: DictsStoreModel;
   ordersStore: OrdersStoreModel;
+  customersStore: CustomersStoreModel;
 }
 
 export interface MainStoreModel {
@@ -185,4 +186,30 @@ export interface OrderStatusItemModel {
   updatedDate?: string;
   createdDate?: string;
   isActive?: boolean;
+}
+
+export interface CustomersStoreModel {
+  customers: CustomerItemModel[];
+  total: number;
+  searchValue: string;
+  createCustomerData: {
+    address: string;
+    email: string;
+    fullName: string;
+    phone: string;
+    phone2: string;
+  };
+}
+
+export interface CustomerItemModel {
+  address?: string;
+  createdBy?: number;
+  createdDate?: string;
+  email?: string;
+  fullName?: string;
+  id?: number;
+  isActive?: boolean;
+  phone?: string;
+  phone2?: string;
+  updatedDate?: string;
 }

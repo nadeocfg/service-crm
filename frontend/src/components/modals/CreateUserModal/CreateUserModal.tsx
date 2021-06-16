@@ -22,7 +22,11 @@ import {
 import ReactInputMask from 'react-input-mask';
 import { createUser } from '../../../store/actions/usersPageActions';
 
-const CreateUserModal = () => {
+interface CreateUserModalProps {
+  btnTitle?: string;
+}
+
+const CreateUserModal = ({ btnTitle }: CreateUserModalProps) => {
   const [open, setOpen] = useState(false);
   const createData = useSelector(
     (store: StoreModel) => store.usersStore.createData
@@ -64,7 +68,7 @@ const CreateUserModal = () => {
     <>
       <Btn classes="btn btn_primary" onClick={handleChangeModal}>
         <AddIcon />
-        Добавить
+        {btnTitle || 'Добавить'}
       </Btn>
 
       <Dialog

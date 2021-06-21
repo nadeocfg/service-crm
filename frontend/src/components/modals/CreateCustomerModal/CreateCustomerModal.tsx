@@ -47,6 +47,20 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
   const submit = async (event: any) => {
     event.preventDefault();
 
+    if (
+      createCustomerData.phone.replace('_', '').length !== 18 ||
+      (createCustomerData.phone2.length !== 0 &&
+        createCustomerData.phone2.replace('_', '').length !== 18)
+    ) {
+      return dispatch({
+        type: ADD_NOTIFY,
+        payload: {
+          message: 'Неправильный формат телефона',
+          type: 'error',
+        },
+      });
+    }
+
     const data = {
       ...createCustomerData,
       createdBy: currentUser.id,
@@ -118,6 +132,15 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
               variant="outlined"
               value={createCustomerData.fullName}
               onChange={handleChange('fullName')}
+              required
+            />
+
+            <TextField
+              className="input form__field"
+              label="Серийный номер"
+              variant="outlined"
+              value={createCustomerData.boilerSerial}
+              onChange={handleChange('boilerSerial')}
               required
             />
 

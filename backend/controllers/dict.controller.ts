@@ -92,7 +92,7 @@ const getJobTypes = async (
   next: NextFunction
 ) => {
   try {
-    const { count, page } = request.query;
+    const { count, page, searchValue } = request.query;
 
     let offset = 0;
 
@@ -104,39 +104,80 @@ const getJobTypes = async (
       });
     }
 
-    const allJobs = await db.query(
-      `
-        SELECT
-          *
-        FROM
-          "${process.env.DB_NAME}"."dictJobTypes"
-        WHERE
-          "isActive" = true
-        ORDER BY
-          id
-        LIMIT
-          $1
-        OFFSET
-          $2;
-      `,
-      [count, offset]
-    );
+    if (searchValue) {
+      const allJobs = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictJobTypes"
+          WHERE
+            "isActive" = true AND
+            (code LIKE $3 OR
+            name LIKE $3)
+          ORDER BY
+            id
+          LIMIT
+            $1
+          OFFSET
+            $2;
+        `,
+        [count, offset, `%${searchValue}%`]
+      );
 
-    const total = await db.query(
-      `
-        SELECT
-          count(*) AS total
-        FROM
-          "${process.env.DB_NAME}"."dictJobTypes"
-        WHERE
-          "isActive" = true;
-      `
-    );
+      const total = await db.query(
+        `
+          SELECT
+            count(*) AS total
+          FROM
+            "${process.env.DB_NAME}"."dictJobTypes"
+          WHERE
+            "isActive" = true AND
+            (code LIKE $1 OR
+            name LIKE $1);
+        `,
+        [`%${searchValue}%`]
+      );
 
-    response.status(200).json({
-      jobTypes: allJobs.rows,
-      total: +total.rows[0].total,
-    });
+      response.status(200).json({
+        jobTypes: allJobs.rows,
+        total: +total.rows[0].total,
+      });
+    } else {
+      const allJobs = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictJobTypes"
+          WHERE
+            "isActive" = true
+          ORDER BY
+            id
+          LIMIT
+            $1
+          OFFSET
+            $2;
+        `,
+        [count, offset]
+      );
+
+      const total = await db.query(
+        `
+          SELECT
+            count(*) AS total
+          FROM
+            "${process.env.DB_NAME}"."dictJobTypes"
+          WHERE
+            "isActive" = true;
+        `
+      );
+
+      response.status(200).json({
+        jobTypes: allJobs.rows,
+        total: +total.rows[0].total,
+      });
+    }
   } catch (error) {
     response.status(404).json({
       message: error.message,
@@ -271,7 +312,7 @@ const getBoilers = async (
   next: NextFunction
 ) => {
   try {
-    const { count, page } = request.query;
+    const { count, page, searchValue } = request.query;
 
     let offset = 0;
 
@@ -283,39 +324,95 @@ const getBoilers = async (
       });
     }
 
-    const allBoilers = await db.query(
-      `
-        SELECT
-          *
-        FROM
-          "${process.env.DB_NAME}"."dictBoilers"
-        WHERE
-          "isActive" = true
-        ORDER BY
-          id
-        LIMIT
-          $1
-        OFFSET
-          $2;
-      `,
-      [count, offset]
-    );
+    if (searchValue) {
+      const allBoilers = await db.query(
+        searchValue
+          ? `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictBoilers"
+          WHERE
+            "isActive" = true AND
+            (article LIKE $3 OR
+            name LIKE $3)
+          ORDER BY
+            id
+          LIMIT
+            $1
+          OFFSET
+            $2;
+        `
+          : `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictBoilers"
+          WHERE
+            "isActive" = true
+          ORDER BY
+            id
+          LIMIT
+            $1
+          OFFSET
+            $2;
+        `,
+        [count, offset, `%${searchValue}%`]
+      );
 
-    const total = await db.query(
-      `
-        SELECT
-          count(*) AS total
-        FROM
-          "${process.env.DB_NAME}"."dictBoilers"
-        WHERE
-          "isActive" = true;
-      `
-    );
+      const total = await db.query(
+        `
+          SELECT
+            count(*) AS total
+          FROM
+            "${process.env.DB_NAME}"."dictBoilers"
+          WHERE
+            "isActive" = true AND
+            (article LIKE $1 OR
+            name LIKE $1);
+        `,
+        [`%${searchValue}%`]
+      );
 
-    response.status(200).json({
-      boilers: allBoilers.rows,
-      total: +total.rows[0].total,
-    });
+      response.status(200).json({
+        boilers: allBoilers.rows,
+        total: +total.rows[0].total,
+      });
+    } else {
+      const allBoilers = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictBoilers"
+          WHERE
+            "isActive" = true
+          ORDER BY
+            id
+          LIMIT
+            $1
+          OFFSET
+            $2;
+        `,
+        [count, offset]
+      );
+
+      const total = await db.query(
+        `
+          SELECT
+            count(*) AS total
+          FROM
+            "${process.env.DB_NAME}"."dictBoilers"
+          WHERE
+            "isActive" = true;
+        `
+      );
+
+      response.status(200).json({
+        boilers: allBoilers.rows,
+        total: +total.rows[0].total,
+      });
+    }
   } catch (error) {
     response.status(404).json({
       message: error.message,
@@ -465,7 +562,7 @@ const getParts = async (
   next: NextFunction
 ) => {
   try {
-    const { count, page } = request.query;
+    const { count, page, searchValue } = request.query;
 
     let offset = 0;
 
@@ -477,39 +574,95 @@ const getParts = async (
       });
     }
 
-    const allParts = await db.query(
-      `
-        SELECT
-          *
-        FROM
-          "${process.env.DB_NAME}"."dictParts"
-        WHERE
-          "isActive" = true
-        ORDER BY
-          id
-        LIMIT
-          $1
-        OFFSET
-          $2;
-      `,
-      [count, offset]
-    );
+    if (searchValue) {
+      const allParts = await db.query(
+        searchValue
+          ? `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictParts"
+          WHERE
+            "isActive" = true AND
+            (article LIKE $3 OR
+            name LIKE $3)
+          ORDER BY
+            id
+          LIMIT
+            $1
+          OFFSET
+            $2;
+        `
+          : `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictParts"
+          WHERE
+            "isActive" = true
+          ORDER BY
+            id
+          LIMIT
+            $1
+          OFFSET
+            $2;
+        `,
+        [count, offset, `%${searchValue}%`]
+      );
 
-    const total = await db.query(
-      `
-        SELECT
-          count(*) AS total
-        FROM
-          "${process.env.DB_NAME}"."dictParts"
-        WHERE
-          "isActive" = true;
-      `
-    );
+      const total = await db.query(
+        `
+          SELECT
+            count(*) AS total
+          FROM
+            "${process.env.DB_NAME}"."dictParts"
+          WHERE
+            "isActive" = true AND
+            (article LIKE $1 OR
+            name LIKE $1);
+        `,
+        [`%${searchValue}%`]
+      );
 
-    response.status(200).json({
-      parts: allParts.rows,
-      total: +total.rows[0].total,
-    });
+      response.status(200).json({
+        parts: allParts.rows,
+        total: +total.rows[0].total,
+      });
+    } else {
+      const allParts = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictParts"
+          WHERE
+            "isActive" = true
+          ORDER BY
+            id
+          LIMIT
+            $1
+          OFFSET
+            $2;
+        `,
+        [count, offset]
+      );
+
+      const total = await db.query(
+        `
+          SELECT
+            count(*) AS total
+          FROM
+            "${process.env.DB_NAME}"."dictParts"
+          WHERE
+            "isActive" = true;
+        `
+      );
+
+      response.status(200).json({
+        parts: allParts.rows,
+        total: +total.rows[0].total,
+      });
+    }
   } catch (error) {
     response.status(404).json({
       message: error.message,

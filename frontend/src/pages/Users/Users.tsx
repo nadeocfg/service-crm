@@ -117,20 +117,22 @@ const Users = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {usersList.map((user) => (
+            {usersList.map((user, index) => (
               <TableRow key={user.id}>
                 <TableCell>{user.id}</TableCell>
                 <TableCell>{user.fullName}</TableCell>
                 <TableCell>{user.login}</TableCell>
                 <TableCell>{user.phone}</TableCell>
                 <TableCell>{user.roleName}</TableCell>
-                <TableCell>{formatDate(user.updatedDate, true)}</TableCell>
+                <TableCell>
+                  {formatDate(user.updatedDate || '', true)}
+                </TableCell>
                 {(userRoleCode === 'SUPER_ADMIN' ||
                   userRoleCode === 'ADMIN') && (
                   <TableCell>
                     <IconButton
                       aria-label="edit"
-                      onClick={() => editUser(user.id)}
+                      onClick={() => editUser(user.id || index)}
                     >
                       <EditIcon fontSize="inherit" />
                     </IconButton>

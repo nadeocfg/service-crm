@@ -16,7 +16,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import EditIcon from '@material-ui/icons/Edit';
 import Btn from '../../components/Btn';
 import { formatDate } from '../../utils/formatDate';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getOrders } from '../../store/actions/ordersActions';
 import AddIcon from '@material-ui/icons/Add';
 import history from '../../utils/history';
@@ -36,6 +36,12 @@ const Orders = () => {
   );
   const orders = useSelector((store: StoreModel) => store.ordersStore.orders);
   const total = useSelector((store: StoreModel) => store.ordersStore.total);
+
+  useEffect(() => {
+    dispatch(getOrders(pagination.currentPage, pagination.rowsPerPage));
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSearch = () => {
     console.log('search');
@@ -103,11 +109,10 @@ const Orders = () => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Имя</TableCell>
-              <TableCell>Логин</TableCell>
-              <TableCell>Телефон</TableCell>
-              <TableCell>Роль</TableCell>
-              <TableCell>Дата обновления</TableCell>
+              <TableCell>Клиент</TableCell>
+              <TableCell>Адрес</TableCell>
+              <TableCell>Комментарий</TableCell>
+              <TableCell>Дата создания</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
@@ -115,11 +120,10 @@ const Orders = () => {
             {orders.map((order) => (
               <TableRow key={order.id}>
                 <TableCell>{order.id}</TableCell>
-                <TableCell>{order.fullName}</TableCell>
-                <TableCell>{order.login}</TableCell>
-                <TableCell>{order.phone}</TableCell>
-                <TableCell>{order.roleName}</TableCell>
-                <TableCell>{formatDate(order.updatedDate, true)}</TableCell>
+                <TableCell>{order.customerId}</TableCell>
+                <TableCell>{order.address}</TableCell>
+                <TableCell>{order.comment}</TableCell>
+                <TableCell>{formatDate(order.createdDate, true)}</TableCell>
                 {(userRoleCode === 'SUPER_ADMIN' ||
                   userRoleCode === 'ADMIN') && (
                   <TableCell>
@@ -146,6 +150,8 @@ const Orders = () => {
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
+
+      {JSON.stringify(selectedOrder, null, 2)}
     </>
   );
 };

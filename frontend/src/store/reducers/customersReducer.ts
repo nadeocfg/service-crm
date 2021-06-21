@@ -17,6 +17,7 @@ const initialState: CustomersStoreModel = {
     fullName: '',
     phone: '',
     phone2: '',
+    boilerSerial: '',
   },
 };
 

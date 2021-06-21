@@ -58,6 +58,7 @@ const Customers = () => {
     isActive: false,
     phone: '',
     phone2: '',
+    boilerSerial: '',
   });
 
   useEffect(() => {
@@ -68,6 +69,8 @@ const Customers = () => {
         searchField
       )
     );
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,6 +209,7 @@ const Customers = () => {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>ФИО</TableCell>
+              <TableCell>Серийный номер</TableCell>
               <TableCell>Телефон</TableCell>
               <TableCell>Телефон 2</TableCell>
               <TableCell>Адрес</TableCell>
@@ -219,6 +223,7 @@ const Customers = () => {
               <TableRow key={customer.id}>
                 <TableCell>{customer.id}</TableCell>
                 <TableCell>{customer.fullName}</TableCell>
+                <TableCell>{customer.boilerSerial}</TableCell>
                 <TableCell>{customer.phone}</TableCell>
                 <TableCell>{customer.phone2}</TableCell>
                 <TableCell>{customer.address}</TableCell>
@@ -259,7 +264,7 @@ const Customers = () => {
         keepMounted
         onClose={() => handleChangeModal()}
       >
-        <DialogTitle>Редактирование отопительного котла</DialogTitle>
+        <DialogTitle>Редактирование клиента</DialogTitle>
         <form id="job-type-form" action="" onSubmit={updateCustomer}>
           <DialogContent className="form">
             <TextField
@@ -286,6 +291,15 @@ const Customers = () => {
               variant="outlined"
               value={selectedCustomer.fullName}
               onChange={handleChange('fullName')}
+              required
+            />
+
+            <TextField
+              className="input form__field"
+              label="Серийный номер 1"
+              variant="outlined"
+              value={selectedCustomer.boilerSerial}
+              onChange={handleChange('boilerSerial')}
               required
             />
 

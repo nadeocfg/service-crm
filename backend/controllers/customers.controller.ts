@@ -16,16 +16,7 @@ const getCustomersList = async (
     const customers = await db.query(
       `
         SELECT
-          id,
-          address,
-          email,
-          "createdDate",
-          "updatedDate",
-          "createdBy",
-          "fullName",
-          "phone",
-          "phone2",
-          "isActive"
+          *
         FROM
           "${process.env.DB_NAME}".customers
         WHERE
@@ -80,17 +71,29 @@ const createCustomer = async (
   next: NextFunction
 ) => {
   try {
-    const { address, email, createdBy, fullName, phone, phone2 } = request.body;
+    const { address, email, createdBy, fullName, phone, phone2, boilerSerial } =
+      request.body;
+
+    const findExistingCustomer = await db.query(
+      `SELECT id FROM "${process.env.DB_NAME}".customers WHERE "boilerSerial" = $1`,
+      [boilerSerial]
+    );
+
+    if (findExistingCustomer.rowCount > 0) {
+      return response.status(400).json({
+        message: `Boiler serial ${boilerSerial}, already exist`,
+      });
+    }
 
     const insertCustomer = await db.query(
       `
         INSERT INTO
-          "${process.env.DB_NAME}".customers(address, email, "createdDate", "updatedDate", "createdBy", "fullName", phone, phone2)
-        VALUES($1, $2, NOW(), NOW(), $3, $4, $5, $6)
+          "${process.env.DB_NAME}".customers(address, email, "createdDate", "updatedDate", "createdBy", "fullName", phone, phone2, "boilerSerial")
+        VALUES($1, $2, NOW(), NOW(), $3, $4, $5, $6, $7)
         RETURNING
           *
         `,
-      [address, email, createdBy, fullName, phone, phone2]
+      [address, email, createdBy, fullName, phone, phone2, boilerSerial]
     );
 
     response.json(insertCustomer.rows[0]);
@@ -121,8 +124,16 @@ const updateCustomer = async (
       });
     }
 
-    const { address, email, fullName, id, isActive, phone, phone2 } =
-      request.body;
+    const {
+      address,
+      email,
+      fullName,
+      id,
+      isActive,
+      phone,
+      phone2,
+      boilerSerial,
+    } = request.body;
 
     const query = `
       UPDATE
@@ -134,9 +145,10 @@ const updateCustomer = async (
         "isActive" = $4,
         phone = $5,
         phone2 = $6,
+        "boilerSerial" = $7,
         "updatedDate" = NOW()
       WHERE
-        id = $7
+        id = $8
       RETURNING
         *
     `;
@@ -148,6 +160,7 @@ const updateCustomer = async (
       isActive,
       phone,
       phone2,
+      boilerSerial,
       id,
     ]);
 

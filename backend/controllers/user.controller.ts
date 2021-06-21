@@ -342,7 +342,7 @@ const getUserByToken = async (
   }
 };
 
-// @desc   Get users with serach params
+// @desc   Get users with search params
 // @route  POST /api/users/find
 // @access Private
 const findUsers = async (
@@ -351,7 +351,80 @@ const findUsers = async (
   next: NextFunction
 ) => {
   try {
-    const { page, count, searchValue } = request.body;
+    const { page, count, searchValue, roleCode } = request.body;
+
+    if (roleCode) {
+      const findRoleId = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictRoles"
+          WHERE
+            code = $1
+        `,
+        [roleCode]
+      );
+
+      if (findRoleId.rowCount === 0) {
+        response.status(404).json({
+          message: `Cannot find role ${roleCode}`,
+        });
+      }
+
+      const users = await db.query(
+        `
+          SELECT
+            id,
+            login,
+            "birthDay",
+            phone,
+            "createdDate",
+            "updatedDate",
+            "fullName",
+            "roleId",
+            "percentFromJob",
+            "percentFromParts",
+            "percentFromVisit",
+            "isActive"
+          FROM
+            "${process.env.DB_NAME}".users
+          WHERE
+            ("isActive" = true AND "roleId" = $4) AND
+            (login LIKE $1 OR
+            "fullName" LIKE $1 OR
+            phone LIKE $1)
+          ORDER BY
+            "isActive" DESC,
+            id
+          LIMIT
+            $2
+          OFFSET
+            $3;
+        `,
+        [`%${searchValue || ''}%`, count, page * count, findRoleId.rows[0].id]
+      );
+
+      const total = await db.query(
+        `
+          SELECT
+            count(*) AS total
+          FROM
+            "${process.env.DB_NAME}".users
+          WHERE
+            ("isActive" = true AND "roleId" = $2) AND
+            (login LIKE $1 OR
+            "fullName" LIKE $1 OR
+            phone LIKE $1)
+        `,
+        [`%${searchValue || ''}%`, findRoleId.rows[0].id]
+      );
+
+      return response.json({
+        users: users.rows,
+        total: +total.rows[0].total,
+      });
+    }
 
     const users = await db.query(
       `
@@ -435,7 +508,7 @@ const findUsers = async (
   }
 };
 
-// @desc   Get users with serach params
+// @desc   Get user by id
 // @route  GET /api/users/:id
 // @access Private
 const getUserById = async (

@@ -13,7 +13,8 @@ const ordersReducer = (state = initialState, action: ReduxActionModel) => {
     case SET_ORDERS:
       return {
         ...state,
-        orders: action.payload,
+        orders: action.payload.orders,
+        total: action.payload.total,
       };
 
     case CLEAR_STORE:

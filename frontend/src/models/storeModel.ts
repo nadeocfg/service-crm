@@ -67,19 +67,19 @@ export interface CreateUserDataModel {
 }
 
 export interface UsersItemModel {
-  id: number;
-  login: string;
-  birthDay: string;
-  phone: string;
-  createdDate: string;
-  updatedDate: string;
-  fullName: string;
-  roleId: number;
-  percentFromJob: number;
-  percentFromParts: number;
-  percentFromVisit: number;
-  roleName: string;
-  roleCode: string;
+  id?: number;
+  login?: string;
+  birthDay?: string;
+  phone?: string;
+  createdDate?: string;
+  updatedDate?: string;
+  fullName?: string;
+  roleId?: number;
+  percentFromJob?: number;
+  percentFromParts?: number;
+  percentFromVisit?: number;
+  roleName?: string;
+  roleCode?: string;
 }
 
 export interface EditUserStoreModel {
@@ -140,6 +140,7 @@ export interface JobItemModel {
   price2?: number;
   price3?: number;
   updatedDate?: string;
+  soldQuantity?: number | string;
 }
 
 export interface BoilerItemModel {
@@ -172,6 +173,7 @@ export interface PartItemModel {
   updatedDate?: string;
   createdBy?: number;
   isActive?: boolean;
+  soldQuantity?: string | number;
 }
 
 export interface OrdersStoreModel {
@@ -198,6 +200,7 @@ export interface CustomersStoreModel {
     fullName: string;
     phone: string;
     phone2: string;
+    boilerSerial: string;
   };
 }
 
@@ -212,4 +215,16 @@ export interface CustomerItemModel {
   phone?: string;
   phone2?: string;
   updatedDate?: string;
+  boilerSerial?: string;
+}
+
+export interface OrderDataModel {
+  customer: CustomerItemModel;
+  address: string;
+  date: string;
+  serviceMan: UsersItemModel;
+  comment: string;
+  boiler: BoilerItemModel;
+  parts: PartItemModel[];
+  jobTypes: JobItemModel[];
 }

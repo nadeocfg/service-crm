@@ -19,6 +19,15 @@
   }
 }
 
+.select-modal {
+  height: 600px;
+
+  .MuiList-root {
+    height: 90%;
+    overflow: auto;
+  }
+}
+
 @media (min-width: 600px) {
   .btn-container {
     flex-direction: row;

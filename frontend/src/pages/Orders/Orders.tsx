@@ -150,8 +150,6 @@ const Orders = () => {
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
-
-      {JSON.stringify(selectedOrder, null, 2)}
     </>
   );
 };

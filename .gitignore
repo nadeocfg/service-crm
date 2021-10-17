@@ -3,6 +3,8 @@
 # dependencies
 node_modules
 /node_modules
+/frontend/node_modules
+/.idea
 /.pnp
 .pnp.js
 
@@ -11,6 +13,7 @@ node_modules
 
 # production
 /build
+/frontend/build
 
 # misc
 .DS_Store

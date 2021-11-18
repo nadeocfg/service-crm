@@ -35,7 +35,7 @@ export const getOrders =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {
@@ -81,7 +81,7 @@ export const createOrder =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {

@@ -191,7 +191,7 @@ const DictBoilers = () => {
         count={total}
         rowsPerPage={pagination.rowsPerPage}
         page={pagination.currentPage}
-        onChangePage={handleChangePage}
+        onPageChange={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
 

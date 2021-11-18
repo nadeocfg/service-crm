@@ -27,10 +27,10 @@ const EditUser = () => {
   );
 
   useEffect(() => {
-    if (params.id) {
+    if (params) {
       dispatch(getUserById(params.id));
     }
-  }, [dispatch, params.id]);
+  }, [dispatch, params]);
 
   if (!user) {
     return <>Cannot find user</>;

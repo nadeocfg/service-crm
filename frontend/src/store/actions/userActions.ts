@@ -57,7 +57,7 @@ export const userSignIn =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {
@@ -116,7 +116,7 @@ export const getUserByToken =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {

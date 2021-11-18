@@ -46,7 +46,7 @@ export const getUsers =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {
@@ -126,7 +126,7 @@ export const createUser =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {

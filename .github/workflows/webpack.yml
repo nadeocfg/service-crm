@@ -1,0 +1,41 @@
+name: Build client app
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  AWS_REGION: eu-central-1b
+  ECS_SERVICE: MY_ECS_SERVICE # set this to your Amazon ECS service name
+  ECS_CLUSTER: MY_ECS_CLUSTER # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION:
+    MY_ECS_TASK_DEFINITION # set this to the path to your Amazon ECS task definition
+    # file, e.g. .aws/task-definition.json
+  CONTAINER_NAME: MY_CONTAINER_NAME
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Packages
+        run: npm install --prefix ./frontend/
+
+      - name: Build
+        run: npm run build --prefix ./frontend
+
+      - name: Deploy to AWS
+        run: scp -r -i ./my-aws.pem ./frontend ec2-user@ec2-18-185-65-50.eu-central-1.compute.amazonaws.com:/var/www

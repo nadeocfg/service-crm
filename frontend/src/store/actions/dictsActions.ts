@@ -36,7 +36,7 @@ export const getAllRoles = () => async (dispatch: Dispatch<any>) => {
       .finally(() => {
         dispatch(setLoader(false));
       });
-  } catch (error) {
+  } catch (error: any) {
     dispatch({
       type: ADD_NOTIFY,
       payload: {
@@ -80,7 +80,7 @@ export const getAllJobTypes =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {
@@ -124,7 +124,7 @@ export const getAllBoilers =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {
@@ -168,7 +168,7 @@ export const getAllParts =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {
@@ -210,7 +210,7 @@ export const getAllOrderStatuses = () => async (dispatch: Dispatch<any>) => {
       .finally(() => {
         dispatch(setLoader(false));
       });
-  } catch (error) {
+  } catch (error: any) {
     dispatch({
       type: ADD_NOTIFY,
       payload: {

@@ -39,7 +39,7 @@ export const getUserById =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {
@@ -90,7 +90,7 @@ export const updateUser =
         .finally(() => {
           dispatch(setLoader(false));
         });
-    } catch (error) {
+    } catch (error: any) {
       dispatch({
         type: ADD_NOTIFY,
         payload: {

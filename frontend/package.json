@@ -2,7 +2,7 @@
   "name": "service-crm",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://127.0.0.1:5000",
+  "proxy": "http://18.185.65.50/api/",
   "dependencies": {
     "@date-io/moment": "1.x",
     "@material-ui/core": "^4.11.4",

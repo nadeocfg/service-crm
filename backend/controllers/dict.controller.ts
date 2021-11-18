@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // @desc   get all roles
 // @route  GET /api/dicts/roles

@@ -1,6 +1,9 @@
 import { NextFunction, Response } from 'express';
 import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // @desc   get customers list with pagination
 // @route  post /api/customers/find

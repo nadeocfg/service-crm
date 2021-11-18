@@ -2,6 +2,9 @@ import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const protect = async (
   request: UserRequest,

@@ -72,7 +72,7 @@ const createOrder = async (
     }
 
     response.json(insertOrder.rows);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -112,18 +112,16 @@ const getOrders = async (
             orders."createdDate",
             orders."updatedDate",
             orders.comment,
-            status.name as "statusName",
-            users."fullName" as "serviceManFullName"
+            orders."customerId",
+            orders."serviceManId",
+            orders."createdBy",
+            status.name as "statusName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
           LEFT JOIN
             "${process.env.DB_NAME}"."dictOrderStatuses" as status
           ON
             orders.status = status.id
-          LEFT JOIN
-            "${process.env.DB_NAME}"."users" as users
-          ON
-            orders."serviceManId" = users.id
           WHERE
             orders."isActive" = true
           ORDER BY
@@ -168,8 +166,57 @@ const getOrders = async (
           [orders[i].id]
         );
 
+        const customer = await db.query(
+          `
+            SELECT
+              *
+            FROM
+              "${process.env.DB_NAME}"."customers"
+            WHERE
+              "id" = $1;
+          `,
+          [orders[i].customerId]
+        );
+
+        const serviceMan = await db.query(
+          `
+            SELECT
+              id,
+              login,
+              phone,
+              "fullName",
+              "percentFromJob",
+              "percentFromParts",
+              "percentFromVisit"
+            FROM
+              "${process.env.DB_NAME}"."users"
+            WHERE
+              "id" = $1;
+          `,
+          [orders[i].serviceManId]
+        );
+
+        const createdBy = await db.query(
+          `
+            SELECT
+              login,
+              "fullName",
+              phone
+            FROM
+              "${process.env.DB_NAME}"."users"
+            WHERE
+              "id" = $1;
+          `,
+          [orders[i].createdBy]
+        );
+
         orders[i].jobs = orderJobs.rows;
         orders[i].parts = orderParts.rows;
+        orders[i].customer = customer.rows.length > 0 ? customer.rows[0] : {};
+        orders[i].serviceMan =
+          serviceMan.rows.length > 0 ? serviceMan.rows[0] : {};
+        orders[i].createdBy =
+          createdBy.rows.length > 0 ? createdBy.rows[0] : {};
       }
 
       const total = await db.query(
@@ -275,7 +322,7 @@ const getOrders = async (
         total: +total.rows[0].total,
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });

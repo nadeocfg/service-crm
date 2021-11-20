@@ -58,3 +58,28 @@ WHERE
   "orderId" = 7
 RETURNING
   *;
+
+SELECT
+  "soldParts"."partId" as "partId",
+  "soldParts"."quantity" as "quantity"
+FROM
+  "service-crm"."soldParts" as "soldParts"
+WHERE
+  "soldParts"."orderId" = 25 AND
+  "soldParts"."isActive" = true;
+
+SELECT
+  *
+FROM
+  "service-crm"."dictJobTypes" as "jobTypes"
+WHERE
+  id = 25;
+
+SELECT
+  "jobTypeId",
+  quantity
+FROM
+  "service-crm"."soldJobTypes" as "soldJobTypes"
+WHERE
+  "soldJobTypes"."orderId" = 25 AND
+  "soldJobTypes"."isActive" = true;

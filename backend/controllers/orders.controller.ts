@@ -187,7 +187,7 @@ const updateOrder = async (
     const updateOrder = await db.query(
       `
         UPDATE
-          "service-crm"."orders" as orders
+          "${process.env.DB_NAME}"."orders" as orders
         SET
           "customerId" = $1,
           address = $2,
@@ -328,6 +328,166 @@ const updateOrder = async (
     );
 
     response.json(updateOrder.rows);
+  } catch (error: any) {
+    response.status(400).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+// @desc   get order by id
+// @route  POST /api/orders/:id
+// @access Private
+const getOrderById = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = request.params;
+
+    if (!id) {
+      return response.status(400).json({
+        message: `Order ID is required`,
+      });
+    }
+
+    const getOrderById = await db.query(
+      `
+        SELECT
+          orders.id as orderId,
+          orders.address,
+          orders."visitPrice",
+          orders.comment,
+          orders."serviceManId",
+          orders."customerId"
+        FROM
+          "${process.env.DB_NAME}"."orders" as orders
+        WHERE
+          orders.id = $1;
+      `,
+      [id]
+    );
+
+    if (getOrderById.rowCount === 0) {
+      return response.status(400).json({
+        message: `Cannot find order with id ${id}`,
+      });
+    }
+
+    const soldParts = await db.query(
+      `
+        SELECT
+          "soldParts"."partId" as "partId",
+          "soldParts"."quantity" as "quantity"
+        FROM
+          "${process.env.DB_NAME}"."soldParts" as "soldParts"
+        WHERE
+          "soldParts"."orderId" = $1 AND
+          "soldParts"."isActive" = true;
+      `,
+      [id]
+    );
+
+    const parts = [];
+    for (let i = 0; i < soldParts.rows.length; i += 1) {
+      const partInfo = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictParts" as parts
+          WHERE
+            id = $1;
+        `,
+        [soldParts.rows[i].partId]
+      );
+
+      parts.push({
+        ...partInfo.rows[0],
+        soldQuantity: soldParts.rows[i].quantity,
+      });
+    }
+
+    const soldJobTypes = await db.query(
+      `
+        SELECT
+          "jobTypeId",
+          quantity
+        FROM
+          "${process.env.DB_NAME}"."soldJobTypes" as "soldJobTypes"
+        WHERE
+          "soldJobTypes"."orderId" = $1 AND
+          "soldJobTypes"."isActive" = true;
+      `,
+      [id]
+    );
+
+    const jobTypes = [];
+    for (let i = 0; i < soldJobTypes.rows.length; i += 1) {
+      const jobInfo = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictJobTypes" as jobTypes
+          WHERE
+            id = $1;
+        `,
+        [soldJobTypes.rows[i].jobTypeId]
+      );
+
+      jobTypes.push({
+        ...jobInfo.rows[0],
+        soldQuantity: soldJobTypes.rows[i].quantity,
+      });
+    }
+
+    const customer = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."customers"
+        WHERE
+          id = $1;
+      `,
+      [getOrderById.rows[0].customerId]
+    );
+
+    const serviceMan = await db.query(
+      `
+        SELECT
+          "id",
+          "login",
+          "birthDay",
+          "phone",
+          "createdDate",
+          "updatedDate",
+          "fullName",
+          "roleId",
+          "percentFromJob",
+          "percentFromParts",
+          "percentFromVisit",
+          "isActive"
+        FROM
+          "${process.env.DB_NAME}"."users"
+        WHERE
+          id = $1;
+      `,
+      [getOrderById.rows[0].serviceManId]
+    );
+
+    const result = {
+      ...getOrderById.rows[0],
+      parts,
+      jobTypes,
+      customer: customer.rows[0],
+      serviceMan: serviceMan.rows[0],
+    };
+
+    response.json(result);
   } catch (error: any) {
     response.status(400).json({
       message: error.message,
@@ -586,4 +746,4 @@ const getOrders = async (
   }
 };
 
-export { createOrder, getOrders, updateOrder };
+export { createOrder, getOrders, updateOrder, getOrderById };

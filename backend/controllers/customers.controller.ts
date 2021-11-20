@@ -57,7 +57,7 @@ const getCustomersList = async (
       customers: customers.rows,
       total: +total.rows[0].total,
     });
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -100,7 +100,7 @@ const createCustomer = async (
     );
 
     response.json(insertCustomer.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -174,7 +174,7 @@ const updateCustomer = async (
     }
 
     response.json(updateQuery.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });

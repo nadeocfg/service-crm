@@ -73,7 +73,7 @@ const authUser = async (
       ...userRole.rows[0],
       token: generateJwt(JSON.stringify(currentUser.rows[0].id)),
     });
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -112,7 +112,7 @@ const getAllActiveUsers = async (
     );
 
     response.json(allUsers.rows);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -151,7 +151,7 @@ const getAllInactiveUsers = async (
     );
 
     response.json(allUsers.rows);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -224,7 +224,7 @@ const createUser = async (
     );
 
     response.json(insertUser.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(400).json({
       message: error.message,
     });
@@ -315,7 +315,7 @@ const updateUser = async (
     }
 
     response.json(insertUser.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -337,7 +337,7 @@ const getUserByToken = async (
       ...request.user,
       token: generateJwt(JSON.stringify(request.user?.id || '')),
     });
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -503,7 +503,7 @@ const findUsers = async (
       users: users.rows,
       total: +total.rows[0].total,
     });
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -552,7 +552,7 @@ const getUserById = async (
     response.json({
       ...findUser.rows[0],
     });
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });

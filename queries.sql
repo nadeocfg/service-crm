@@ -25,3 +25,36 @@ GRANT USAGE ON TABLES TO "service-crm";
 grant all privileges on database "service-crm" to "service-crm";
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "service-crm" TO "service-crm";
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "service-crm" TO "service-crm";
+
+SELECT
+  users."percentFromVisit"
+FROM
+  "service-crm"."orders" as orders
+LEFT JOIN
+  "service-crm"."users" as users
+ON
+  orders."serviceManId" = users.id
+WHERE
+  users.id = 5
+ORDER BY
+  users.id;
+
+UPDATE
+  "service-crm"."orders" as orders
+SET
+  "customerId" = 3,
+  address = 'test address',
+  "updatedDate" = now(),
+  "serviceManId" = 5,
+  comment = 'comment for order'
+WHERE
+  orders.id = 2;
+
+UPDATE
+  "service-crm"."soldParts"
+SET
+  "isActive" = false
+WHERE
+  "orderId" = 7
+RETURNING
+  *;

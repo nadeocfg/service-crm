@@ -26,7 +26,7 @@ const getDictRoles = async (
     );
 
     response.json(allRoles.rows);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -78,7 +78,7 @@ const createRole = async (
     );
 
     response.json(insertRole.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -181,7 +181,7 @@ const getJobTypes = async (
         total: +total.rows[0].total,
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -239,7 +239,7 @@ const createJobType = async (
     );
 
     response.json(insertJobType.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -298,7 +298,7 @@ const updateJobType = async (
     );
 
     response.json(updateQuery.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -416,7 +416,7 @@ const getBoilers = async (
         total: +total.rows[0].total,
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -483,7 +483,7 @@ const createBoiler = async (
     );
 
     response.json(insertBoiler.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -548,7 +548,7 @@ const updateBoiler = async (
     );
 
     response.json(updateQuery.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -666,7 +666,7 @@ const getParts = async (
         total: +total.rows[0].total,
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -733,7 +733,7 @@ const createPart = async (
     );
 
     response.json(insertJobType.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -798,7 +798,7 @@ const updatePart = async (
     );
 
     response.json(updateQuery.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -827,7 +827,7 @@ const getOrderStatuses = async (
     );
 
     response.json(allStatuses.rows);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });
@@ -879,7 +879,7 @@ const createOrderStatus = async (
     );
 
     response.json(insertOrderStatus.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     response.status(404).json({
       message: error.message,
     });

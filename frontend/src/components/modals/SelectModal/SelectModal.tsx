@@ -13,6 +13,12 @@ import Transition from '../../Transition';
 import SearchIcon from '@material-ui/icons/Search';
 import { useEffect, useRef, useState } from 'react';
 
+declare global {
+  interface Window {
+    delay: any;
+  }
+}
+
 interface SelectModalProps {
   open: boolean;
   onSelect: Function;
@@ -21,7 +27,6 @@ interface SelectModalProps {
   items: any[];
   handleChange: any;
   fieldName: string;
-  isLoading: boolean;
 }
 
 const SelectModal = ({
@@ -32,7 +37,6 @@ const SelectModal = ({
   items,
   handleChange,
   fieldName,
-  isLoading,
 }: SelectModalProps) => {
   let isOpen = useRef(open);
   const [searchValue, setSearchValue] = useState('');
@@ -49,7 +53,14 @@ const SelectModal = ({
   }, [open, handleChange]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleChange(event.target.value);
+    if (typeof window.delay !== 'undefined') {
+      clearTimeout(window.delay);
+    }
+
+    window.delay = setTimeout(() => {
+      handleChange(event.target.value);
+    }, 500);
+
     setSearchValue(event.target.value);
   };
 

@@ -10,7 +10,12 @@ import {
 import { setLoader } from './mainActions';
 
 export const getUsers =
-  (page: number = 0, count: number = 10, searchValue?: string) =>
+  (
+    page: number = 0,
+    count: number = 10,
+    searchValue?: string,
+    roleCode?: string
+  ) =>
   async (dispatch: Dispatch<any>) => {
     try {
       dispatch(setLoader(true));
@@ -19,6 +24,7 @@ export const getUsers =
         page,
         count,
         searchValue,
+        roleCode,
       };
 
       api

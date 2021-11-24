@@ -23,6 +23,7 @@ const createOrder = async (
       parts,
       jobTypes,
       visitPrice,
+      boiler,
     } = request.body;
 
     const requiredKeys = [
@@ -32,6 +33,7 @@ const createOrder = async (
       'serviceMan',
       'parts',
       'jobTypes',
+      'boiler',
     ];
 
     for (let i = 0; i < requiredKeys.length; i += 1) {
@@ -43,12 +45,20 @@ const createOrder = async (
     const insertOrder = await db.query(
       `
         INSERT INTO
-          "${process.env.DB_NAME}"."orders" ("customerId", "createdBy", address, "createdDate", "updatedDate", status, "serviceManId", comment)
-        VALUES($1, $2, $3, NOW(), NOW(), 1, $4, $5)
+          "${process.env.DB_NAME}"."orders" ("customerId", "createdBy", address, "createdDate", "updatedDate", status, "serviceManId", comment, "visitPrice", "boilerId")
+        VALUES($1, $2, $3, NOW(), NOW(), 1, $4, $5, $6, $7)
         RETURNING
           *;
       `,
-      [customer.id, createdBy, address, serviceMan.id, comment]
+      [
+        customer.id,
+        createdBy,
+        address,
+        serviceMan.id,
+        comment,
+        visitPrice,
+        boiler.id,
+      ]
     );
 
     let partsTotal: number = 0;
@@ -121,6 +131,18 @@ const createOrder = async (
       (jobTotal / 100) * serviceManPercents.rows[0].percentFromJob;
     const serviceManVisitPaidOut =
       (visitPrice / 100) * serviceManPercents.rows[0].percentFromVisit;
+
+    const insertTotalSum = await db.query(
+      `
+        UPDATE
+          "${process.env.DB_NAME}"."orders"
+        SET
+          "totalSum" = $1
+        WHERE
+          id = $2;
+      `,
+      [partsTotal + jobTotal + visitPrice, insertOrder.rows[0].id]
+    );
 
     const insertPaidOut: any = await db.query(
       `
@@ -303,6 +325,18 @@ const updateOrder = async (
     const serviceManVisitPaidOut =
       (visitPrice / 100) * serviceManPercents.rows[0].percentFromVisit;
 
+    const insertTotalSum = await db.query(
+      `
+        UPDATE
+          "${process.env.DB_NAME}"."orders"
+        SET
+          "totalSum" = $1
+        WHERE
+          id = $2;
+      `,
+      [partsTotal + jobTotal + visitPrice, updateOrder.rows[0].id]
+    );
+
     const insertPaidOut: any = await db.query(
       `
         UPDATE
@@ -356,11 +390,12 @@ const getOrderById = async (
     const getOrderById = await db.query(
       `
         SELECT
-          orders.id as orderId,
+          orders.id as "orderId",
           orders.address,
           orders."visitPrice",
           orders.comment,
           orders."serviceManId",
+          orders."boilerId",
           orders."customerId"
         FROM
           "${process.env.DB_NAME}"."orders" as orders
@@ -375,6 +410,19 @@ const getOrderById = async (
         message: `Cannot find order with id ${id}`,
       });
     }
+
+    const boiler = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."dictBoilers" as "dictBoilers"
+        WHERE
+          "dictBoilers".id = $1 AND
+          "dictBoilers"."isActive" = true;
+      `,
+      [getOrderById.rows[0].boilerId]
+    );
 
     const soldParts = await db.query(
       `
@@ -479,12 +527,17 @@ const getOrderById = async (
       [getOrderById.rows[0].serviceManId]
     );
 
+    delete getOrderById.rows[0].serviceManId;
+    delete getOrderById.rows[0].customerId;
+    delete getOrderById.rows[0].boilerId;
+
     const result = {
       ...getOrderById.rows[0],
       parts,
       jobTypes,
       customer: customer.rows[0],
       serviceMan: serviceMan.rows[0],
+      boiler: boiler.rows[0],
     };
 
     response.json(result);
@@ -541,7 +594,7 @@ const getOrders = async (
           WHERE
             orders."isActive" = true
           ORDER BY
-            orders.id
+            orders.id DESC
           LIMIT
             $1
           OFFSET

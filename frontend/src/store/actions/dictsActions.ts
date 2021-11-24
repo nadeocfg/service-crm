@@ -53,13 +53,15 @@ export const getAllRoles = () => async (dispatch: Dispatch<any>) => {
 };
 
 export const getAllJobTypes =
-  (page: number = 0, count: number = 10) =>
+  (page: number = 0, count: number = 10, searchValue: string = '') =>
   async (dispatch: Dispatch<any>) => {
     try {
       dispatch(setLoader(true));
 
       api
-        .get(`/api/dicts/job-types?page=${page}&count=${count}`)
+        .get(
+          `/api/dicts/job-types?page=${page}&count=${count}&searchValue=${searchValue}`
+        )
         .then((res) => {
           dispatch({
             type: SET_JOB_TYPES_LIST,
@@ -97,13 +99,15 @@ export const getAllJobTypes =
   };
 
 export const getAllBoilers =
-  (page: number = 0, count: number = 10) =>
+  (page: number = 0, count: number = 10, searchValue: string = '') =>
   async (dispatch: Dispatch<any>) => {
     try {
       dispatch(setLoader(true));
 
       api
-        .get(`/api/dicts/boilers?page=${page}&count=${count}`)
+        .get(
+          `/api/dicts/boilers?page=${page}&count=${count}&searchValue=${searchValue}`
+        )
         .then((res) => {
           dispatch({
             type: SET_BOILER_LIST,
@@ -141,13 +145,15 @@ export const getAllBoilers =
   };
 
 export const getAllParts =
-  (page: number = 0, count: number = 10) =>
+  (page: number = 0, count: number = 10, searchValue: string = '') =>
   async (dispatch: Dispatch<any>) => {
     try {
       dispatch(setLoader(true));
 
       api
-        .get(`/api/dicts/parts?page=${page}&count=${count}`)
+        .get(
+          `/api/dicts/parts?page=${page}&count=${count}&searchValue=${searchValue}`
+        )
         .then((res) => {
           dispatch({
             type: SET_PART_LIST,

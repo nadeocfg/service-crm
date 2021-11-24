@@ -3,27 +3,31 @@ import {
   CardActions,
   CardContent,
   TextField,
-  Divider,
   IconButton,
   Input,
 } from '@material-ui/core';
 import React, { useState } from 'react';
-import Btn from '../../components/Btn';
-import history from '../../utils/history';
-import SelectModal from '../../components/modals/SelectModal';
-import api from '../../utils/axiosMiddleware';
-import { useDispatch } from 'react-redux';
-import { ADD_NOTIFY } from '../../store/storeConstants/snackbarConstants';
-import ReactInputMask from 'react-input-mask';
-import moment from 'moment';
+import Btn from '../../../components/Btn';
+import history from '../../../utils/history';
+import SelectModal from '../../../components/modals/SelectModal';
+import { useDispatch, useSelector } from 'react-redux';
 import AddIcon from '@material-ui/icons/Add';
 import {
   JobItemModel,
   OrderDataModel,
   PartItemModel,
-} from '../../models/storeModel';
-import { createOrder } from '../../store/actions/ordersActions';
+  StoreModel,
+} from '../../../models/storeModel';
+import { createOrder } from '../../../store/actions/ordersActions';
 import CloseIcon from '@material-ui/icons/Close';
+import { getCustomersList } from '../../../store/actions/customersActions';
+import {
+  getAllBoilers,
+  getAllJobTypes,
+  getAllParts,
+} from '../../../store/actions/dictsActions';
+import { getUsers } from '../../../store/actions/usersPageActions';
+import { formatSum } from '../../../utils/formatSum';
 
 const CreateOrder = () => {
   const [fetchFunction, setFetchFunction] = React.useState<any>(() => () => {});
@@ -34,19 +38,35 @@ const CreateOrder = () => {
     items: [],
     fieldName: '',
   });
-  const [selectItems, setSelectItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [currentSearch, setCurrentSearch] = useState<
+    'customer' | 'boiler' | 'serviceMan' | 'parts' | 'jobTypes'
+  >('customer');
   const [orderData, setOrderData] = useState<OrderDataModel>({
-    customer: {},
     address: '',
-    date: moment().format('DD/MM/YYYY'),
-    serviceMan: {},
     comment: '',
-    boiler: {},
-    parts: [],
+    customer: {},
     jobTypes: [],
+    parts: [],
+    serviceMan: {},
+    boiler: {},
+    visitPrice: 5000,
   });
   const dispatch = useDispatch();
+  const customersList = useSelector(
+    (store: StoreModel) => store.customersStore.customers
+  );
+  const boilersList = useSelector(
+    (store: StoreModel) => store.dictsStore.dictBoilers.boilers
+  );
+  const jobsList = useSelector(
+    (store: StoreModel) => store.dictsStore.dictJobTypes.jobTypes
+  );
+  const partsList = useSelector(
+    (store: StoreModel) => store.dictsStore.dictParts.parts
+  );
+  const serviceManList = useSelector(
+    (store: StoreModel) => store.usersStore.usersList
+  );
 
   const submitOrder = (event: any) => {
     event.preventDefault();
@@ -65,7 +85,6 @@ const CreateOrder = () => {
       title: title,
       fieldName: type,
     });
-
     setFetchFunction(() => (searchValue: string) => fetch(searchValue));
   };
 
@@ -108,140 +127,33 @@ const CreateOrder = () => {
   };
 
   const getCustomers = (searchValue: string) => {
-    setIsLoading(true);
+    dispatch(getCustomersList(0, 20, searchValue));
 
-    const data = {
-      searchValue,
-      page: 0,
-      count: 20,
-    };
-
-    api
-      .post(`/api/customers/find`, data)
-      .then((res) => {
-        setSelectItems(res.data.customers);
-      })
-      .catch((err) => {
-        dispatch({
-          type: ADD_NOTIFY,
-          payload: {
-            message: err.response?.data?.message
-              ? err.response.data.message
-              : 'Ошибка',
-            type: 'error',
-          },
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    setCurrentSearch('customer');
   };
 
   const getBoilers = (searchValue: string) => {
-    setIsLoading(true);
+    dispatch(getAllBoilers(0, 20, searchValue));
 
-    api
-      .get(
-        `/api/dicts/boilers?page=0&count=20&searchValue=${searchValue || ''}`
-      )
-      .then((res) => {
-        setSelectItems(res.data.boilers);
-      })
-      .catch((err) => {
-        dispatch({
-          type: ADD_NOTIFY,
-          payload: {
-            message: err.response?.data?.message
-              ? err.response.data.message
-              : 'Ошибка',
-            type: 'error',
-          },
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    setCurrentSearch('boiler');
   };
 
   const getParts = (searchValue: string) => {
-    setIsLoading(true);
+    dispatch(getAllParts(0, 20, searchValue));
 
-    api
-      .get(`/api/dicts/parts?page=0&count=20&searchValue=${searchValue || ''}`)
-      .then((res) => {
-        setSelectItems(res.data.parts);
-      })
-      .catch((err) => {
-        dispatch({
-          type: ADD_NOTIFY,
-          payload: {
-            message: err.response?.data?.message
-              ? err.response.data.message
-              : 'Ошибка',
-            type: 'error',
-          },
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    setCurrentSearch('parts');
   };
 
   const getJobTypes = (searchValue: string) => {
-    setIsLoading(true);
+    dispatch(getAllJobTypes(0, 20, searchValue));
 
-    api
-      .get(
-        `/api/dicts/job-types?page=0&count=20&searchValue=${searchValue || ''}`
-      )
-      .then((res) => {
-        setSelectItems(res.data.jobTypes);
-      })
-      .catch((err) => {
-        dispatch({
-          type: ADD_NOTIFY,
-          payload: {
-            message: err.response?.data?.message
-              ? err.response.data.message
-              : 'Ошибка',
-            type: 'error',
-          },
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    setCurrentSearch('jobTypes');
   };
 
   const getServiceMan = (searchValue: string) => {
-    setIsLoading(true);
+    dispatch(getUsers(0, 20, searchValue, 'SERVICE_MAN'));
 
-    const data = {
-      page: 0,
-      count: 20,
-      roleCode: 'SERVICE_MAN',
-      searchValue: searchValue || '',
-    };
-
-    api
-      .post(`/api/users/find`, data)
-      .then((res) => {
-        setSelectItems(res.data.users);
-      })
-      .catch((err) => {
-        dispatch({
-          type: ADD_NOTIFY,
-          payload: {
-            message: err.response?.data?.message
-              ? err.response.data.message
-              : 'Ошибка',
-            type: 'error',
-          },
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    setCurrentSearch('serviceMan');
   };
 
   const handleChange =
@@ -276,20 +188,59 @@ const CreateOrder = () => {
       });
     };
 
-  const removeItem = (index: number, type: string) => (event: any) => {
+  const removeItem = (id: number | undefined, type: string) => (event: any) => {
     if (type === 'parts') {
       return setOrderData({
         ...orderData,
-        parts: [...orderData.parts.splice(index, 1)],
+        parts: orderData.parts.filter((item) => item.id !== id),
       });
     }
 
     if (type === 'jobs') {
       return setOrderData({
         ...orderData,
-        jobTypes: [...orderData.jobTypes.splice(index, 1)],
+        jobTypes: orderData.jobTypes.filter((item) => item.id !== id),
       });
     }
+  };
+
+  const setItems = () => {
+    switch (currentSearch) {
+      case 'customer': {
+        return customersList;
+      }
+
+      case 'boiler': {
+        return boilersList;
+      }
+
+      case 'jobTypes': {
+        return jobsList;
+      }
+
+      case 'parts': {
+        return partsList;
+      }
+
+      case 'serviceMan': {
+        return serviceManList;
+      }
+
+      default: {
+        return [];
+      }
+    }
+  };
+
+  const getTotalSum = () => {
+    const parts = orderData.parts.reduce((acc, item) => {
+      return (acc += (item?.price || 0) * +(item?.soldQuantity || 0));
+    }, 0);
+    const jobs = orderData.jobTypes.reduce((acc, item) => {
+      return (acc += (item?.price || 0) * +(item?.soldQuantity || 0));
+    }, 0);
+
+    return formatSum(parts + jobs + +orderData.visitPrice);
   };
 
   return (
@@ -331,19 +282,6 @@ const CreateOrder = () => {
               required
             />
 
-            <ReactInputMask
-              mask="99/99/9999"
-              value={orderData.date}
-              onChange={handleChange('date')}
-            >
-              <TextField
-                className="input form__field"
-                label="Дата"
-                variant="outlined"
-                required
-              />
-            </ReactInputMask>
-
             <TextField
               className="input form__field"
               label="Котел"
@@ -364,6 +302,15 @@ const CreateOrder = () => {
               variant="outlined"
               value={orderData.comment}
               onChange={handleChange('comment')}
+            />
+
+            <TextField
+              className="input form__field"
+              label="Цена за визит"
+              variant="outlined"
+              value={orderData.visitPrice}
+              type="number"
+              onChange={handleChange('visitPrice')}
             />
           </CardContent>
         </Card>
@@ -420,7 +367,7 @@ const CreateOrder = () => {
                       onChange={changeQuantity(index, 'parts')}
                     />
                   </div>
-                  <IconButton onClick={removeItem(index, 'parts')}>
+                  <IconButton onClick={removeItem(el.id, 'parts')}>
                     <CloseIcon />
                   </IconButton>
                 </div>
@@ -460,7 +407,7 @@ const CreateOrder = () => {
                       onChange={changeQuantity(index, 'jobs')}
                     />
                   </div>
-                  <IconButton onClick={removeItem(index, 'jobs')}>
+                  <IconButton onClick={removeItem(el.id, 'jobs')}>
                     <CloseIcon />
                   </IconButton>
                 </div>
@@ -470,19 +417,43 @@ const CreateOrder = () => {
         </Card>
 
         <Card>
-          <h2>Итого</h2>
+          <CardContent className="total">
+            <div className="total__item">
+              <h4>Запчасти:</h4>
+              <div className="list">
+                {orderData.parts.map((el: PartItemModel) => (
+                  <div className="list__item" key={el.id}>
+                    {`${el.name} x ${el.soldQuantity}`}
+                    <span></span>
+                    {formatSum(+(el?.soldQuantity || 0) * (el?.price || 0))}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="total__item">
+              <h4>Работы:</h4>
+              <div className="list">
+                <div className="list__item">
+                  {`Выезд специалиста x 1`}
+                  <span></span>
+                  {formatSum(+(orderData.visitPrice || 0))}
+                </div>
 
-          <CardContent className="form">
-            Запчасти:
-            {orderData.parts.map((el: PartItemModel) => (
-              <h3 key={el.id}>{el.name}</h3>
-            ))}
-            <Divider />
-            Работы:
-            {orderData.jobTypes.map((el: JobItemModel) => (
-              <h3 key={el.id}>{el.name}</h3>
-            ))}
-            <Divider />
+                {orderData.jobTypes.map((el: PartItemModel) => (
+                  <div className="list__item" key={el.id + '' + el.price}>
+                    {`${el.name} x ${el.soldQuantity}`}
+                    <span></span>
+                    {formatSum(+(el?.soldQuantity || 0) * (el?.price || 0))}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="total__item">
+              <h4>Общая сумма заказа:</h4>
+              <div className="list">
+                <div className="list__item">{getTotalSum()}</div>
+              </div>
+            </div>
           </CardContent>
 
           <CardActions className="btn-container">
@@ -502,9 +473,8 @@ const CreateOrder = () => {
         onSelect={onSelect}
         title={modalProps.title}
         handleChange={fetchFunction}
-        items={selectItems}
+        items={setItems()}
         fieldName={modalProps.fieldName}
-        isLoading={isLoading}
       />
     </>
   );

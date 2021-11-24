@@ -20,3 +20,18 @@ h2 {
   font-size: 20px;
   font-weight: 500;
 }
+
+.list {
+  width: 100%;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+
+    span {
+      flex-grow: 1;
+      margin: 0 4px 4px 4px;
+      border-bottom: 2px dotted var(--text-color);
+    }
+  }
+}

@@ -11,20 +11,21 @@ import {
   TableRow,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { StoreModel } from '../../models/storeModel';
+import { StoreModel } from '../../../models/storeModel';
 import SearchIcon from '@material-ui/icons/Search';
 import EditIcon from '@material-ui/icons/Edit';
-import Btn from '../../components/Btn';
-import { formatDate } from '../../utils/formatDate';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import Btn from '../../../components/Btn';
+import { formatDate } from '../../../utils/formatDate';
 import React, { useEffect, useState } from 'react';
-import { getOrders } from '../../store/actions/ordersActions';
+import { getOrders } from '../../../store/actions/ordersActions';
 import AddIcon from '@material-ui/icons/Add';
-import history from '../../utils/history';
+import history from '../../../utils/history';
+import { OrderItemModel } from '../../../models/orderModel';
 
-const Orders = () => {
+const OrdersList = () => {
   const dispatch = useDispatch();
   const [searchField, setSearchField] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState({});
   const [pagination, setPagination] = useState({
     currentPage: 0,
     rowsPerPage: 10,
@@ -51,10 +52,6 @@ const Orders = () => {
     setSearchField(event.target.value);
   };
 
-  const editOrder = (order: any) => {
-    setSelectedOrder(order);
-  };
-
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -79,6 +76,14 @@ const Orders = () => {
 
   const createOrderNav = () => {
     history.push('/orders/create');
+  };
+
+  const viewOrder = (order: OrderItemModel) => {
+    history.push(`/orders/view/${order.id}`);
+  };
+
+  const editOrder = (order: OrderItemModel) => {
+    history.push(`/orders/edit/${order.id}`);
   };
 
   return (
@@ -109,32 +114,39 @@ const Orders = () => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Клиент</TableCell>
+              <TableCell>ФИО клиента</TableCell>
               <TableCell>Адрес</TableCell>
+              <TableCell>Дата</TableCell>
               <TableCell>Комментарий</TableCell>
-              <TableCell>Дата создания</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.map((order) => (
+            {orders.map((order: OrderItemModel) => (
               <TableRow key={order.id}>
                 <TableCell>{order.id}</TableCell>
-                <TableCell>{order.customerId}</TableCell>
+                <TableCell>{order.customer.fullName}</TableCell>
                 <TableCell>{order.address}</TableCell>
+                <TableCell>{formatDate(order.updatedDate, true)}</TableCell>
                 <TableCell>{order.comment}</TableCell>
-                <TableCell>{formatDate(order.createdDate, true)}</TableCell>
-                {(userRoleCode === 'SUPER_ADMIN' ||
-                  userRoleCode === 'ADMIN') && (
-                  <TableCell>
+                <TableCell>
+                  <IconButton
+                    aria-label="view"
+                    onClick={() => viewOrder(order)}
+                  >
+                    <VisibilityIcon fontSize="inherit" />
+                  </IconButton>
+
+                  {(userRoleCode === 'SUPER_ADMIN' ||
+                    userRoleCode === 'ADMIN') && (
                     <IconButton
                       aria-label="edit"
                       onClick={() => editOrder(order)}
                     >
                       <EditIcon fontSize="inherit" />
                     </IconButton>
-                  </TableCell>
-                )}
+                  )}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -154,4 +166,4 @@ const Orders = () => {
   );
 };
 
-export default Orders;
+export default OrdersList;

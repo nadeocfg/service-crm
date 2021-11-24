@@ -15,10 +15,12 @@ import DictRoles from './pages/administration/DictRoles';
 import DictParts from './pages/administration/DictParts';
 import DictJobTypes from './pages/administration/DictJobTypes';
 import DictBoilers from './pages/administration/DictBoilers';
-import Orders from './pages/Orders';
-import CreateOrder from './pages/CreateOrder';
+import OrdersList from './pages/orders/OrdersList';
+import CreateOrder from './pages/orders/CreateOrder';
 import DictOrderStatuses from './pages/administration/DictOrderStatuses';
 import Customers from './pages/Customers';
+import OrderView from './pages/orders/OrderView';
+import OrderEdit from './pages/orders/OrderEdit';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -74,10 +76,16 @@ const App = () => {
                 <Customers />
               </Route>
               <Route exact path="/orders/">
-                <Orders />
+                <OrdersList />
               </Route>
               <Route exact path="/orders/create">
                 <CreateOrder />
+              </Route>
+              <Route exact path="/orders/view/:id">
+                <OrderView />
+              </Route>
+              <Route exact path="/orders/edit/:id">
+                <OrderEdit />
               </Route>
 
               <Route exact path="/administration/roles">

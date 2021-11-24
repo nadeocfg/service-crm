@@ -1,4 +1,5 @@
 import { VariantType } from 'notistack';
+import { OrderItemModel } from './orderModel';
 
 export interface StoreModel {
   mainStore: MainStoreModel;
@@ -177,7 +178,7 @@ export interface PartItemModel {
 }
 
 export interface OrdersStoreModel {
-  orders: any[];
+  orders: OrderItemModel[];
   total: number;
 }
 
@@ -221,10 +222,11 @@ export interface CustomerItemModel {
 export interface OrderDataModel {
   customer: CustomerItemModel;
   address: string;
-  date: string;
   serviceMan: UsersItemModel;
   comment: string;
+  visitPrice: number;
   boiler: BoilerItemModel;
   parts: PartItemModel[];
   jobTypes: JobItemModel[];
+  orderId?: number;
 }

@@ -83,3 +83,21 @@ FROM
 WHERE
   "soldJobTypes"."orderId" = 25 AND
   "soldJobTypes"."isActive" = true;
+
+SELECT
+  orders.id as "orderId",
+  orders.address,
+  orders."visitPrice",
+  orders.comment,
+  orders."serviceManId",
+  orders."boilerId",
+  orders."customerId",
+  statuses.name as "status"
+FROM
+  "service-crm"."orders" as orders
+LEFT JOIN
+  "service-crm"."dictOrderStatuses" as statuses
+ON
+  orders."status" = statuses.id
+WHERE
+  orders.id = 31;

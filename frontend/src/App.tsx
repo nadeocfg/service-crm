@@ -1,4 +1,4 @@
-import { Redirect, Route, Switch, useHistory } from 'react-router';
+import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router';
 import SingIn from './pages/SignIn';
 import Snackbar from './components/Snackbar';
 import { useEffect } from 'react';
@@ -25,6 +25,7 @@ import OrderEdit from './pages/orders/OrderEdit';
 const App = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
   const isAuthorized = useSelector(
     (store: StoreModel) => store.userStore.isAuthorized
   );
@@ -43,9 +44,9 @@ const App = () => {
     }
   }, [dispatch, history]);
 
-  history.listen(() => {
+  useEffect(() => {
     dispatch(changeDrawer(window.innerWidth > 960));
-  });
+  }, [location, dispatch]);
 
   return (
     <>

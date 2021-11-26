@@ -396,9 +396,16 @@ const getOrderById = async (
           orders.comment,
           orders."serviceManId",
           orders."boilerId",
-          orders."customerId"
+          orders."customerId",
+          orders."createdDate",
+          orders."updatedDate",
+          statuses.name as "status"
         FROM
           "${process.env.DB_NAME}"."orders" as orders
+        LEFT JOIN
+          "${process.env.DB_NAME}"."dictOrderStatuses" as statuses
+        ON
+          orders."status" = statuses.id
         WHERE
           orders.id = $1;
       `,

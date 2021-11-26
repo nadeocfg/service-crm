@@ -31,6 +31,7 @@ import api from '../../../utils/axiosMiddleware';
 import { setLoader } from '../../../store/actions/mainActions';
 import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
 import { formatSum } from '../../../utils/formatSum';
+import { getTotalSum } from '../../../utils/getOrderSum';
 
 const OrderEdit = () => {
   const [fetchFunction, setFetchFunction] = React.useState<any>(() => () => {});
@@ -267,17 +268,6 @@ const OrderEdit = () => {
     }
   };
 
-  const getTotalSum = () => {
-    const parts = orderData.parts.reduce((acc, item) => {
-      return (acc += (item?.price || 0) * +(item?.soldQuantity || 0));
-    }, 0);
-    const jobs = orderData.jobTypes.reduce((acc, item) => {
-      return (acc += (item?.price || 0) * +(item?.soldQuantity || 0));
-    }, 0);
-
-    return formatSum(parts + jobs + +orderData.visitPrice);
-  };
-
   return (
     <>
       <form action="" onSubmit={submitOrder} id="create-order-form">
@@ -488,10 +478,7 @@ const OrderEdit = () => {
               </div>
             </div>
             <div className="total__item">
-              <h4>Общая сумма заказа:</h4>
-              <div className="list">
-                <div className="list__item">{getTotalSum()}</div>
-              </div>
+              <h4>Общая сумма заказа: {getTotalSum(orderData)}</h4>
             </div>
           </CardContent>
 

@@ -27,11 +27,34 @@ h2 {
   &__item {
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 4px;
 
     span {
       flex-grow: 1;
+      min-width: 8px;
       margin: 0 4px 4px 4px;
       border-bottom: 2px dotted var(--text-color);
+    }
+  }
+}
+
+.info-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .MuiListItem-root {
+    flex-basis: 100%;
+    flex-grow: 1;
+    width: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .info-list {
+    .MuiListItem-root {
+      flex-basis: auto;
     }
   }
 }

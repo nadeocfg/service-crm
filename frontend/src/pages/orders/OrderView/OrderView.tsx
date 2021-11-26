@@ -1,167 +1,211 @@
 import {
-  IconButton,
-  InputBase,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
+  Card,
+  CardContent,
+  CardHeader,
+  List,
+  ListItem,
+  ListItemText,
 } from '@material-ui/core';
-import { useDispatch, useSelector } from 'react-redux';
-import { StoreModel } from '../../../models/storeModel';
-import SearchIcon from '@material-ui/icons/Search';
-import EditIcon from '@material-ui/icons/Edit';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import Btn from '../../../components/Btn';
+import { useDispatch } from 'react-redux';
+import { OrderDataModel, PartItemModel } from '../../../models/storeModel';
+import { useEffect, useState } from 'react';
+import { setLoader } from '../../../store/actions/mainActions';
+import api from '../../../utils/axiosMiddleware';
+import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
+import { formatSum } from '../../../utils/formatSum';
+import { getTotalSum } from '../../../utils/getOrderSum';
+import { getPhoneLink } from '../../../utils/getPhoneLink';
+import { getAddressLink } from '../../../utils/getAddressLink';
 import { formatDate } from '../../../utils/formatDate';
-import React, { useEffect, useState } from 'react';
-import { getOrders } from '../../../store/actions/ordersActions';
-import AddIcon from '@material-ui/icons/Add';
-import history from '../../../utils/history';
-import { OrderItemModel } from '../../../models/orderModel';
 
 const OrderView = () => {
   const dispatch = useDispatch();
-  const [searchField, setSearchField] = useState('');
-  const [pagination, setPagination] = useState({
-    currentPage: 0,
-    rowsPerPage: 10,
-    rowsPerPageOptions: [10, 20, 50],
+  const [orderData, setOrderData] = useState<OrderDataModel>({
+    customer: {},
+    address: '',
+    serviceMan: {},
+    comment: '',
+    visitPrice: 0,
+    boiler: {},
+    parts: [],
+    jobTypes: [],
+    orderId: 0,
   });
 
-  const userRoleCode = useSelector(
-    (store: StoreModel) => store.userStore.authResponse.roleCode
-  );
-  const orders = useSelector((store: StoreModel) => store.ordersStore.orders);
-  const total = useSelector((store: StoreModel) => store.ordersStore.total);
-
   useEffect(() => {
-    dispatch(getOrders(pagination.currentPage, pagination.rowsPerPage));
+    getOrderData();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, []);
 
-  const handleSearch = () => {
-    console.log('search');
-  };
+  const getOrderData = () => {
+    const currentPath = window.location.pathname.split('/');
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchField(event.target.value);
-  };
+    dispatch(setLoader(true));
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setPagination({
-      ...pagination,
-      rowsPerPage: +event.target.value,
-    });
-
-    dispatch(
-      getOrders(pagination.currentPage, +event.target.value, searchField)
-    );
-  };
-
-  const handleChangePage = (event: any, page: number) => {
-    setPagination({
-      ...pagination,
-      currentPage: page,
-    });
-
-    dispatch(getOrders(page, pagination.rowsPerPage, searchField));
-  };
-
-  const createOrderNav = () => {
-    history.push('/orders/create');
-  };
-
-  const viewOrder = (order: OrderItemModel) => {
-    console.log(order);
-  };
-
-  const editOrder = (order: OrderItemModel) => {
-    console.log(order);
+    api
+      .get(`/api/orders/${currentPath[currentPath.length - 1]}`)
+      .then((res) => {
+        setOrderData(res.data);
+      })
+      .catch((err) => {
+        dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: err.response?.data?.message
+              ? err.response.data.message
+              : 'Ошибка',
+            type: 'error',
+          },
+        });
+      })
+      .finally(() => {
+        dispatch(setLoader(false));
+      });
   };
 
   return (
     <>
-      <div className="search-row">
-        <Btn classes="btn btn_white" onClick={handleSearch}>
-          <SearchIcon />
-          Поиск
-        </Btn>
+      <Card>
+        <CardHeader title="Информация о заказе:" />
+        <CardContent>
+          <List className="info-list">
+            <ListItem>
+              <ListItemText
+                primary={orderData.orderId}
+                secondary={'Номер заказа'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={orderData.status}
+                secondary={'Статус заказа'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={orderData.comment}
+                secondary={'Комментарий'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={formatDate(orderData.createdDate || '', true)}
+                secondary={'Дата создания'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={formatDate(orderData.updatedDate || '', true)}
+                secondary={'Дата обновления'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={getAddressLink(orderData.address)}
+                secondary={'Адрес'}
+              />
+            </ListItem>
+          </List>
+        </CardContent>
+      </Card>
 
-        <InputBase
-          value={searchField}
-          onChange={handleSearchChange}
-          placeholder="Введите параметры поиска"
-          inputProps={{ 'aria-label': 'Введите параметры поиска' }}
-        />
+      <Card>
+        <CardHeader title="Данные о клиенте:" />
+        <CardContent>
+          <List className="info-list">
+            <ListItem>
+              <ListItemText
+                primary={orderData.customer.fullName}
+                secondary={'ФИО'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={getPhoneLink(orderData.customer.phone)}
+                secondary={'Телефон 1'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={getPhoneLink(orderData.customer.phone2)}
+                secondary={'Телефон 2'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={getAddressLink(orderData.customer.address)}
+                secondary={'Адрес'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={orderData.boiler.name}
+                secondary={'Модель бойлера'}
+              />
+            </ListItem>
+          </List>
+        </CardContent>
+      </Card>
 
-        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
-          <Btn classes="btn btn_primary" onClick={createOrderNav}>
-            <AddIcon />
-            Добавить
-          </Btn>
-        )}
-      </div>
+      <Card>
+        <CardHeader title="Данные о специалисте:" />
+        <CardContent>
+          <List className="info-list">
+            <ListItem>
+              <ListItemText
+                primary={orderData.serviceMan.fullName}
+                secondary={'ФИО'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={getPhoneLink(orderData.serviceMan.phone)}
+                secondary={'Телефон'}
+              />
+            </ListItem>
+          </List>
+        </CardContent>
+      </Card>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>ФИО клиента</TableCell>
-              <TableCell>Адрес</TableCell>
-              <TableCell>Дата</TableCell>
-              <TableCell>Комментарий</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {orders.map((order: OrderItemModel) => (
-              <TableRow key={order.id}>
-                <TableCell>{order.id}</TableCell>
-                <TableCell>{order.customer.fullName}</TableCell>
-                <TableCell>{order.address}</TableCell>
-                <TableCell>{formatDate(order.updatedDate, true)}</TableCell>
-                <TableCell>{order.comment}</TableCell>
-                <TableCell>
-                  <IconButton
-                    aria-label="view"
-                    onClick={() => viewOrder(order)}
-                  >
-                    <VisibilityIcon fontSize="inherit" />
-                  </IconButton>
+      <Card>
+        <CardHeader title="Список работ и запчастей:" />
+        <CardContent className="total">
+          <div className="total__item">
+            <h4>Запчасти:</h4>
+            <div className="list">
+              {orderData.parts.map((el: PartItemModel) => (
+                <div className="list__item" key={el.id}>
+                  {`${el.name} x ${el.soldQuantity}`}
+                  <span></span>
+                  {formatSum(+(el?.soldQuantity || 0) * (el?.price || 0))}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="total__item">
+            <h4>Работы:</h4>
+            <div className="list">
+              <div className="list__item">
+                {`Выезд специалиста x 1`}
+                <span></span>
+                {formatSum(+(orderData.visitPrice || 0))}
+              </div>
 
-                  {(userRoleCode === 'SUPER_ADMIN' ||
-                    userRoleCode === 'ADMIN') && (
-                    <IconButton
-                      aria-label="edit"
-                      onClick={() => editOrder(order)}
-                    >
-                      <EditIcon fontSize="inherit" />
-                    </IconButton>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <TablePagination
-        rowsPerPageOptions={pagination.rowsPerPageOptions}
-        component="div"
-        count={total}
-        rowsPerPage={pagination.rowsPerPage}
-        page={pagination.currentPage}
-        onPageChange={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
+              {orderData.jobTypes.map((el: PartItemModel) => (
+                <div className="list__item" key={el.id + '' + el.price}>
+                  {`${el.name} x ${el.soldQuantity}`}
+                  <span></span>
+                  {formatSum(+(el?.soldQuantity || 0) * (el?.price || 0))}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="total__item">
+            <h4>Общая сумма заказа: {getTotalSum(orderData)}</h4>
+          </div>
+        </CardContent>
+      </Card>
     </>
   );
 };

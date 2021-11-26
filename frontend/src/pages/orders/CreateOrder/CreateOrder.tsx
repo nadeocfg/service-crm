@@ -28,6 +28,7 @@ import {
 } from '../../../store/actions/dictsActions';
 import { getUsers } from '../../../store/actions/usersPageActions';
 import { formatSum } from '../../../utils/formatSum';
+import { getTotalSum } from '../../../utils/getOrderSum';
 
 const CreateOrder = () => {
   const [fetchFunction, setFetchFunction] = React.useState<any>(() => () => {});
@@ -230,17 +231,6 @@ const CreateOrder = () => {
         return [];
       }
     }
-  };
-
-  const getTotalSum = () => {
-    const parts = orderData.parts.reduce((acc, item) => {
-      return (acc += (item?.price || 0) * +(item?.soldQuantity || 0));
-    }, 0);
-    const jobs = orderData.jobTypes.reduce((acc, item) => {
-      return (acc += (item?.price || 0) * +(item?.soldQuantity || 0));
-    }, 0);
-
-    return formatSum(parts + jobs + +orderData.visitPrice);
   };
 
   return (
@@ -449,10 +439,7 @@ const CreateOrder = () => {
               </div>
             </div>
             <div className="total__item">
-              <h4>Общая сумма заказа:</h4>
-              <div className="list">
-                <div className="list__item">{getTotalSum()}</div>
-              </div>
+              <h4>Общая сумма заказа: {getTotalSum(orderData)}</h4>
             </div>
           </CardContent>
 

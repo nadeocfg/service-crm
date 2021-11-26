@@ -228,5 +228,8 @@ export interface OrderDataModel {
   boiler: BoilerItemModel;
   parts: PartItemModel[];
   jobTypes: JobItemModel[];
+  createdDate?: string;
+  updatedDate?: string;
+  status?: string;
   orderId?: number;
 }

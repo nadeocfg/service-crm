@@ -117,6 +117,8 @@ const OrdersList = () => {
               <TableCell>ФИО клиента</TableCell>
               <TableCell>Адрес</TableCell>
               <TableCell>Дата</TableCell>
+              <TableCell>Фио специалиста</TableCell>
+              <TableCell>Статус</TableCell>
               <TableCell>Комментарий</TableCell>
               <TableCell></TableCell>
             </TableRow>
@@ -128,6 +130,8 @@ const OrdersList = () => {
                 <TableCell>{order.customer.fullName}</TableCell>
                 <TableCell>{order.address}</TableCell>
                 <TableCell>{formatDate(order.updatedDate, true)}</TableCell>
+                <TableCell>{order.serviceMan.fullName}</TableCell>
+                <TableCell>{order.statusName}</TableCell>
                 <TableCell>{order.comment}</TableCell>
                 <TableCell>
                   <IconButton

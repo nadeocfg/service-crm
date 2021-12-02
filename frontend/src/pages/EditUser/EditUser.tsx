@@ -30,7 +30,9 @@ const EditUser = () => {
     if (params) {
       dispatch(getUserById(params.id));
     }
-  }, [dispatch, params]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   if (!user) {
     return <>Cannot find user</>;

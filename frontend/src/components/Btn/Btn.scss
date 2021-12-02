@@ -30,6 +30,35 @@
     }
   }
 
+  &_success {
+    background: var(--success-color);
+    color: var(--white-color);
+
+    &:hover {
+      background: var(--white-color);
+      color: var(--success-color);
+    }
+  }
+
+  &_danger {
+    background: var(--danger-color);
+    color: var(--white-color);
+
+    &:hover {
+      background: var(--white-color);
+      color: var(--danger-color);
+    }
+  }
+
+  &_warning {
+    background: var(--warning-color);
+
+    &:hover {
+      background: var(--white-color);
+      color: var(--warning-color);
+    }
+  }
+
   &_big {
     padding: 20px;
   }

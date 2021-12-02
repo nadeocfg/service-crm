@@ -1,5 +1,6 @@
 import {
   Card,
+  CardActions,
   CardContent,
   CardHeader,
   List,
@@ -17,9 +18,13 @@ import { getTotalSum } from '../../../utils/getOrderSum';
 import { getPhoneLink } from '../../../utils/getPhoneLink';
 import { getAddressLink } from '../../../utils/getAddressLink';
 import { formatDate } from '../../../utils/formatDate';
+import { useParams } from 'react-router';
+import { OrderActionModel } from '../../../models/orderActionModel';
+import Btn from '../../../components/Btn';
 
 const OrderView = () => {
   const dispatch = useDispatch();
+  const params: { id: string | undefined } = useParams();
   const [orderData, setOrderData] = useState<OrderDataModel>({
     customer: {},
     address: '',
@@ -31,22 +36,101 @@ const OrderView = () => {
     jobTypes: [],
     orderId: 0,
   });
+  const [actions, setActions] = useState<OrderActionModel[]>([]);
 
   useEffect(() => {
     getOrderData();
+    getOrderActions();
 
     // eslint-disable-next-line
   }, []);
 
   const getOrderData = () => {
-    const currentPath = window.location.pathname.split('/');
-
     dispatch(setLoader(true));
 
     api
-      .get(`/api/orders/${currentPath[currentPath.length - 1]}`)
+      .get(`/api/orders/${params.id}`)
       .then((res) => {
         setOrderData(res.data);
+      })
+      .catch((err) => {
+        dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: err.response?.data?.message
+              ? err.response.data.message
+              : 'Ошибка',
+            type: 'error',
+          },
+        });
+      })
+      .finally(() => {
+        dispatch(setLoader(false));
+      });
+  };
+
+  const getOrderActions = () => {
+    api
+      .get(`/api/orders/${params.id}/actions`)
+      .then((res) => {
+        setActions(res.data);
+      })
+      .catch((err) => {
+        dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: err.response?.data?.message
+              ? err.response.data.message
+              : 'Ошибка',
+            type: 'error',
+          },
+        });
+
+        setActions([]);
+      });
+  };
+
+  const getButtonClass = (code: string) => {
+    switch (code) {
+      case 'DONE': {
+        return 'btn btn_success';
+      }
+
+      case 'CANCELED': {
+        return 'btn btn_danger';
+      }
+
+      case 'IN_PROGRESS': {
+        return 'btn btn_success';
+      }
+
+      default: {
+        return 'btn btn_primary';
+      }
+    }
+  };
+
+  const executeAction = (code: string) => {
+    dispatch(setLoader(true));
+
+    const data = {
+      code,
+      orderId: params.id,
+    };
+
+    api
+      .post(`/api/orders/execute-action`, data)
+      .then((res) => {
+        getOrderData();
+        getOrderActions();
+
+        dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: 'Статус заказа успешно изменен',
+            type: 'success',
+          },
+        });
       })
       .catch((err) => {
         dispatch({
@@ -140,7 +224,7 @@ const OrderView = () => {
             </ListItem>
             <ListItem>
               <ListItemText
-                primary={orderData.boiler.name}
+                primary={orderData.boiler?.name || ''}
                 secondary={'Модель бойлера'}
               />
             </ListItem>
@@ -204,6 +288,18 @@ const OrderView = () => {
           <div className="total__item">
             <h4>Общая сумма заказа: {getTotalSum(orderData)}</h4>
           </div>
+
+          <CardActions>
+            {actions.map((item, index) => (
+              <Btn
+                key={index}
+                classes={getButtonClass(item.code)}
+                onClick={() => executeAction(item.code)}
+              >
+                {item.action}
+              </Btn>
+            ))}
+          </CardActions>
         </CardContent>
       </Card>
     </>

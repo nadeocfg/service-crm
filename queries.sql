@@ -101,3 +101,38 @@ ON
   orders."status" = statuses.id
 WHERE
   orders.id = 31;
+
+SELECT
+  orders.id,
+  orders.status
+FROM
+  "service-crm"."orders" as orders
+WHERE
+  orders.id = 31 AND
+  orders."isActive" = true;
+
+SELECT
+  statuses.code as "code",
+  statuses.action as "action",
+  statuses."availableOn" as "availableOn"
+FROM
+  "service-crm"."dictOrderStatuses" as statuses
+WHERE
+  statuses."availableOn" = 'CREATED' AND
+  statuses."isActive" = true;
+
+UPDATE
+  "service-crm"."orders" as orders
+SET
+  status = (
+    SELECT
+      status.id
+    FROM
+      "service-crm"."dictOrderStatuses" as status
+    WHERE
+      status.code = 'CREATED'
+  )
+WHERE
+  orders.id = 12
+RETURNING
+      *;

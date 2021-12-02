@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 import dotenv from 'dotenv';
+import { checkAvailableStatuses } from '../utils/checkAvailableStatuses';
 
 dotenv.config();
 
@@ -371,7 +372,7 @@ const updateOrder = async (
 };
 
 // @desc   get order by id
-// @route  POST /api/orders/:id
+// @route  GET /api/orders/:id
 // @access Private
 const getOrderById = async (
   request: UserRequest,
@@ -380,6 +381,7 @@ const getOrderById = async (
 ) => {
   try {
     const { id } = request.params;
+    const user = request.user;
 
     if (!id) {
       return response.status(400).json({
@@ -415,6 +417,16 @@ const getOrderById = async (
     if (getOrderById.rowCount === 0) {
       return response.status(400).json({
         message: `Cannot find order with id ${id}`,
+      });
+    }
+
+    if (
+      getOrderById.rows[0]?.serviceManId !== user?.id &&
+      user?.roleCode !== 'SUPER_ADMIN' &&
+      user?.roleCode !== 'ADMIN'
+    ) {
+      return response.status(401).json({
+        message: 'Нет доступа к заказу',
       });
     }
 
@@ -579,6 +591,8 @@ const getOrders = async (
       });
     }
 
+    let orders = [];
+
     if (roleCode === 'ADMIN' || roleCode === 'SUPER_ADMIN') {
       const getAllOrders = await db.query(
         `
@@ -610,106 +624,7 @@ const getOrders = async (
         [count, offset]
       );
 
-      const orders = getAllOrders.rows;
-      for (let i = 0; i < orders.length; i += 1) {
-        const orderJobs = await db.query(
-          `
-            SELECT
-              *
-            FROM
-              "${process.env.DB_NAME}"."soldJobTypes"
-            WHERE
-              "orderId" = $1 AND
-              "isActive" = true
-            ORDER BY
-              id;
-          `,
-          [orders[i].id]
-        );
-
-        const orderParts = await db.query(
-          `
-            SELECT
-              *
-            FROM
-              "${process.env.DB_NAME}"."soldParts"
-            WHERE
-              "orderId" = $1 AND
-              "isActive" = true
-            ORDER BY
-              id;
-          `,
-          [orders[i].id]
-        );
-
-        const customer = await db.query(
-          `
-            SELECT
-              *
-            FROM
-              "${process.env.DB_NAME}"."customers"
-            WHERE
-              "id" = $1;
-          `,
-          [orders[i].customerId]
-        );
-
-        const serviceMan = await db.query(
-          `
-            SELECT
-              id,
-              login,
-              phone,
-              "fullName",
-              "percentFromJob",
-              "percentFromParts",
-              "percentFromVisit"
-            FROM
-              "${process.env.DB_NAME}"."users"
-            WHERE
-              "id" = $1;
-          `,
-          [orders[i].serviceManId]
-        );
-
-        const createdBy = await db.query(
-          `
-            SELECT
-              login,
-              "fullName",
-              phone
-            FROM
-              "${process.env.DB_NAME}"."users"
-            WHERE
-              "id" = $1;
-          `,
-          [orders[i].createdBy]
-        );
-
-        orders[i].jobs = orderJobs.rows;
-        orders[i].parts = orderParts.rows;
-        orders[i].customer = customer.rows.length > 0 ? customer.rows[0] : {};
-        orders[i].serviceMan =
-          serviceMan.rows.length > 0 ? serviceMan.rows[0] : {};
-        orders[i].createdBy =
-          createdBy.rows.length > 0 ? createdBy.rows[0] : {};
-      }
-
-      const total = await db.query(
-        `
-          SELECT
-            count(*) AS total
-          FROM
-            "${process.env.DB_NAME}"."orders"
-          WHERE
-            "isActive" = true;
-        `
-      );
-
-      response.json({
-        orders: orders,
-        total: +total.rows[0].total,
-      });
+      orders = getAllOrders.rows;
     } else {
       const getUserOrders = await db.query(
         `
@@ -719,8 +634,10 @@ const getOrders = async (
             orders."createdDate",
             orders."updatedDate",
             orders.comment,
-            status.name as "statusName",
-            users."fullName" as "serviceManFullName"
+            orders."customerId",
+            orders."serviceManId",
+            orders."createdBy",
+            status.name as "statusName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
           LEFT JOIN
@@ -735,7 +652,7 @@ const getOrders = async (
             orders."serviceManId" = $3 AND
             orders."isActive" = true
           ORDER BY
-            orders.id
+            orders.id DESC
           LIMIT
             $1
           OFFSET
@@ -744,10 +661,12 @@ const getOrders = async (
         [count, offset, userId]
       );
 
-      const orders = getUserOrders.rows;
-      for (let i = 0; i < orders.length; i += 1) {
-        const orderJobs = await db.query(
-          `
+      orders = getUserOrders.rows;
+    }
+
+    for (let i = 0; i < orders.length; i += 1) {
+      const orderJobs = await db.query(
+        `
             SELECT
               *
             FROM
@@ -758,11 +677,11 @@ const getOrders = async (
             ORDER BY
               id;
           `,
-          [orders[i].id]
-        );
+        [orders[i].id]
+      );
 
-        const orderParts = await db.query(
-          `
+      const orderParts = await db.query(
+        `
             SELECT
               *
             FROM
@@ -773,31 +692,78 @@ const getOrders = async (
             ORDER BY
               id;
           `,
-          [orders[i].id]
-        );
-
-        orders[i].jobs = orderJobs.rows;
-        orders[i].parts = orderParts.rows;
-      }
-
-      const total = await db.query(
-        `
-          SELECT
-            count(*) AS total
-          FROM
-            "${process.env.DB_NAME}"."orders"
-          WHERE
-            "serviceManId" = $1 AND
-            "isActive" = true;
-        `,
-        [userId]
+        [orders[i].id]
       );
 
-      response.json({
-        orders: orders,
-        total: +total.rows[0].total,
-      });
+      const customer = await db.query(
+        `
+            SELECT
+              *
+            FROM
+              "${process.env.DB_NAME}"."customers"
+            WHERE
+              "id" = $1;
+          `,
+        [orders[i].customerId]
+      );
+
+      const serviceMan = await db.query(
+        `
+            SELECT
+              id,
+              login,
+              phone,
+              "fullName",
+              "percentFromJob",
+              "percentFromParts",
+              "percentFromVisit"
+            FROM
+              "${process.env.DB_NAME}"."users"
+            WHERE
+              "id" = $1;
+          `,
+        [orders[i].serviceManId]
+      );
+
+      const createdBy = await db.query(
+        `
+            SELECT
+              login,
+              "fullName",
+              phone
+            FROM
+              "${process.env.DB_NAME}"."users"
+            WHERE
+              "id" = $1;
+          `,
+        [orders[i].createdBy]
+      );
+
+      orders[i].jobs = orderJobs.rows;
+      orders[i].parts = orderParts.rows;
+      orders[i].customer = customer.rows.length > 0 ? customer.rows[0] : {};
+      orders[i].serviceMan =
+        serviceMan.rows.length > 0 ? serviceMan.rows[0] : {};
+      orders[i].createdBy = createdBy.rows.length > 0 ? createdBy.rows[0] : {};
     }
+
+    const total = await db.query(
+      `
+        SELECT
+          count(*) AS total
+        FROM
+          "${process.env.DB_NAME}"."orders"
+        WHERE
+          "serviceManId" = $1 AND
+          "isActive" = true;
+      `,
+      [userId]
+    );
+
+    response.json({
+      orders: orders,
+      total: +total.rows[0].total,
+    });
   } catch (error: any) {
     response.status(404).json({
       message: error.message,
@@ -806,4 +772,144 @@ const getOrders = async (
   }
 };
 
-export { createOrder, getOrders, updateOrder, getOrderById };
+// @desc   get order actions
+// @route  GET /api/orders/:id/actions
+// @access Private
+const getOrderActions = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = request.params;
+    const user = request.user || null;
+
+    const order = await db.query(
+      `
+        SELECT
+          orders.id,
+          orders.status,
+          orders."serviceManId",
+          statuses.code as "statusCode"
+        FROM
+          "${process.env.DB_NAME}"."orders" as orders
+        LEFT JOIN
+          "${process.env.DB_NAME}"."dictOrderStatuses" as statuses
+        ON
+          statuses.id = orders.status
+        WHERE
+          orders.id = $1 AND
+          orders."isActive" = true;
+      `,
+      [id]
+    );
+
+    if (
+      order.rows[0]?.serviceManId !== user?.id &&
+      user?.roleCode !== 'SUPER_ADMIN' &&
+      user?.roleCode !== 'ADMIN'
+    ) {
+      return response.status(401).json({
+        message: 'Нет доступа к изменению статуса',
+      });
+    }
+
+    const availableStatuses = await db.query(
+      `
+      SELECT
+        statuses.code as "code",
+        statuses.action as "action",
+        statuses."availableOn" as "availableOn"
+      FROM
+        "${process.env.DB_NAME}"."dictOrderStatuses" as statuses
+      WHERE
+        statuses."availableOn" = $1 AND
+        statuses."isActive" = true;
+      `,
+      [order.rows[0]?.statusCode]
+    );
+
+    response.json(availableStatuses.rows);
+  } catch (error: any) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+// @desc   execute action
+// @route  POST /api/orders/execute-action
+// @access Private
+const executeAction = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { orderId, code } = request.body;
+    const user = request.user || null;
+
+    const order = await db.query(
+      `
+        SELECT
+          orders.id,
+          orders.status,
+          orders."serviceManId"
+        FROM
+          "${process.env.DB_NAME}"."orders" as orders
+        WHERE
+          orders.id = $1 AND
+          orders."isActive" = true;
+      `,
+      [orderId]
+    );
+
+    if (
+      order.rows[0]?.serviceManId !== user?.id &&
+      user?.roleCode !== 'SUPER_ADMIN' &&
+      user?.roleCode !== 'ADMIN'
+    ) {
+      return response.status(401).json({
+        message: 'Нет доступа к изменению статуса',
+      });
+    }
+
+    const changeStatus = await db.query(
+      `
+        UPDATE
+          "service-crm"."orders" as orders
+        SET
+          status = (
+            SELECT
+              status.id
+            FROM
+              "service-crm"."dictOrderStatuses" as status
+            WHERE
+              status.code = $1
+          )
+        WHERE
+          orders.id = $2
+        RETURNING
+          *;
+      `,
+      [code, orderId]
+    );
+
+    response.json(changeStatus.rows);
+  } catch (error: any) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+export {
+  createOrder,
+  getOrders,
+  updateOrder,
+  getOrderById,
+  getOrderActions,
+  executeAction,
+};

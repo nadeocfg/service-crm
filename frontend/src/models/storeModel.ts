@@ -10,6 +10,7 @@ export interface StoreModel {
   dictsStore: DictsStoreModel;
   ordersStore: OrdersStoreModel;
   customersStore: CustomersStoreModel;
+  paidOutsStore: PaidOutsStoreModel;
 }
 
 export interface MainStoreModel {
@@ -232,4 +233,21 @@ export interface OrderDataModel {
   updatedDate?: string;
   status?: string;
   orderId?: number;
+}
+
+export interface PaidOutsStoreModel {
+  paidOutsList: PaidOutsItemModel[];
+  total: number;
+  searchField: string;
+}
+
+export interface PaidOutsItemModel {
+  createdDate: string;
+  fullName: string;
+  id: number;
+  isPaid: boolean;
+  orderId: number;
+  sum: number;
+  updatedDate: string;
+  userId: number;
 }

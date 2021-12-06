@@ -136,3 +136,21 @@ WHERE
   orders.id = 12
 RETURNING
       *;
+
+SELECT
+  paids.*,
+  users."fullName" as "fullName"
+FROM
+  "service-crm"."serviceManPaidOuts" as paids
+LEFT JOIN
+  "service-crm"."users" as users
+ON
+  users.id = paids."userId"
+WHERE
+  (users."fullName" like '%26%' OR paids."orderId"::text like '%26%')
+ORDER BY
+  paids.id DESC
+LIMIT
+  10
+OFFSET
+  0;

@@ -1,20 +1,38 @@
-import { useDispatch } from 'react-redux';
-import Btn from '../../components/Btn';
-import { logout } from '../../store/actions/userActions';
-
 const Home = () => {
-  const dispatch = useDispatch();
-
-  const initLogout = () => {
-    dispatch(logout());
-  };
-
   return (
-    <div>
-      <h1>Home</h1>
+    <>
+      <div className="dashboard">
+        <div className="stats dashboard__item">
+          <div className="stats__item">
+            <h4>Мои заказы</h4>
+            <p>100</p>
+          </div>
+          <div className="stats__item">
+            <h4>Заказы в работе</h4>
+            <p>11</p>
+          </div>
+          <div className="stats__item">
+            <h4>Выполненные заказы</h4>
+            <p>23</p>
+          </div>
+        </div>
 
-      <Btn onClick={initLogout}>Logout</Btn>
-    </div>
+        <div className="stats dashboard__item">
+          <div className="stats__item">
+            <h4>Мои заказы</h4>
+            <p>100</p>
+          </div>
+          <div className="stats__item">
+            <h4>Заказы в работе</h4>
+            <p>11</p>
+          </div>
+          <div className="stats__item">
+            <h4>Выполненные заказы</h4>
+            <p>23</p>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

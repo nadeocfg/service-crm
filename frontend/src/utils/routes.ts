@@ -19,6 +19,11 @@ export const routes = [
     code: 'orders',
     name: 'Заказы',
   },
+  {
+    path: '/paids',
+    code: 'paids',
+    name: 'Выплаты',
+  },
 ];
 
 export const adminRoutes = [

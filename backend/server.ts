@@ -6,6 +6,7 @@ import { errorHandler, notFound } from './middleware/errorMiddleware';
 import dictRoutes from './routes/dict.routes';
 import customersRoutes from './routes/customers.routes';
 import ordersRoutes from './routes/orders.routes';
+import paidsRoutes from './routes/paidOuts.routes';
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -22,6 +23,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/dicts', dictRoutes);
 app.use('/api/customers', customersRoutes);
 app.use('/api/orders', ordersRoutes);
+app.use('/api/paids', paidsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

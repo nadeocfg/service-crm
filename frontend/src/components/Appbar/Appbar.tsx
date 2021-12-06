@@ -33,9 +33,13 @@ import ExtensionIcon from '@material-ui/icons/Extension';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
 const Appbar = () => {
   const open = useSelector((state: StoreModel) => state.mainStore.isDrawerOpen);
+  const userRoleCode = useSelector(
+    (state: StoreModel) => state.userStore.authResponse.roleCode
+  );
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
@@ -116,46 +120,52 @@ const Appbar = () => {
                 {route.code === 'users' && <PeopleAltOutlinedIcon />}
                 {route.code === 'orders' && <ShoppingCartIcon />}
                 {route.code === 'customers' && <EmojiPeopleIcon />}
+                {route.code === 'paids' && <AttachMoneyIcon />}
               </ListItemIcon>
               <ListItemText primary={route.name} />
             </ListItem>
           ))}
 
-          <ListItem button onClick={handleOpenSubmenu}>
-            <ListItemIcon>
-              <SettingsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Администрирование" />
-            {openSubMenu ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
-          <Collapse in={openSubMenu} unmountOnExit>
-            <List component="div" disablePadding className="menu__nested">
-              {adminRoutes.map((route, index) => (
-                <ListItem
-                  key={index}
-                  button
-                  onClick={() => navigateTo(route.path)}
-                  selected={location.pathname === route.path}
-                  className={
-                    location.pathname === route.path
-                      ? 'menu__item menu__item_selected'
-                      : 'menu__item'
-                  }
-                >
-                  <ListItemIcon>
-                    {route.code === 'dictRoles' && <GroupIcon />}
-                    {route.code === 'dictJobTypes' && <WorkIcon />}
-                    {route.code === 'dictBoilers' && <BathtubIcon />}
-                    {route.code === 'dictParts' && <ExtensionIcon />}
-                    {route.code === 'dictOrderStatuses' && (
-                      <PlaylistAddCheckIcon />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText primary={route.name} />
-                </ListItem>
-              ))}
-            </List>
-          </Collapse>
+          {(userRoleCode === 'ADMIN' || userRoleCode === 'SUPER_ADMIN') && (
+            <>
+              <ListItem button onClick={handleOpenSubmenu}>
+                <ListItemIcon>
+                  <SettingsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Администрирование" />
+                {openSubMenu ? <ExpandLess /> : <ExpandMore />}
+              </ListItem>
+
+              <Collapse in={openSubMenu} unmountOnExit>
+                <List component="div" disablePadding className="menu__nested">
+                  {adminRoutes.map((route, index) => (
+                    <ListItem
+                      key={index}
+                      button
+                      onClick={() => navigateTo(route.path)}
+                      selected={location.pathname === route.path}
+                      className={
+                        location.pathname === route.path
+                          ? 'menu__item menu__item_selected'
+                          : 'menu__item'
+                      }
+                    >
+                      <ListItemIcon>
+                        {route.code === 'dictRoles' && <GroupIcon />}
+                        {route.code === 'dictJobTypes' && <WorkIcon />}
+                        {route.code === 'dictBoilers' && <BathtubIcon />}
+                        {route.code === 'dictParts' && <ExtensionIcon />}
+                        {route.code === 'dictOrderStatuses' && (
+                          <PlaylistAddCheckIcon />
+                        )}
+                      </ListItemIcon>
+                      <ListItemText primary={route.name} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            </>
+          )}
         </List>
       </Drawer>
     </>

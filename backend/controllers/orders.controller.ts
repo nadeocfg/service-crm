@@ -1,8 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 import dotenv from 'dotenv';
-import { checkAvailableStatuses } from '../utils/checkAvailableStatuses';
 
 dotenv.config();
 
@@ -887,7 +886,8 @@ const executeAction = async (
               "service-crm"."dictOrderStatuses" as status
             WHERE
               status.code = $1
-          )
+          ),
+          "updatedDate" = NOW()
         WHERE
           orders.id = $2
         RETURNING

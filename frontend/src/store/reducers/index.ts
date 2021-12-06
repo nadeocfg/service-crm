@@ -7,6 +7,7 @@ import editUserStore from './editUserReducer';
 import dictsStore from './dictsReducer';
 import ordersStore from './ordersReducer';
 import customersStore from './customersReducer';
+import paidOutsStore from './paidOutsReducer';
 
 const rootReducer = combineReducers({
   mainStore,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   dictsStore,
   ordersStore,
   customersStore,
+  paidOutsStore,
 });
 
 export default rootReducer;

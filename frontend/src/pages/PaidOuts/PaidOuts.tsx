@@ -116,6 +116,7 @@ const PaidOuts = () => {
               <TableCell>Номер заказа</TableCell>
               <TableCell>Сумма</TableCell>
               <TableCell>Дата обновления</TableCell>
+              <TableCell>Статус выплаты</TableCell>
               <TableCell>Статус</TableCell>
               <TableCell></TableCell>
             </TableRow>
@@ -132,6 +133,11 @@ const PaidOuts = () => {
                 </TableCell>
                 <TableCell>
                   {paidOut.isPaid ? 'Выплачено' : 'Не выплачено'}
+                </TableCell>
+                <TableCell>
+                  {paidOut.canBePaid
+                    ? 'Готова к выплате'
+                    : 'Не готова к выплате'}
                 </TableCell>
                 <TableCell>
                   <IconButton
@@ -154,7 +160,7 @@ const PaidOuts = () => {
         rowsPerPage={pagination.rowsPerPage}
         page={pagination.currentPage}
         onPageChange={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </>
   );

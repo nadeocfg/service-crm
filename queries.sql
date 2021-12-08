@@ -139,15 +139,27 @@ RETURNING
 
 SELECT
   paids.*,
-  users."fullName" as "fullName"
+  users."fullName" as "fullName",
+  orders."status" as "orderStatus"
 FROM
   "service-crm"."serviceManPaidOuts" as paids
 LEFT JOIN
   "service-crm"."users" as users
 ON
   users.id = paids."userId"
+LEFT JOIN
+  "service-crm"."orders" as orders
+ON
+  orders.id = paids."orderId"
 WHERE
-  (users."fullName" like '%26%' OR paids."orderId"::text like '%26%')
+  orders."status" = (
+    SELECT
+      status.id
+    FROM
+      "service-crm"."dictOrderStatuses" as status
+    WHERE
+      status.code = 'DONE'
+  )
 ORDER BY
   paids.id DESC
 LIMIT

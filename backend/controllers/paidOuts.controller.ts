@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 import dotenv from 'dotenv';
+import moment from 'moment';
 
 dotenv.config();
 
@@ -50,11 +51,24 @@ const getPaidsByUser = async (
             "${process.env.DB_NAME}"."users" as users
           ON
             users.id = paids."userId"
-          ${
-            searchValue
-              ? 'WHERE (paids.id::text LIKE $3 OR users."fullName" like $3 OR paids."orderId"::text like $3)'
-              : ''
-          }
+          LEFT JOIN
+            "${process.env.DB_NAME}"."orders" as orders
+          ON
+            orders.id = paids."orderId"
+          WHERE
+            orders."status" = (
+              SELECT
+                status.id
+              FROM
+                "${process.env.DB_NAME}"."dictOrderStatuses" as status
+              WHERE
+                status.code = 'DONE'
+            )
+            ${
+              searchValue
+                ? 'AND (paids.id::text LIKE $3 OR users."fullName" like $3 OR paids."orderId"::text like $3)'
+                : ''
+            }
           ORDER BY
             paids.id DESC
           LIMIT
@@ -76,8 +90,20 @@ const getPaidsByUser = async (
             "${process.env.DB_NAME}"."users" as users
           ON
             users.id = paids."userId"
+          LEFT JOIN
+            "${process.env.DB_NAME}"."orders" as orders
+          ON
+            orders.id = paids."orderId"
           WHERE
-            paids."userId" = $3
+            paids."userId" = $3 AND
+            orders."status" = (
+              SELECT
+                status.id
+              FROM
+                "${process.env.DB_NAME}"."dictOrderStatuses" as status
+              WHERE
+                status.code = 'DONE'
+            )
             ${
               searchValue
                 ? 'AND (paids.id::text LIKE $4 OR users."fullName" like $4 OR paids."orderId"::text like $4)'
@@ -106,6 +132,8 @@ const getPaidsByUser = async (
         updatedDate: item.updatedDate,
         createdDate: item.createdDate,
         isPaid: item.isPaid,
+        canBePaid:
+          moment(new Date()).diff(moment(item.updatedDate), 'days') >= 15,
       });
 
       return acc;

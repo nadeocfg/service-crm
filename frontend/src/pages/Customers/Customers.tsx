@@ -255,7 +255,7 @@ const Customers = () => {
         rowsPerPage={pagination.rowsPerPage}
         page={pagination.currentPage}
         onPageChange={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
       />
 
       <Dialog

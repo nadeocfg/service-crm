@@ -250,4 +250,5 @@ export interface PaidOutsItemModel {
   sum: number;
   updatedDate: string;
   userId: number;
+  canBePaid: boolean;
 }

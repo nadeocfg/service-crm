@@ -23,6 +23,8 @@ GRANT ALL ON SCHEMA "service-crm" TO "service-crm";
 GRANT USAGE ON TABLES TO "service-crm";
 
 grant all privileges on database "service-crm" to "service-crm";
+
+---------------------- Выдать доступы пользователю БД к таблицам ----------------
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "service-crm" TO "service-crm";
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "service-crm" TO "service-crm";
 
@@ -166,3 +168,42 @@ LIMIT
   10
 OFFSET
   0;
+
+SELECT
+  count(*) AS total
+FROM
+  "service-crm"."orders"
+LEFT JOIN
+  "service-crm"."customers" as customers
+ON
+  orders."customerId" = customers.id
+WHERE
+  orders."isActive" = true AND
+  (customers."fullName" LIKE '%%' OR
+  orders.id::text LIKE '%%' OR
+  orders.address LIKE '%%' OR
+  orders.comment LIKE '%%');
+
+SELECT
+  "statusHistory".id,
+  "statusHistory"."orderId",
+  "statusHistory".status,
+  "statusHistory".comment,
+  "statusHistory"."createdDate",
+  "statusHistory"."createdBy",
+  status.name,
+  users."fullName"
+FROM
+  "service-crm"."ordersStatusHistory" as "statusHistory"
+LEFT JOIN
+  "service-crm"."dictOrderStatuses" as "status"
+ON
+  status.id = "statusHistory".status
+LEFT JOIN
+  "service-crm"."users" as "users"
+ON
+  users.id = "statusHistory"."createdBy"
+WHERE
+  "statusHistory"."orderId" = 27
+ORDER BY
+  "statusHistory".id DESC;

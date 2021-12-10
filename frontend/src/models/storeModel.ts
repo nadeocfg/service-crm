@@ -181,6 +181,7 @@ export interface PartItemModel {
 export interface OrdersStoreModel {
   orders: OrderItemModel[];
   total: number;
+  searchValue: string;
 }
 
 export interface OrderStatusItemModel {
@@ -251,4 +252,13 @@ export interface PaidOutsItemModel {
   updatedDate: string;
   userId: number;
   canBePaid: boolean;
+}
+
+export interface OrderStatusHistoryItem {
+  comment: string;
+  createdBy: string;
+  createdDate: string;
+  id: number;
+  orderId: number;
+  status: string;
 }

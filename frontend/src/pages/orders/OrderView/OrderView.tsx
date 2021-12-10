@@ -3,12 +3,28 @@ import {
   CardActions,
   CardContent,
   CardHeader,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   List,
   ListItem,
   ListItemText,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
 } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
-import { OrderDataModel, PartItemModel } from '../../../models/storeModel';
+import {
+  OrderDataModel,
+  OrderStatusHistoryItem,
+  PartItemModel,
+} from '../../../models/storeModel';
 import { useEffect, useState } from 'react';
 import { setLoader } from '../../../store/actions/mainActions';
 import api from '../../../utils/axiosMiddleware';
@@ -21,6 +37,7 @@ import { formatDate } from '../../../utils/formatDate';
 import { useParams } from 'react-router';
 import { OrderActionModel } from '../../../models/orderActionModel';
 import Btn from '../../../components/Btn';
+import Transition from '../../../components/Transition';
 
 const OrderView = () => {
   const dispatch = useDispatch();
@@ -37,13 +54,44 @@ const OrderView = () => {
     orderId: 0,
   });
   const [actions, setActions] = useState<OrderActionModel[]>([]);
+  const [history, setHistory] = useState<OrderStatusHistoryItem[]>([]);
+  const [modalData, setModalData] = useState<any>({
+    open: false,
+    comment: '',
+  });
+  const [action, setAction] = useState<OrderActionModel>({
+    action: '',
+    availableOn: '',
+    code: '',
+    commentRequired: false,
+  });
 
   useEffect(() => {
     getOrderData();
     getOrderActions();
+    getOrderStatusHistory();
 
     // eslint-disable-next-line
   }, []);
+
+  const handleChangeModal = () => {
+    setModalData({
+      ...modalData,
+      open: !modalData.open,
+    });
+  };
+
+  const onSelectAction = (action: OrderActionModel) => {
+    setAction(action);
+    handleChangeModal();
+  };
+
+  const handleChange = (name: string) => (event: any) => {
+    setModalData({
+      ...modalData,
+      [name]: event.target.value,
+    });
+  };
 
   const getOrderData = () => {
     dispatch(setLoader(true));
@@ -90,6 +138,27 @@ const OrderView = () => {
       });
   };
 
+  const getOrderStatusHistory = () => {
+    api
+      .get(`/api/orders/${params.id}/history`)
+      .then((res) => {
+        setHistory(res.data);
+      })
+      .catch((err) => {
+        dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: err.response?.data?.message
+              ? err.response.data.message
+              : 'Ошибка',
+            type: 'error',
+          },
+        });
+
+        setHistory([]);
+      });
+  };
+
   const getButtonClass = (code: string) => {
     switch (code) {
       case 'DONE': {
@@ -110,12 +179,27 @@ const OrderView = () => {
     }
   };
 
-  const executeAction = (code: string) => {
+  const executeAction = (event: React.FormEvent<any>) => {
+    event.preventDefault();
+
+    const { code, commentRequired } = action;
+
+    if (commentRequired && !modalData.comment) {
+      return dispatch({
+        type: ADD_NOTIFY,
+        payload: {
+          message: 'Введите комментарий',
+          type: 'error',
+        },
+      });
+    }
+
     dispatch(setLoader(true));
 
     const data = {
       code,
       orderId: params.id,
+      comment: modalData.comment,
     };
 
     api
@@ -123,6 +207,12 @@ const OrderView = () => {
       .then((res) => {
         getOrderData();
         getOrderActions();
+        getOrderStatusHistory();
+
+        setModalData({
+          ...modalData,
+          comment: '',
+        });
 
         dispatch({
           type: ADD_NOTIFY,
@@ -131,6 +221,8 @@ const OrderView = () => {
             type: 'success',
           },
         });
+
+        handleChangeModal();
       })
       .catch((err) => {
         dispatch({
@@ -290,18 +382,77 @@ const OrderView = () => {
           </div>
 
           <CardActions>
-            {actions.map((item, index) => (
+            {actions.map((action, index) => (
               <Btn
                 key={index}
-                classes={getButtonClass(item.code)}
-                onClick={() => executeAction(item.code)}
+                classes={getButtonClass(action.code)}
+                onClick={() => onSelectAction(action)}
               >
-                {item.action}
+                {action.action}
               </Btn>
             ))}
           </CardActions>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader title="История заказа:" />
+        <CardContent>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Пользователь</TableCell>
+                  <TableCell>Статус</TableCell>
+                  <TableCell>Комментарий</TableCell>
+                  <TableCell>Дата</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {history.map((history: OrderStatusHistoryItem) => (
+                  <TableRow key={history.id}>
+                    <TableCell>{history.id}</TableCell>
+                    <TableCell>{history.createdBy}</TableCell>
+                    <TableCell>{history.status}</TableCell>
+                    <TableCell>{history.comment}</TableCell>
+                    <TableCell>
+                      {formatDate(history.createdDate, true)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
+
+      <Dialog
+        open={modalData.open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleChangeModal}
+      >
+        <DialogTitle>{action.action} ?</DialogTitle>
+        <DialogContent className="form">
+          <TextField
+            className="input"
+            label="Комментарий"
+            variant="outlined"
+            value={modalData.comment}
+            onChange={handleChange('comment')}
+            required={action.commentRequired}
+          />
+        </DialogContent>
+        <DialogActions className="btn-container">
+          <Btn classes="btn btn_white" onClick={handleChangeModal}>
+            Отмена
+          </Btn>
+          <Btn classes="btn btn_primary" onClick={executeAction}>
+            {action.action}
+          </Btn>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

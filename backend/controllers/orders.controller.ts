@@ -576,7 +576,7 @@ const getOrders = async (
   next: NextFunction
 ) => {
   try {
-    const { count, page } = request.query;
+    const { page, count, searchValue } = request.query;
     const roleCode = request.user?.roleCode || '';
     const userId = request.user?.id || '';
 
@@ -591,6 +591,7 @@ const getOrders = async (
     }
 
     let orders = [];
+    let total = null;
 
     if (roleCode === 'ADMIN' || roleCode === 'SUPER_ADMIN') {
       const getAllOrders = await db.query(
@@ -604,15 +605,24 @@ const getOrders = async (
             orders."customerId",
             orders."serviceManId",
             orders."createdBy",
-            status.name as "statusName"
+            status.name as "statusName",
+            customers."fullName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
           LEFT JOIN
             "${process.env.DB_NAME}"."dictOrderStatuses" as status
           ON
             orders.status = status.id
+          LEFT JOIN
+            "${process.env.DB_NAME}"."customers" as customers
+          ON
+            orders."customerId" = customers.id
           WHERE
-            orders."isActive" = true
+            orders."isActive" = true AND
+            (customers."fullName" LIKE $3 OR
+            orders.id::text LIKE $3 OR
+            orders.address LIKE $3 OR
+            orders.comment LIKE $3)
           ORDER BY
             orders.id DESC
           LIMIT
@@ -620,7 +630,27 @@ const getOrders = async (
           OFFSET
             $2;
         `,
-        [count, offset]
+        [count, offset, `%${searchValue || ''}%`]
+      );
+
+      total = await db.query(
+        `
+          SELECT
+            count(*) AS total
+          FROM
+            "${process.env.DB_NAME}"."orders"
+          LEFT JOIN
+            "${process.env.DB_NAME}"."customers" as customers
+          ON
+            orders."customerId" = customers.id
+          WHERE
+            orders."isActive" = true AND
+            (customers."fullName" LIKE $1 OR
+            orders.id::text LIKE $1 OR
+            orders.address LIKE $1 OR
+            orders.comment LIKE $1);
+        `,
+        [`%${searchValue}%`]
       );
 
       orders = getAllOrders.rows;
@@ -636,7 +666,8 @@ const getOrders = async (
             orders."customerId",
             orders."serviceManId",
             orders."createdBy",
-            status.name as "statusName"
+            status.name as "statusName",
+            customers."fullName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
           LEFT JOIN
@@ -647,9 +678,17 @@ const getOrders = async (
             "${process.env.DB_NAME}"."users" as users
           ON
             orders."serviceManId" = users.id
+          LEFT JOIN
+            "${process.env.DB_NAME}"."customers" as customers
+          ON
+            orders."customerId" = customers.id
           WHERE
             orders."serviceManId" = $3 AND
-            orders."isActive" = true
+            orders."isActive" = true AND
+            (customers."fullName" LIKE $4 OR
+            orders.id::text LIKE $4 OR
+            orders.address LIKE $4 OR
+            orders.comment LIKE $4)
           ORDER BY
             orders.id DESC
           LIMIT
@@ -657,7 +696,28 @@ const getOrders = async (
           OFFSET
             $2;
         `,
-        [count, offset, userId]
+        [count, offset, userId, `%${searchValue}%`]
+      );
+
+      total = await db.query(
+        `
+          SELECT
+            count(*) AS total
+          FROM
+            "${process.env.DB_NAME}"."orders"
+          LEFT JOIN
+            "${process.env.DB_NAME}"."customers" as customers
+          ON
+            orders."customerId" = customers.id
+          WHERE
+            orders."serviceManId" = $1 AND
+            orders."isActive" = true AND
+            (customers."fullName" LIKE $2 OR
+            orders.id::text LIKE $2 OR
+            orders.address LIKE $2 OR
+            orders.comment LIKE $2);
+        `,
+        [userId, `%${searchValue}%`]
       );
 
       orders = getUserOrders.rows;
@@ -746,22 +806,9 @@ const getOrders = async (
       orders[i].createdBy = createdBy.rows.length > 0 ? createdBy.rows[0] : {};
     }
 
-    const total = await db.query(
-      `
-        SELECT
-          count(*) AS total
-        FROM
-          "${process.env.DB_NAME}"."orders"
-        WHERE
-          "serviceManId" = $1 AND
-          "isActive" = true;
-      `,
-      [userId]
-    );
-
     response.json({
       orders: orders,
-      total: +total.rows[0].total,
+      total: +total.rows[0]?.total || 0,
     });
   } catch (error: any) {
     response.status(404).json({
@@ -818,6 +865,7 @@ const getOrderActions = async (
       SELECT
         statuses.code as "code",
         statuses.action as "action",
+        statuses."commentRequired" as "commentRequired",
         statuses."availableOn" as "availableOn"
       FROM
         "${process.env.DB_NAME}"."dictOrderStatuses" as statuses
@@ -827,6 +875,14 @@ const getOrderActions = async (
       `,
       [order.rows[0]?.statusCode]
     );
+
+    if (
+      availableStatuses.rows[0]?.availableOn === 'SERVICE_DONE' &&
+      user?.roleCode !== 'SUPER_ADMIN' &&
+      user?.roleCode !== 'ADMIN'
+    ) {
+      return response.json([]);
+    }
 
     response.json(availableStatuses.rows);
   } catch (error: any) {
@@ -846,7 +902,7 @@ const executeAction = async (
   next: NextFunction
 ) => {
   try {
-    const { orderId, code } = request.body;
+    const { orderId, code, comment } = request.body;
     const user = request.user || null;
 
     const order = await db.query(
@@ -896,7 +952,87 @@ const executeAction = async (
       [code, orderId]
     );
 
+    const insertOrderHistory = await db.query(
+      `
+        INSERT INTO
+          "service-crm"."ordersStatusHistory" ("orderId", "status", "comment", "createdBy")
+        VALUES($1, (
+          SELECT
+            status.id
+          FROM
+            "service-crm"."dictOrderStatuses" as status
+          WHERE
+            status.code = $2
+        ), $3, $4)
+        RETURNING
+          *;
+      `,
+      [orderId, code, comment, user?.id || 1]
+    );
+
     response.json(changeStatus.rows);
+  } catch (error: any) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+// @desc   get order status history
+// @route  POST /api/orders/:id/history
+// @access Private
+const getOrderStatusHistory = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = request.params;
+
+    const statusHistory = await db.query(
+      `
+        SELECT
+          "statusHistory".id,
+          "statusHistory"."orderId",
+          "statusHistory".status,
+          "statusHistory".comment,
+          "statusHistory"."createdDate",
+          "statusHistory"."createdBy",
+          status.name as "statusName",
+          users."fullName" as "createdFullName"
+        FROM
+          "${process.env.DB_NAME}"."ordersStatusHistory" as "statusHistory"
+        LEFT JOIN
+          "${process.env.DB_NAME}"."dictOrderStatuses" as "status"
+        ON
+          status.id = "statusHistory".status
+        LEFT JOIN
+          "${process.env.DB_NAME}"."users" as "users"
+        ON
+          users.id = "statusHistory"."createdBy"
+        WHERE
+          "statusHistory"."orderId" = $1
+        ORDER BY
+          "statusHistory".id DESC;
+      `,
+      [id]
+    );
+
+    const result = statusHistory.rows.reduce((acc, item) => {
+      acc.push({
+        id: item.id,
+        orderId: item.orderId,
+        createdBy: item.createdFullName,
+        status: item.statusName,
+        comment: item.comment,
+        createdDate: item.createdDate,
+      });
+
+      return acc;
+    }, []);
+
+    response.json(result);
   } catch (error: any) {
     response.status(404).json({
       message: error.message,
@@ -912,4 +1048,5 @@ export {
   getOrderById,
   getOrderActions,
   executeAction,
+  getOrderStatusHistory,
 };

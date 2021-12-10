@@ -22,10 +22,13 @@ import { getOrders } from '../../../store/actions/ordersActions';
 import AddIcon from '@material-ui/icons/Add';
 import history from '../../../utils/history';
 import { OrderItemModel } from '../../../models/orderModel';
+import { SET_ORDERS_SEARCH_FIELD } from '../../../store/storeConstants/ordersConstants';
 
 const OrdersList = () => {
   const dispatch = useDispatch();
-  const [searchField, setSearchField] = useState('');
+  const searchField = useSelector(
+    (store: StoreModel) => store.ordersStore.searchValue
+  );
   const [pagination, setPagination] = useState({
     currentPage: 0,
     rowsPerPage: 10,
@@ -39,17 +42,24 @@ const OrdersList = () => {
   const total = useSelector((store: StoreModel) => store.ordersStore.total);
 
   useEffect(() => {
-    dispatch(getOrders(pagination.currentPage, pagination.rowsPerPage));
+    dispatch(
+      getOrders(pagination.currentPage, pagination.rowsPerPage, searchField)
+    );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSearch = () => {
-    console.log('search');
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: SET_ORDERS_SEARCH_FIELD,
+      payload: event.target.value,
+    });
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchField(event.target.value);
+  const handleSearch = () => {
+    dispatch(
+      getOrders(pagination.currentPage, pagination.rowsPerPage, searchField)
+    );
   };
 
   const handleChangeRowsPerPage = (

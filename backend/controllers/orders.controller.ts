@@ -2,6 +2,7 @@ import { NextFunction, Response } from 'express';
 import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 import dotenv from 'dotenv';
+import format from 'pg-format';
 
 dotenv.config();
 
@@ -576,7 +577,9 @@ const getOrders = async (
   next: NextFunction
 ) => {
   try {
-    const { page, count, searchValue } = request.query;
+    const { page, count, searchValue, sort = 'id,desc' } = request.query;
+    const sortBy = (<string>sort).split(',')[0];
+    const order = (<string>sort).split(',')[1];
     const roleCode = request.user?.roleCode || '';
     const userId = request.user?.id || '';
 
@@ -606,7 +609,8 @@ const getOrders = async (
             orders."serviceManId",
             orders."createdBy",
             status.name as "statusName",
-            customers."fullName"
+            customers."fullName",
+            users."fullName" as "serviceManFullName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
           LEFT JOIN
@@ -617,6 +621,10 @@ const getOrders = async (
             "${process.env.DB_NAME}"."customers" as customers
           ON
             orders."customerId" = customers.id
+          LEFT JOIN
+            "${process.env.DB_NAME}"."users" as users
+          ON
+            orders."serviceManId" = users.id
           WHERE
             orders."isActive" = true AND
             (customers."fullName" LIKE $3 OR
@@ -624,7 +632,7 @@ const getOrders = async (
             orders.address LIKE $3 OR
             orders.comment LIKE $3)
           ORDER BY
-            orders.id DESC
+            ${format('%I', sortBy)} ${format('%s', order)}
           LIMIT
             $1
           OFFSET
@@ -667,7 +675,8 @@ const getOrders = async (
             orders."serviceManId",
             orders."createdBy",
             status.name as "statusName",
-            customers."fullName"
+            customers."fullName",
+            users."fullName" as "serviceManFullName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
           LEFT JOIN
@@ -690,7 +699,7 @@ const getOrders = async (
             orders.address LIKE $4 OR
             orders.comment LIKE $4)
           ORDER BY
-            orders.id DESC
+            ${format('%I', sortBy)} ${format('%s', order)}
           LIMIT
             $1
           OFFSET
@@ -870,10 +879,10 @@ const getOrderActions = async (
       FROM
         "${process.env.DB_NAME}"."dictOrderStatuses" as statuses
       WHERE
-        statuses."availableOn" = $1 AND
+        statuses."availableOn" LIKE $1 AND
         statuses."isActive" = true;
       `,
-      [order.rows[0]?.statusCode]
+      [`%${order.rows[0]?.statusCode}%`]
     );
 
     if (

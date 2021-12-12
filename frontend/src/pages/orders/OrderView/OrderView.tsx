@@ -76,8 +76,8 @@ const OrderView = () => {
 
   const handleChangeModal = () => {
     setModalData({
-      ...modalData,
       open: !modalData.open,
+      comment: '',
     });
   };
 
@@ -208,11 +208,6 @@ const OrderView = () => {
         getOrderData();
         getOrderActions();
         getOrderStatusHistory();
-
-        setModalData({
-          ...modalData,
-          comment: '',
-        });
 
         dispatch({
           type: ADD_NOTIFY,

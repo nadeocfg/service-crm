@@ -5,16 +5,22 @@ import { SET_ORDERS } from '../storeConstants/ordersConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import { setLoader } from './mainActions';
 import history from '../../utils/history';
+import { SortModel } from '../../models/orderModel';
 
 export const getOrders =
-  (page: number = 0, count: number = 10, searchField: string = '') =>
+  (
+    page: number = 0,
+    count: number = 10,
+    searchField: string = '',
+    sort: SortModel = { name: 'id', order: 'desc' }
+  ) =>
   async (dispatch: Dispatch<any>) => {
     try {
       dispatch(setLoader(true));
 
       api
         .get(
-          `/api/orders?page=${page}&count=${count}&searchValue=${searchField}`
+          `/api/orders?page=${page}&count=${count}&searchValue=${searchField}&sort=${sort.name},${sort.order}`
         )
         .then((res) => {
           dispatch({

@@ -207,3 +207,59 @@ WHERE
   "statusHistory"."orderId" = 27
 ORDER BY
   "statusHistory".id DESC;
+
+SELECT
+  statuses.code as "code",
+  statuses.action as "action",
+  statuses."commentRequired" as "commentRequired",
+  statuses."availableOn" as "availableOn"
+FROM
+  "service-crm"."dictOrderStatuses" as statuses
+WHERE
+  statuses."availableOn" LIKE '%ON_HOLD%' AND
+  statuses."isActive" = true;
+
+SELECT
+  orders.id,
+  orders.address,
+  orders."createdDate",
+  orders."updatedDate",
+  orders.comment,
+  orders."customerId",
+  orders."serviceManId",
+  orders."createdBy",
+  status.name as "statusName",
+  customers."fullName"
+FROM
+  "service-crm"."orders" as orders
+LEFT JOIN
+  "service-crm"."dictOrderStatuses" as status
+ON
+  orders.status = status.id
+LEFT JOIN
+  "service-crm"."customers" as customers
+ON
+  orders."customerId" = customers.id
+WHERE
+  orders."isActive" = true AND
+  (customers."fullName" LIKE '%%' OR
+  orders.id::text LIKE '%%' OR
+  orders.address LIKE '%%' OR
+  orders.comment LIKE '%%')
+ORDER BY
+  name desc
+LIMIT
+  10
+OFFSET
+  0;
+
+SELECT
+  *
+FROM
+  "service-crm"."orders" as orders
+ORDER BY
+  status DESC
+LIMIT
+  5
+OFFSET
+  0;

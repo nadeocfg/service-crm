@@ -62,6 +62,24 @@ const createOrder = async (
       ]
     );
 
+    const insertOrderHistory = await db.query(
+      `
+        INSERT INTO
+          "service-crm"."ordersStatusHistory" ("orderId", "status", "comment", "createdBy")
+        VALUES($1, (
+          SELECT
+            status.id
+          FROM
+            "service-crm"."dictOrderStatuses" as status
+          WHERE
+            status.code = $2
+        ), $3, $4)
+        RETURNING
+          *;
+      `,
+      [insertOrder.rows[0].id, 'CREATED', comment, createdBy]
+    );
+
     let partsTotal: number = 0;
     for (let i = 0; i < parts.length; i += 1) {
       const { price, soldQuantity, id, monthsOfGuarantee, quantity } = parts[i];
@@ -81,6 +99,18 @@ const createOrder = async (
           id,
           monthsOfGuarantee,
         ]
+      );
+
+      const subQuantity = await db.query(
+        `
+          UPDATE
+            "${process.env.DB_NAME}"."dictParts"
+          SET
+            quantity = quantity - $1
+          WHERE
+            id = $2;
+        `,
+        [soldQuantity, id]
       );
 
       partsTotal += price * soldQuantity;
@@ -240,6 +270,20 @@ const updateOrder = async (
       [orderId]
     );
 
+    for (let i = 0; i < disableOldSoldParts.rows.length; i += 1) {
+      const returnQuantity = await db.query(
+        `
+          UPDATE
+            "${process.env.DB_NAME}"."dictParts"
+          SET
+            quantity = quantity + $1
+          WHERE
+            id = $2;
+        `,
+        [disableOldSoldParts.rows[i].quantity, disableOldSoldParts.rows[i].id]
+      );
+    }
+
     let partsTotal: number = 0;
     for (let i = 0; i < parts.length; i += 1) {
       const { price, soldQuantity, id, monthsOfGuarantee, quantity } = parts[i];
@@ -259,6 +303,18 @@ const updateOrder = async (
           id,
           monthsOfGuarantee,
         ]
+      );
+
+      const subQuantity = await db.query(
+        `
+          UPDATE
+            "${process.env.DB_NAME}"."dictParts"
+          SET
+            quantity = quantity - $1
+          WHERE
+            id = $2;
+        `,
+        [soldQuantity, id]
       );
 
       partsTotal += price * soldQuantity;
@@ -859,6 +915,10 @@ const getOrderActions = async (
       [id]
     );
 
+    if (order.rows[0]?.statusCode === 'DONE') {
+      return response.json([]);
+    }
+
     if (
       order.rows[0]?.serviceManId !== user?.id &&
       user?.roleCode !== 'SUPER_ADMIN' &&
@@ -871,16 +931,16 @@ const getOrderActions = async (
 
     const availableStatuses = await db.query(
       `
-      SELECT
-        statuses.code as "code",
-        statuses.action as "action",
-        statuses."commentRequired" as "commentRequired",
-        statuses."availableOn" as "availableOn"
-      FROM
-        "${process.env.DB_NAME}"."dictOrderStatuses" as statuses
-      WHERE
-        statuses."availableOn" LIKE $1 AND
-        statuses."isActive" = true;
+        SELECT
+          statuses.code as "code",
+          statuses.action as "action",
+          statuses."commentRequired" as "commentRequired",
+          statuses."availableOn" as "availableOn"
+        FROM
+          "${process.env.DB_NAME}"."dictOrderStatuses" as statuses
+        WHERE
+          statuses."availableOn" LIKE $1 AND
+          statuses."isActive" = true;
       `,
       [`%${order.rows[0]?.statusCode}%`]
     );
@@ -978,6 +1038,39 @@ const executeAction = async (
       `,
       [orderId, code, comment, user?.id || 1]
     );
+
+    // Return quantity, if code === 'CANCELED'
+    if (code === 'CANCELED') {
+      const disableOldSoldParts = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."soldParts"
+          WHERE
+            "orderId" = $1 AND
+            "isActive" = true;
+        `,
+        [orderId]
+      );
+
+      for (let i = 0; i < disableOldSoldParts.rows.length; i += 1) {
+        const returnQuantity = await db.query(
+          `
+            UPDATE
+              "${process.env.DB_NAME}"."dictParts"
+            SET
+              quantity = quantity + $1
+            WHERE
+              id = $2;
+          `,
+          [
+            disableOldSoldParts.rows[i].quantity,
+            disableOldSoldParts.rows[i].partId,
+          ]
+        );
+      }
+    }
 
     response.json(changeStatus.rows);
   } catch (error: any) {

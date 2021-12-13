@@ -209,6 +209,8 @@ const OrderView = () => {
         getOrderActions();
         getOrderStatusHistory();
 
+        setActions([]);
+
         dispatch({
           type: ADD_NOTIFY,
           payload: {

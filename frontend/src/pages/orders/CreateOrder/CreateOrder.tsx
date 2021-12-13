@@ -170,6 +170,15 @@ const CreateOrder = () => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (type === 'parts') {
         const partsArr = [...orderData.parts];
+
+        if (+event.target.value < 1) {
+          event.target.value = '1';
+        }
+
+        if (+event.target.value > (partsArr[index].quantity || 1)) {
+          event.target.value = partsArr[index].quantity + '' || '1';
+        }
+
         partsArr[index].soldQuantity = event.target.value;
 
         setOrderData({

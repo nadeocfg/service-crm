@@ -263,3 +263,36 @@ LIMIT
   5
 OFFSET
   0;
+
+UPDATE
+  "service-crm"."dictParts"
+SET
+  quantity = quantity - 2
+WHERE
+  id = 2;
+
+SELECT
+  statuses.code as "code",
+  statuses.action as "action",
+  statuses."commentRequired" as "commentRequired",
+  statuses."availableOn" as "availableOn"
+FROM
+  "service-crm"."dictOrderStatuses" as statuses
+WHERE
+  statuses."availableOn" LIKE '%DONE%' AND
+  statuses."isActive" = true;
+
+SELECT
+  *
+FROM
+  "service-crm"."soldParts"
+WHERE
+  "orderId" = 38 AND
+  "isActive" = true;
+
+UPDATE
+  "service-crm"."dictParts"
+SET
+  quantity = quantity + 5
+WHERE
+  id = 4;

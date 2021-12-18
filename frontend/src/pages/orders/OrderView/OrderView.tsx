@@ -280,6 +280,12 @@ const OrderView = () => {
                 secondary={'Адрес'}
               />
             </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={getPhoneLink(orderData.phone)}
+                secondary={'Телефон'}
+              />
+            </ListItem>
           </List>
         </CardContent>
       </Card>

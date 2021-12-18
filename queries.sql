@@ -25,8 +25,11 @@ GRANT USAGE ON TABLES TO "service-crm";
 grant all privileges on database "service-crm" to "service-crm";
 
 ---------------------- Выдать доступы пользователю БД к таблицам ----------------
+
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "service-crm" TO "service-crm";
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "service-crm" TO "service-crm";
+
+---------------------------------------------------------------------------------
 
 SELECT
   users."percentFromVisit"
@@ -296,3 +299,17 @@ SET
   quantity = quantity + 5
 WHERE
   id = 4;
+
+SELECT
+  *
+FROM
+  "service-crm"."utils"
+WHERE
+  name = 'paidOutTerm';
+
+UPDATE
+  "service-crm".orders
+SET
+  "doneDate" = '2021-11-24 12:09:51.494406 +00:00'
+WHERE
+  status = (SELECT id FROM "service-crm"."dictOrderStatuses" WHERE code = 'DONE')

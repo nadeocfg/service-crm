@@ -44,7 +44,8 @@ const getPaidsByUser = async (
         `
           SELECT
             paids.*,
-            users."fullName" as "fullName"
+            users."fullName" as "fullName",
+            orders."doneDate"
           FROM
             "${process.env.DB_NAME}"."serviceManPaidOuts" as paids
           LEFT JOIN
@@ -83,7 +84,8 @@ const getPaidsByUser = async (
         `
           SELECT
             paids.*,
-            users."fullName" as "fullName"
+            users."fullName" as "fullName",
+            orders."doneDate"
           FROM
             "${process.env.DB_NAME}"."serviceManPaidOuts" as paids
           LEFT JOIN
@@ -122,6 +124,18 @@ const getPaidsByUser = async (
       );
     }
 
+    const getPaidOutTerm = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."utils"
+        WHERE
+          name = $1;
+      `,
+      ['paidOutTerm']
+    );
+
     const resultArr = getPaidsByUser.rows.reduce((acc, item) => {
       acc.push({
         id: item.id,
@@ -133,7 +147,10 @@ const getPaidsByUser = async (
         createdDate: item.createdDate,
         isPaid: item.isPaid,
         canBePaid:
-          moment(new Date()).diff(moment(item.updatedDate), 'days') >= 15,
+          moment(new Date()).diff(
+            moment(item.doneDate || new Date()),
+            'days'
+          ) >= (getPaidOutTerm.rows[0].value || 15),
       });
 
       return acc;

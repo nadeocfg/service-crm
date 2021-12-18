@@ -668,8 +668,10 @@ const getOrders = async (
             orders."customerId",
             orders."serviceManId",
             orders."createdBy",
+            orders."phone",
             status.name as "statusName",
             customers."fullName",
+            customers."boilerSerial",
             users."fullName" as "serviceManFullName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
@@ -691,6 +693,7 @@ const getOrders = async (
             orders.id::text LIKE $3 OR
             LOWER(orders.address) LIKE $3 OR
             LOWER(users."fullName") LIKE $3 OR
+            LOWER(customers."boilerSerial") LIKE $3 OR
             LOWER(orders.comment) LIKE $3)
           ORDER BY
             ${format('%I', sortBy)} ${format('%s', order)}
@@ -740,8 +743,10 @@ const getOrders = async (
             orders."customerId",
             orders."serviceManId",
             orders."createdBy",
+            orders."phone",
             status.name as "statusName",
             customers."fullName",
+            customers."boilerSerial",
             users."fullName" as "serviceManFullName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
@@ -764,6 +769,7 @@ const getOrders = async (
             orders.id::text LIKE $4 OR
             LOWER(orders.address) LIKE $4 OR
             LOWER(users."fullName") LIKE $4 OR
+            LOWER(customers."boilerSerial") LIKE $3 OR
             LOWER(orders.comment) LIKE $4)
           ORDER BY
             ${format('%I', sortBy)} ${format('%s', order)}
@@ -1029,6 +1035,7 @@ const executeAction = async (
               status.code = $1
           ),
           "updatedDate" = NOW()
+          ${code === 'DONE' ? ', "doneDate" = NOW()' : ''}
         WHERE
           orders.id = $2
         RETURNING

@@ -168,6 +168,14 @@ const OrdersList = () => {
                   sortBy="fullName"
                 />
               </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Серийный номер"
+                  sortBy="boilerSerial"
+                />
+              </TableCell>
               <TableCell>Адрес</TableCell>
               <TableCell>
                 <TableSort
@@ -202,6 +210,7 @@ const OrdersList = () => {
               <TableRow key={order.id}>
                 <TableCell>{order.id}</TableCell>
                 <TableCell>{order.customer.fullName}</TableCell>
+                <TableCell>{order.customer.boilerSerial}</TableCell>
                 <TableCell>{order.address}</TableCell>
                 <TableCell>{formatDate(order.createdDate, true)}</TableCell>
                 <TableCell>{order.serviceMan.fullName}</TableCell>

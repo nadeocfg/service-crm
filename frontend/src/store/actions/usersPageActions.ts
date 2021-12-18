@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { Dispatch } from 'react';
+import { SortModel } from '../../models/orderModel';
 import { CreateUserDataModel } from '../../models/storeModel';
 import api from '../../utils/axiosMiddleware';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
@@ -13,6 +14,7 @@ export const getUsers =
   (
     page: number = 0,
     count: number = 10,
+    sort: SortModel = { name: 'id', order: 'desc' },
     searchValue?: string,
     roleCode?: string
   ) =>
@@ -25,6 +27,7 @@ export const getUsers =
         count,
         searchValue,
         roleCode,
+        sort: `${sort.name},${sort.order}`,
       };
 
       api

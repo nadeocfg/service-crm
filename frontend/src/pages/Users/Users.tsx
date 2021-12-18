@@ -20,6 +20,8 @@ import { formatDate } from '../../utils/formatDate';
 import React, { useEffect, useState } from 'react';
 import CreateUserModal from '../../components/modals/CreateUserModal';
 import history from '../../utils/history';
+import { SortModel } from '../../models/orderModel';
+import TableSort from '../../components/TableSort';
 
 const Users = () => {
   const dispatch = useDispatch();
@@ -40,6 +42,10 @@ const Users = () => {
     rowsPerPage: 10,
     rowsPerPageOptions: [10, 20, 50],
   });
+  const [sort, setSort] = useState<SortModel>({
+    name: 'id',
+    order: 'desc',
+  });
 
   useEffect(() => {
     handleSearch();
@@ -56,7 +62,7 @@ const Users = () => {
     });
 
     dispatch(
-      getUsers(pagination.currentPage, +event.target.value, searchField)
+      getUsers(pagination.currentPage, +event.target.value, sort, searchField)
     );
   };
 
@@ -66,12 +72,17 @@ const Users = () => {
       currentPage: page,
     });
 
-    dispatch(getUsers(page, pagination.rowsPerPage, searchField));
+    dispatch(getUsers(page, pagination.rowsPerPage, sort, searchField));
   };
 
   const handleSearch = () => {
     dispatch(
-      getUsers(pagination.currentPage, pagination.rowsPerPage, searchField)
+      getUsers(
+        pagination.currentPage,
+        pagination.rowsPerPage,
+        sort,
+        searchField
+      )
     );
   };
 
@@ -81,6 +92,25 @@ const Users = () => {
 
   const editUser = (id: number) => {
     history.push(`/edit-user/${id}`);
+  };
+
+  const handleChangeSort = (property: string) => {
+    setSort({
+      order: sort.order === 'desc' ? 'asc' : 'desc',
+      name: property,
+    });
+
+    dispatch(
+      getUsers(
+        pagination.currentPage,
+        pagination.rowsPerPage,
+        {
+          order: sort.order === 'desc' ? 'asc' : 'desc',
+          name: property,
+        },
+        searchField
+      )
+    );
   };
 
   return (
@@ -107,11 +137,46 @@ const Users = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Имя</TableCell>
-              <TableCell>Логин</TableCell>
-              <TableCell>Телефон</TableCell>
-              <TableCell>Роль</TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="ID"
+                  sortBy="id"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Имя"
+                  sortBy="fullName"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Логин"
+                  sortBy="login"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Телефон"
+                  sortBy="phone"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Роль"
+                  sortBy="roleId"
+                />
+              </TableCell>
               <TableCell>Дата обновления</TableCell>
               <TableCell></TableCell>
             </TableRow>

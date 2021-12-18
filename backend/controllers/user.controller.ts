@@ -5,6 +5,7 @@ import db from '../config/db';
 import generateJwt from '../utils/generateToken';
 import getSetString from '../utils/queryBuilders';
 import dotenv from 'dotenv';
+import format from 'pg-format';
 
 dotenv.config();
 
@@ -354,7 +355,15 @@ const findUsers = async (
   next: NextFunction
 ) => {
   try {
-    const { page, count, searchValue, roleCode } = request.body;
+    const {
+      page,
+      count,
+      searchValue,
+      roleCode,
+      sort = 'id,desc',
+    } = request.body;
+    const sortBy = (<string>sort).split(',')[0];
+    const order = (<string>sort).split(',')[1];
 
     if (roleCode) {
       const findRoleId = await db.query(
@@ -394,12 +403,11 @@ const findUsers = async (
             "${process.env.DB_NAME}".users
           WHERE
             ("isActive" = true AND "roleId" = $4) AND
-            (login LIKE $1 OR
-            "fullName" LIKE $1 OR
-            phone LIKE $1)
+            (LOWER("login") LIKE $1 OR
+            LOWER("fullName") LIKE $1 OR
+            LOWER("phone") LIKE $1)
           ORDER BY
-            "isActive" DESC,
-            id
+            ${format('%I', sortBy)} ${format('%s', order)}
           LIMIT
             $2
           OFFSET
@@ -416,11 +424,11 @@ const findUsers = async (
             "${process.env.DB_NAME}".users
           WHERE
             ("isActive" = true AND "roleId" = $2) AND
-            (login LIKE $1 OR
-            "fullName" LIKE $1 OR
-            phone LIKE $1)
+            (LOWER("login") LIKE $1 OR
+            LOWER("fullName") LIKE $1 OR
+            LOWER("phone") LIKE $1)
         `,
-        [`%${searchValue || ''}%`, findRoleId.rows[0].id]
+        [`%${searchValue || ''}%`.toLowerCase(), findRoleId.rows[0].id]
       );
 
       return response.json({
@@ -471,18 +479,18 @@ const findUsers = async (
             users."roleId" = roles.id
           ) as Users
         WHERE
-          login LIKE $1 OR
-          "fullName" LIKE $1 OR
-          phone LIKE $1
+          LOWER("login") LIKE $1 OR
+          id::text LIKE $1 OR
+          LOWER("fullName") LIKE $1 OR
+          LOWER("phone") LIKE $1
         ORDER BY
-          "isActive" DESC,
-          id
+          ${format('%I', sortBy)} ${format('%s', order)}
         LIMIT
           $2
         OFFSET
           $3;
       `,
-      [`%${searchValue || ''}%`, count, page * count]
+      [`%${searchValue || ''}%`.toLowerCase(), count, page * count]
     );
 
     const total = await db.query(
@@ -492,11 +500,11 @@ const findUsers = async (
         FROM
           "${process.env.DB_NAME}".users
         WHERE
-          login LIKE $1 OR
-          "fullName" LIKE $1 OR
-          phone LIKE $1
+          LOWER("login") LIKE $1 OR
+          LOWER("fullName") LIKE $1 OR
+          LOWER("phone") LIKE $1
       `,
-      [`%${searchValue || ''}%`]
+      [`%${searchValue || ''}%`.toLowerCase()]
     );
 
     response.json({

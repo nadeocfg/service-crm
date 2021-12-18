@@ -75,7 +75,8 @@ const Customers = () => {
       getCustomersList(
         pagination.currentPage,
         pagination.rowsPerPage,
-        searchField
+        searchField,
+        sort
       )
     );
 
@@ -94,7 +95,8 @@ const Customers = () => {
       getCustomersList(
         pagination.currentPage,
         pagination.rowsPerPage,
-        searchField
+        searchField,
+        sort
       )
     );
   };
@@ -108,7 +110,12 @@ const Customers = () => {
     });
 
     dispatch(
-      getCustomersList(pagination.currentPage, +event.target.value, searchField)
+      getCustomersList(
+        pagination.currentPage,
+        +event.target.value,
+        searchField,
+        sort
+      )
     );
   };
 
@@ -118,7 +125,7 @@ const Customers = () => {
       currentPage: page,
     });
 
-    dispatch(getCustomersList(page, pagination.rowsPerPage, searchField));
+    dispatch(getCustomersList(page, pagination.rowsPerPage, searchField, sort));
   };
 
   const handleChangeModal = (customer?: CustomerItemModel) => {
@@ -174,7 +181,8 @@ const Customers = () => {
           getCustomersList(
             pagination.currentPage,
             pagination.rowsPerPage,
-            searchField
+            searchField,
+            sort
           )
         );
       })

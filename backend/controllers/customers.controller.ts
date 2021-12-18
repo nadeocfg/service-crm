@@ -51,12 +51,12 @@ const getCustomersList = async (
         FROM
           "${process.env.DB_NAME}".customers
         WHERE
-          "fullName" LIKE $1 OR
-          phone LIKE $1 OR
-          address LIKE $1 OR
-          phone2 LIKE $1
+          LOWER("fullName") LIKE $1 OR
+          LOWER("phone") LIKE $1 OR
+          LOWER("address") LIKE $1 OR
+          LOWER("phone2") LIKE $1
       `,
-      [`%${searchValue || ''}%`]
+      [`%${searchValue || ''}%`.toLowerCase()]
     );
 
     response.json({

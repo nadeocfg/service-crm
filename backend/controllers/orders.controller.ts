@@ -460,6 +460,7 @@ const getOrderById = async (
           orders."customerId",
           orders."createdDate",
           orders."updatedDate",
+          orders.phone,
           statuses.name as "status"
         FROM
           "${process.env.DB_NAME}"."orders" as orders
@@ -711,14 +712,19 @@ const getOrders = async (
             "${process.env.DB_NAME}"."customers" as customers
           ON
             orders."customerId" = customers.id
+          LEFT JOIN
+            "${process.env.DB_NAME}"."users" as users
+          ON
+            orders."serviceManId" = users.id
           WHERE
             orders."isActive" = true AND
-            (customers."fullName" LIKE $1 OR
+            (LOWER(customers."fullName") LIKE $1 OR
             orders.id::text LIKE $1 OR
-            orders.address LIKE $1 OR
-            orders.comment LIKE $1);
+            LOWER(orders.address) LIKE $1 OR
+            LOWER(users."fullName") LIKE $1 OR
+            LOWER(orders.comment) LIKE $1);
         `,
-        [`%${searchValue}%`]
+        [`%${searchValue}%`.toLowerCase()]
       );
 
       orders = getAllOrders.rows;
@@ -777,17 +783,22 @@ const getOrders = async (
             "${process.env.DB_NAME}"."orders"
           LEFT JOIN
             "${process.env.DB_NAME}"."customers" as customers
+          LEFT JOIN
+            "${process.env.DB_NAME}"."users" as users
+          ON
+            orders."serviceManId" = users.id
           ON
             orders."customerId" = customers.id
           WHERE
             orders."serviceManId" = $1 AND
             orders."isActive" = true AND
-            (customers."fullName" LIKE $2 OR
+            (LOWER(customers."fullName") LIKE $2 OR
             orders.id::text LIKE $2 OR
-            orders.address LIKE $2 OR
-            orders.comment LIKE $2);
+            LOWER(orders.address) LIKE $2 OR
+            LOWER(users."fullName") LIKE $2 OR
+            LOWER(orders.comment) LIKE $2);
         `,
-        [userId, `%${searchValue}%`]
+        [userId, `%${searchValue}%`.toLowerCase()]
       );
 
       orders = getUserOrders.rows;

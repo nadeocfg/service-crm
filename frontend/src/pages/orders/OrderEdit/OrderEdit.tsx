@@ -188,7 +188,7 @@ const OrderEdit = () => {
   };
 
   const getServiceMan = (searchValue: string) => {
-    dispatch(getUsers(0, 20, searchValue, 'SERVICE_MAN'));
+    dispatch(getUsers(0, 20, undefined, searchValue, 'SERVICE_MAN'));
 
     setCurrentSearch('serviceMan');
   };

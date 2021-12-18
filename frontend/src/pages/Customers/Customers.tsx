@@ -35,6 +35,8 @@ import ReactInputMask from 'react-input-mask';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import history from '../../utils/history';
 import { SET_ORDER_DATA } from '../../store/storeConstants/ordersConstants';
+import TableSort from '../../components/TableSort';
+import { SortModel } from '../../models/orderModel';
 
 const Customers = () => {
   const dispatch = useDispatch();
@@ -62,6 +64,10 @@ const Customers = () => {
     phone: '',
     phone2: '',
     boilerSerial: '',
+  });
+  const [sort, setSort] = useState<SortModel>({
+    name: 'id',
+    order: 'desc',
   });
 
   useEffect(() => {
@@ -216,6 +222,25 @@ const Customers = () => {
     return history.push('/orders/create');
   };
 
+  const handleChangeSort = (property: string) => {
+    setSort({
+      order: sort.order === 'desc' ? 'asc' : 'desc',
+      name: property,
+    });
+
+    dispatch(
+      getCustomersList(
+        pagination.currentPage,
+        pagination.rowsPerPage,
+        searchField,
+        {
+          order: sort.order === 'desc' ? 'asc' : 'desc',
+          name: property,
+        }
+      )
+    );
+  };
+
   return (
     <>
       <div className="search-row">
@@ -227,7 +252,7 @@ const Customers = () => {
         <InputBase
           value={searchField}
           onChange={handleSearchChange}
-          placeholder="Введите параметры поиска"
+          placeholder="Введите параметры поиска (ID, ФИО, Серийный номер, Телефон, Адрес, Email)"
           inputProps={{ 'aria-label': 'Введите параметры поиска' }}
         />
 
@@ -238,14 +263,70 @@ const Customers = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>ФИО</TableCell>
-              <TableCell>Серийный номер</TableCell>
-              <TableCell>Телефон</TableCell>
-              <TableCell>Телефон 2</TableCell>
-              <TableCell>Адрес</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Дата обновления</TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="ID"
+                  sortBy="id"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="ФИО"
+                  sortBy="fullName"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Серийный номер"
+                  sortBy="boilerSerial"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Телефон"
+                  sortBy="phone"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Телефон 2"
+                  sortBy="phone2"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Адрес"
+                  sortBy="address"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Email"
+                  sortBy="email"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Дата обновления"
+                  sortBy="updatedDate"
+                />
+              </TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHead>

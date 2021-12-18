@@ -1,11 +1,17 @@
 import { Dispatch } from 'react';
+import { SortModel } from '../../models/orderModel';
 import api from '../../utils/axiosMiddleware';
 import { SET_CUSTOMERS_LIST } from '../storeConstants/customersConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import { setLoader } from './mainActions';
 
 export const getCustomersList =
-  (page: number = 0, count: number = 10, searchValue?: string) =>
+  (
+    page: number = 0,
+    count: number = 10,
+    searchValue: string = '',
+    sort: SortModel = { name: 'id', order: 'desc' }
+  ) =>
   async (dispatch: Dispatch<any>) => {
     try {
       dispatch(setLoader(true));
@@ -14,6 +20,7 @@ export const getCustomersList =
         page,
         count,
         searchValue,
+        sort: `${sort.name},${sort.order}`,
       };
 
       api

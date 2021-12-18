@@ -686,10 +686,11 @@ const getOrders = async (
             orders."serviceManId" = users.id
           WHERE
             orders."isActive" = true AND
-            (customers."fullName" LIKE $3 OR
+            (LOWER(customers."fullName") LIKE $3 OR
             orders.id::text LIKE $3 OR
-            orders.address LIKE $3 OR
-            orders.comment LIKE $3)
+            LOWER(orders.address) LIKE $3 OR
+            LOWER(users."fullName") LIKE $3 OR
+            LOWER(orders.comment) LIKE $3)
           ORDER BY
             ${format('%I', sortBy)} ${format('%s', order)}
           LIMIT
@@ -697,7 +698,7 @@ const getOrders = async (
           OFFSET
             $2;
         `,
-        [count, offset, `%${searchValue || ''}%`]
+        [count, offset, `%${searchValue || ''}%`.toLowerCase()]
       );
 
       total = await db.query(
@@ -753,10 +754,11 @@ const getOrders = async (
           WHERE
             orders."serviceManId" = $3 AND
             orders."isActive" = true AND
-            (customers."fullName" LIKE $4 OR
+            (LOWER(customers."fullName") LIKE $4 OR
             orders.id::text LIKE $4 OR
-            orders.address LIKE $4 OR
-            orders.comment LIKE $4)
+            LOWER(orders.address) LIKE $4 OR
+            LOWER(users."fullName") LIKE $4 OR
+            LOWER(orders.comment) LIKE $4)
           ORDER BY
             ${format('%I', sortBy)} ${format('%s', order)}
           LIMIT
@@ -764,7 +766,7 @@ const getOrders = async (
           OFFSET
             $2;
         `,
-        [count, offset, userId, `%${searchValue}%`]
+        [count, offset, userId, `%${searchValue}%`.toLowerCase()]
       );
 
       total = await db.query(

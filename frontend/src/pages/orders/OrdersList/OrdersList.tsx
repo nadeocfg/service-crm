@@ -9,7 +9,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreModel } from '../../../models/storeModel';
@@ -24,6 +23,7 @@ import AddIcon from '@material-ui/icons/Add';
 import history from '../../../utils/history';
 import { OrderItemModel, SortModel } from '../../../models/orderModel';
 import { SET_ORDERS_SEARCH_FIELD } from '../../../store/storeConstants/ordersConstants';
+import TableSort from '../../../components/TableSort';
 
 const OrdersList = () => {
   const dispatch = useDispatch();
@@ -136,7 +136,7 @@ const OrdersList = () => {
         <InputBase
           value={searchField}
           onChange={handleSearchChange}
-          placeholder="Введите параметры поиска"
+          placeholder="Введите параметры поиска (ФИО клиента, ID, Адрес, ФИО специалиста, Комментарий)"
           inputProps={{ 'aria-label': 'Введите параметры поиска' }}
         />
 
@@ -153,52 +153,45 @@ const OrdersList = () => {
           <TableHead>
             <TableRow>
               <TableCell>
-                <TableSortLabel
-                  active={sort.name === 'id'}
-                  direction={sort.name === 'id' ? sort.order : 'asc'}
-                  onClick={() => handleChangeSort('id')}
-                >
-                  ID
-                </TableSortLabel>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="ID"
+                  sortBy="id"
+                />
               </TableCell>
               <TableCell>
-                <TableSortLabel
-                  active={sort.name === 'fullName'}
-                  direction={sort.name === 'fullName' ? sort.order : 'asc'}
-                  onClick={() => handleChangeSort('fullName')}
-                >
-                  ФИО клиента
-                </TableSortLabel>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="ФИО клиента"
+                  sortBy="fullName"
+                />
               </TableCell>
               <TableCell>Адрес</TableCell>
               <TableCell>
-                <TableSortLabel
-                  active={sort.name === 'createdDate'}
-                  direction={sort.name === 'createdDate' ? sort.order : 'asc'}
-                  onClick={() => handleChangeSort('createdDate')}
-                >
-                  Дата
-                </TableSortLabel>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Дата"
+                  sortBy="createdDate"
+                />
               </TableCell>
               <TableCell>
-                <TableSortLabel
-                  active={sort.name === 'serviceManFullName'}
-                  direction={
-                    sort.name === 'serviceManFullName' ? sort.order : 'asc'
-                  }
-                  onClick={() => handleChangeSort('serviceManFullName')}
-                >
-                  Фио специалиста
-                </TableSortLabel>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Фио специалиста"
+                  sortBy="serviceManFullName"
+                />
               </TableCell>
               <TableCell>
-                <TableSortLabel
-                  active={sort.name === 'name'}
-                  direction={sort.name === 'name' ? sort.order : 'asc'}
-                  onClick={() => handleChangeSort('name')}
-                >
-                  Статус
-                </TableSortLabel>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Статус"
+                  sortBy="name"
+                />
               </TableCell>
               <TableCell>Комментарий</TableCell>
               <TableCell></TableCell>

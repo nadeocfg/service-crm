@@ -2,6 +2,7 @@ import { NextFunction, Response } from 'express';
 import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 import dotenv from 'dotenv';
+import format from 'pg-format';
 
 dotenv.config();
 
@@ -14,7 +15,9 @@ const getCustomersList = async (
   next: NextFunction
 ) => {
   try {
-    const { page, count, searchValue } = request.body;
+    const { page, count, searchValue, sort = 'id,desc' } = request.body;
+    const sortBy = (<string>sort).split(',')[0];
+    const order = (<string>sort).split(',')[1];
 
     const customers = await db.query(
       `
@@ -24,18 +27,21 @@ const getCustomersList = async (
           "${process.env.DB_NAME}".customers
         WHERE
           "isActive" = true AND
-          ("fullName" LIKE $1 OR
-          phone LIKE $1 OR
-          address LIKE $1 OR
-          phone2 LIKE $1)
+          (LOWER("fullName") LIKE $1 OR
+          id::text LIKE $1 OR
+          LOWER("phone") LIKE $1 OR
+          LOWER("phone2") LIKE $1 OR
+          LOWER("boilerSerial") LIKE $1 OR
+          LOWER("email") LIKE $1 OR
+          LOWER("address") LIKE $1)
         ORDER BY
-          id DESC
+          ${format('%I', sortBy)} ${format('%s', order)}
         LIMIT
           $2
         OFFSET
           $3;
       `,
-      [`%${searchValue || ''}%`, count, page * count]
+      [`%${searchValue || ''}%`.toLowerCase(), count, page * count]
     );
 
     const total = await db.query(

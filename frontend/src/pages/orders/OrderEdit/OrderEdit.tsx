@@ -48,6 +48,7 @@ const OrderEdit = () => {
   const [orderData, setOrderData] = useState<OrderDataModel>({
     customer: {},
     address: '',
+    phone: '',
     serviceMan: {},
     comment: '',
     boiler: {},

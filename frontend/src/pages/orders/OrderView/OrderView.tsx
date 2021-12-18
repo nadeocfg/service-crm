@@ -45,6 +45,7 @@ const OrderView = () => {
   const [orderData, setOrderData] = useState<OrderDataModel>({
     customer: {},
     address: '',
+    phone: '',
     serviceMan: {},
     comment: '',
     visitPrice: 0,

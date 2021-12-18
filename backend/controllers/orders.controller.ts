@@ -19,6 +19,7 @@ const createOrder = async (
     const {
       customer,
       address,
+      phone,
       serviceMan,
       comment,
       parts,
@@ -35,6 +36,7 @@ const createOrder = async (
       'parts',
       'jobTypes',
       'boiler',
+      'phone',
     ];
 
     for (let i = 0; i < requiredKeys.length; i += 1) {
@@ -46,8 +48,8 @@ const createOrder = async (
     const insertOrder = await db.query(
       `
         INSERT INTO
-          "${process.env.DB_NAME}"."orders" ("customerId", "createdBy", address, "createdDate", "updatedDate", status, "serviceManId", comment, "visitPrice", "boilerId")
-        VALUES($1, $2, $3, NOW(), NOW(), 1, $4, $5, $6, $7)
+          "${process.env.DB_NAME}"."orders" ("customerId", "createdBy", address, "createdDate", "updatedDate", status, "serviceManId", comment, "visitPrice", "boilerId", phone)
+        VALUES($1, $2, $3, NOW(), NOW(), 1, $4, $5, $6, $7, $8)
         RETURNING
           *;
       `,
@@ -59,6 +61,7 @@ const createOrder = async (
         comment,
         visitPrice,
         boiler.id,
+        phone,
       ]
     );
 

@@ -1,7 +1,10 @@
 import { Dispatch } from 'react';
 import { OrderDataModel } from '../../models/storeModel';
 import api from '../../utils/axiosMiddleware';
-import { SET_ORDERS } from '../storeConstants/ordersConstants';
+import {
+  CLEAR_ORDER_DATA,
+  SET_ORDERS,
+} from '../storeConstants/ordersConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import { setLoader } from './mainActions';
 import history from '../../utils/history';
@@ -72,6 +75,10 @@ export const createOrder =
               message: 'Заказ успешно создан',
               type: 'success',
             },
+          });
+
+          dispatch({
+            type: CLEAR_ORDER_DATA,
           });
 
           history.push('/orders');

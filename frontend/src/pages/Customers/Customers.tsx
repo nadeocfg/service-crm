@@ -32,6 +32,9 @@ import api from '../../utils/axiosMiddleware';
 import { setLoader } from '../../store/actions/mainActions';
 import { ADD_NOTIFY } from '../../store/storeConstants/snackbarConstants';
 import ReactInputMask from 'react-input-mask';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import history from '../../utils/history';
+import { SET_ORDER_DATA } from '../../store/storeConstants/ordersConstants';
 
 const Customers = () => {
   const dispatch = useDispatch();
@@ -185,6 +188,34 @@ const Customers = () => {
       });
   };
 
+  const createOrder = (customer: CustomerItemModel) => {
+    dispatch({
+      type: SET_ORDER_DATA,
+      payload: {
+        name: 'customer',
+        value: customer,
+      },
+    });
+
+    dispatch({
+      type: SET_ORDER_DATA,
+      payload: {
+        name: 'address',
+        value: customer.address,
+      },
+    });
+
+    dispatch({
+      type: SET_ORDER_DATA,
+      payload: {
+        name: 'phone',
+        value: customer.phone,
+      },
+    });
+
+    return history.push('/orders/create');
+  };
+
   return (
     <>
       <div className="search-row">
@@ -239,6 +270,12 @@ const Customers = () => {
                       onClick={() => handleChangeModal(customer)}
                     >
                       <EditIcon fontSize="inherit" />
+                    </IconButton>
+                    <IconButton
+                      aria-label="edit"
+                      onClick={() => createOrder(customer)}
+                    >
+                      <ShoppingCartIcon fontSize="inherit" />
                     </IconButton>
                   </TableCell>
                 )}

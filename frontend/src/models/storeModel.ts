@@ -182,6 +182,7 @@ export interface OrdersStoreModel {
   orders: OrderItemModel[];
   total: number;
   searchValue: string;
+  orderData: OrderDataModel;
 }
 
 export interface OrderStatusItemModel {
@@ -224,6 +225,7 @@ export interface CustomerItemModel {
 export interface OrderDataModel {
   customer: CustomerItemModel;
   address: string;
+  phone: string;
   serviceMan: UsersItemModel;
   comment: string;
   visitPrice: number;

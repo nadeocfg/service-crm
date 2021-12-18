@@ -23,13 +23,13 @@ const getCustomersList = async (
         FROM
           "${process.env.DB_NAME}".customers
         WHERE
-          "fullName" LIKE $1 OR
+          "isActive" = true AND
+          ("fullName" LIKE $1 OR
           phone LIKE $1 OR
           address LIKE $1 OR
-          phone2 LIKE $1
+          phone2 LIKE $1)
         ORDER BY
-          "isActive" DESC,
-          id
+          id DESC
         LIMIT
           $2
         OFFSET

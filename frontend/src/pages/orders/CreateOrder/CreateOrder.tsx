@@ -14,7 +14,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import AddIcon from '@material-ui/icons/Add';
 import {
   JobItemModel,
-  OrderDataModel,
   PartItemModel,
   StoreModel,
 } from '../../../models/storeModel';
@@ -29,6 +28,8 @@ import {
 import { getUsers } from '../../../store/actions/usersPageActions';
 import { formatSum } from '../../../utils/formatSum';
 import { getTotalSum } from '../../../utils/getOrderSum';
+import { SET_ORDER_DATA } from '../../../store/storeConstants/ordersConstants';
+import ReactInputMask from 'react-input-mask';
 
 const CreateOrder = () => {
   const [fetchFunction, setFetchFunction] = React.useState<any>(() => () => {});
@@ -42,16 +43,9 @@ const CreateOrder = () => {
   const [currentSearch, setCurrentSearch] = useState<
     'customer' | 'boiler' | 'serviceMan' | 'parts' | 'jobTypes'
   >('customer');
-  const [orderData, setOrderData] = useState<OrderDataModel>({
-    address: '',
-    comment: '',
-    customer: {},
-    jobTypes: [],
-    parts: [],
-    serviceMan: {},
-    boiler: {},
-    visitPrice: 5000,
-  });
+  const orderData = useSelector(
+    (store: StoreModel) => store.ordersStore.orderData
+  );
   const dispatch = useDispatch();
   const customersList = useSelector(
     (store: StoreModel) => store.customersStore.customers
@@ -91,38 +85,59 @@ const CreateOrder = () => {
 
   const onSelect = (name: string, value: any) => {
     if (name === 'customer') {
-      setOrderData({
-        ...orderData,
-        customer: value,
-        address: value.address,
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'customer',
+          value: value,
+        },
+      });
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'address',
+          value: value.address,
+        },
       });
     }
 
     if (name === 'boiler') {
-      setOrderData({
-        ...orderData,
-        boiler: value,
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'boiler',
+          value: value,
+        },
       });
     }
 
     if (name === 'parts') {
-      setOrderData({
-        ...orderData,
-        parts: [...orderData.parts, { ...value, soldQuantity: 1 }],
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'parts',
+          value: [...orderData.parts, { ...value, soldQuantity: 1 }],
+        },
       });
     }
 
     if (name === 'jobTypes') {
-      setOrderData({
-        ...orderData,
-        jobTypes: [...orderData.jobTypes, { ...value, soldQuantity: 1 }],
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'jobTypes',
+          value: [...orderData.jobTypes, { ...value, soldQuantity: 1 }],
+        },
       });
     }
 
     if (name === 'serviceMan') {
-      setOrderData({
-        ...orderData,
-        serviceMan: value,
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'serviceMan',
+          value: value,
+        },
       });
     }
   };
@@ -159,9 +174,12 @@ const CreateOrder = () => {
 
   const handleChange =
     (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setOrderData({
-        ...orderData,
-        [name]: event.target.value,
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: name,
+          value: event.target.value,
+        },
       });
     };
 
@@ -181,9 +199,12 @@ const CreateOrder = () => {
 
         partsArr[index].soldQuantity = event.target.value;
 
-        setOrderData({
-          ...orderData,
-          parts: [...partsArr],
+        dispatch({
+          type: SET_ORDER_DATA,
+          payload: {
+            name: 'parts',
+            value: [...partsArr],
+          },
         });
 
         return;
@@ -192,24 +213,33 @@ const CreateOrder = () => {
       const jobsArr = [...orderData.jobTypes];
       jobsArr[index].soldQuantity = event.target.value;
 
-      setOrderData({
-        ...orderData,
-        jobTypes: [...jobsArr],
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'jobTypes',
+          value: [...jobsArr],
+        },
       });
     };
 
   const removeItem = (id: number | undefined, type: string) => (event: any) => {
     if (type === 'parts') {
-      return setOrderData({
-        ...orderData,
-        parts: orderData.parts.filter((item) => item.id !== id),
+      return dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'parts',
+          value: orderData.parts.filter((item) => item.id !== id),
+        },
       });
     }
 
     if (type === 'jobs') {
-      return setOrderData({
-        ...orderData,
-        jobTypes: orderData.jobTypes.filter((item) => item.id !== id),
+      return dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'jobTypes',
+          value: orderData.jobTypes.filter((item) => item.id !== id),
+        },
       });
     }
   };
@@ -280,6 +310,19 @@ const CreateOrder = () => {
               onChange={handleChange('address')}
               required
             />
+
+            <ReactInputMask
+              mask="+7 (999) 999-99-99"
+              onChange={handleChange('phone')}
+              value={orderData.phone}
+            >
+              <TextField
+                className="input form__field"
+                label="Телефон"
+                variant="outlined"
+                required
+              />
+            </ReactInputMask>
 
             <TextField
               className="input form__field"

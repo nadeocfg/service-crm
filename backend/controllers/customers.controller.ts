@@ -59,6 +59,23 @@ const getCustomersList = async (
       [`%${searchValue || ''}%`.toLowerCase()]
     );
 
+    for (let i = 0; i < customers.rows.length; i += 1) {
+      const boiler = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."dictBoilers"
+          WHERE
+            "isActive" = true AND
+            id = $1
+        `,
+        [customers.rows[i].boilerId]
+      );
+
+      customers.rows[i].boiler = boiler.rows[0] || {};
+    }
+
     response.json({
       customers: customers.rows,
       total: +total.rows[0].total,
@@ -80,8 +97,16 @@ const createCustomer = async (
   next: NextFunction
 ) => {
   try {
-    const { address, email, createdBy, fullName, phone, phone2, boilerSerial } =
-      request.body;
+    const {
+      address,
+      email,
+      createdBy,
+      fullName,
+      phone,
+      phone2,
+      boilerSerial,
+      boiler,
+    } = request.body;
 
     const findExistingCustomer = await db.query(
       `SELECT id FROM "${process.env.DB_NAME}".customers WHERE "boilerSerial" = $1`,
@@ -97,12 +122,21 @@ const createCustomer = async (
     const insertCustomer = await db.query(
       `
         INSERT INTO
-          "${process.env.DB_NAME}".customers(address, email, "createdDate", "updatedDate", "createdBy", "fullName", phone, phone2, "boilerSerial")
-        VALUES($1, $2, NOW(), NOW(), $3, $4, $5, $6, $7)
+          "${process.env.DB_NAME}".customers(address, email, "createdDate", "updatedDate", "createdBy", "fullName", phone, phone2, "boilerSerial", "boilerId")
+        VALUES($1, $2, NOW(), NOW(), $3, $4, $5, $6, $7, $8)
         RETURNING
           *
         `,
-      [address, email, createdBy, fullName, phone, phone2, boilerSerial]
+      [
+        address,
+        email,
+        createdBy,
+        fullName,
+        phone,
+        phone2,
+        boilerSerial,
+        boiler.id,
+      ]
     );
 
     response.json(insertCustomer.rows[0]);
@@ -142,6 +176,7 @@ const updateCustomer = async (
       phone,
       phone2,
       boilerSerial,
+      boiler,
     } = request.body;
 
     const query = `
@@ -155,9 +190,10 @@ const updateCustomer = async (
         phone = $5,
         phone2 = $6,
         "boilerSerial" = $7,
+        "boilerId" = $8,
         "updatedDate" = NOW()
       WHERE
-        id = $8
+        id = $9
       RETURNING
         *
     `;
@@ -170,6 +206,7 @@ const updateCustomer = async (
       phone,
       phone2,
       boilerSerial,
+      boiler.id,
       id,
     ]);
 

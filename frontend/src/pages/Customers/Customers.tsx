@@ -37,6 +37,8 @@ import history from '../../utils/history';
 import { SET_ORDER_DATA } from '../../store/storeConstants/ordersConstants';
 import TableSort from '../../components/TableSort';
 import { SortModel } from '../../models/orderModel';
+import SelectModal from '../../components/modals/SelectModal';
+import { getAllBoilers } from '../../store/actions/dictsActions';
 
 const Customers = () => {
   const dispatch = useDispatch();
@@ -49,6 +51,9 @@ const Customers = () => {
   const total = useSelector((store: StoreModel) => store.customersStore.total);
   const userRoleCode = useSelector(
     (store: StoreModel) => store.userStore.authResponse.roleCode
+  );
+  const boilersList = useSelector(
+    (store: StoreModel) => store.dictsStore.dictBoilers.boilers
   );
   const [pagination, setPagination] = useState({
     currentPage: 0,
@@ -64,11 +69,13 @@ const Customers = () => {
     phone: '',
     phone2: '',
     boilerSerial: '',
+    boiler: {},
   });
   const [sort, setSort] = useState<SortModel>({
     name: 'id',
     order: 'desc',
   });
+  const [selectModal, setSelectModal] = useState(false);
 
   useEffect(() => {
     dispatch(
@@ -139,6 +146,7 @@ const Customers = () => {
         isActive: false,
         phone: '',
         phone2: '',
+        boiler: {},
       });
     }
 
@@ -227,6 +235,14 @@ const Customers = () => {
       },
     });
 
+    dispatch({
+      type: SET_ORDER_DATA,
+      payload: {
+        name: 'boiler',
+        value: customer.boiler,
+      },
+    });
+
     return history.push('/orders/create');
   };
 
@@ -247,6 +263,21 @@ const Customers = () => {
         }
       )
     );
+  };
+
+  const changeModal = () => {
+    setSelectModal(!selectModal);
+  };
+
+  const onSelect = (name: string, value: any) => {
+    setSelectedCustomer({
+      ...selectedCustomer,
+      boiler: value,
+    });
+  };
+
+  const getBoilers = (searchValue: string) => {
+    dispatch(getAllBoilers(0, 20, searchValue));
   };
 
   return (
@@ -295,6 +326,7 @@ const Customers = () => {
                   sortBy="boilerSerial"
                 />
               </TableCell>
+              <TableCell>Котел</TableCell>
               <TableCell>
                 <TableSort
                   sort={sort}
@@ -344,6 +376,7 @@ const Customers = () => {
                 <TableCell>{customer.id}</TableCell>
                 <TableCell>{customer.fullName}</TableCell>
                 <TableCell>{customer.boilerSerial}</TableCell>
+                <TableCell>{customer.boiler?.name || ''}</TableCell>
                 <TableCell>{customer.phone}</TableCell>
                 <TableCell>{customer.phone2}</TableCell>
                 <TableCell>{customer.address}</TableCell>
@@ -395,15 +428,6 @@ const Customers = () => {
           <DialogContent className="form">
             <TextField
               className="input form__field"
-              label="Адрес"
-              variant="outlined"
-              value={selectedCustomer.address}
-              onChange={handleChange('address')}
-              required
-            />
-
-            <TextField
-              className="input form__field"
               label="Email"
               variant="outlined"
               value={selectedCustomer.email}
@@ -422,10 +446,20 @@ const Customers = () => {
 
             <TextField
               className="input form__field"
-              label="Серийный номер 1"
+              label="Серийный номер"
               variant="outlined"
               value={selectedCustomer.boilerSerial}
               onChange={handleChange('boilerSerial')}
+              required
+            />
+
+            <TextField
+              className="input form__field"
+              label="Котел"
+              variant="outlined"
+              onClick={changeModal}
+              onKeyUp={changeModal}
+              value={selectedCustomer.boiler?.name || ''}
               required
             />
 
@@ -454,6 +488,15 @@ const Customers = () => {
               />
             </ReactInputMask>
 
+            <TextField
+              className="input form__field"
+              label="Адрес"
+              variant="outlined"
+              value={selectedCustomer.address}
+              onChange={handleChange('address')}
+              required
+            />
+
             <FormControlLabel
               className="input form__field form__field_checkbox"
               control={
@@ -477,6 +520,16 @@ const Customers = () => {
           </DialogActions>
         </form>
       </Dialog>
+
+      <SelectModal
+        open={selectModal}
+        handleChangeModal={changeModal}
+        onSelect={onSelect}
+        title={'Выберите котел'}
+        handleChange={getBoilers}
+        items={boilersList}
+        fieldName={'boiler'}
+      />
     </>
   );
 };

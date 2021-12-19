@@ -20,7 +20,7 @@ const CreateBoilerModal = () => {
     article: '',
     name: '',
     price: 0,
-    monthsOfGuarantee: 0,
+    daysOfGuarantee: 0,
     quantity: 0,
     price1: 0,
     price2: 0,
@@ -105,10 +105,10 @@ const CreateBoilerModal = () => {
 
             <TextField
               className="input form__field"
-              label="Гарантия (мес.)"
+              label="Гарантия (дни)"
               variant="outlined"
-              value={boilerData.monthsOfGuarantee}
-              onChange={handleChange('monthsOfGuarantee')}
+              value={boilerData.daysOfGuarantee}
+              onChange={handleChange('daysOfGuarantee')}
               type="number"
               required
             />

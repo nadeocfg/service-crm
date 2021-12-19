@@ -7,6 +7,6 @@ export interface SoldPartModel {
   partId: number;
   createdDate: string;
   updatedDate: string;
-  monthsOfGuarantee: number;
+  daysOfGuarantee: number;
   isActive: boolean;
 }

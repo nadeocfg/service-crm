@@ -85,11 +85,11 @@ const createOrder = async (
 
     let partsTotal: number = 0;
     for (let i = 0; i < parts.length; i += 1) {
-      const { price, soldQuantity, id, monthsOfGuarantee, quantity } = parts[i];
+      const { price, soldQuantity, id, daysOfGuarantee, quantity } = parts[i];
       const insertSoldPart = await db.query(
         `
           INSERT INTO
-            "${process.env.DB_NAME}"."soldParts" (price, quantity, sum, "orderId", "partId", "monthsOfGuarantee", "createdDate", "updatedDate")
+            "${process.env.DB_NAME}"."soldParts" (price, quantity, sum, "orderId", "partId", "daysOfGuarantee", "createdDate", "updatedDate")
           VALUES($1, $2, $3, $4, $5, $6, NOW(), NOW())
           RETURNING
             *;
@@ -100,7 +100,7 @@ const createOrder = async (
           price * soldQuantity,
           insertOrder.rows[0].id,
           id,
-          monthsOfGuarantee,
+          daysOfGuarantee,
         ]
       );
 
@@ -121,11 +121,11 @@ const createOrder = async (
 
     let jobTotal: number = 0;
     for (let i = 0; i < jobTypes.length; i += 1) {
-      const { id, price, soldQuantity, monthsOfGuarantee } = jobTypes[i];
+      const { id, price, soldQuantity, daysOfGuarantee } = jobTypes[i];
       const insertSoldJobTypes = await db.query(
         `
           INSERT INTO
-            "${process.env.DB_NAME}"."soldJobTypes" ("jobTypeId", price, quantity, sum, "orderId", "monthsOfGuarantee", "createdDate", "updatedDate")
+            "${process.env.DB_NAME}"."soldJobTypes" ("jobTypeId", price, quantity, sum, "orderId", "daysOfGuarantee", "createdDate", "updatedDate")
           VALUES($1, $2, $3, $4, $5, $6, NOW(), NOW())
           RETURNING
             *;
@@ -136,7 +136,7 @@ const createOrder = async (
           soldQuantity,
           price * soldQuantity,
           insertOrder.rows[0].id,
-          monthsOfGuarantee,
+          daysOfGuarantee,
         ]
       );
 
@@ -289,11 +289,11 @@ const updateOrder = async (
 
     let partsTotal: number = 0;
     for (let i = 0; i < parts.length; i += 1) {
-      const { price, soldQuantity, id, monthsOfGuarantee, quantity } = parts[i];
+      const { price, soldQuantity, id, daysOfGuarantee, quantity } = parts[i];
       const insertSoldPart = await db.query(
         `
           INSERT INTO
-            "${process.env.DB_NAME}"."soldParts" (price, quantity, sum, "orderId", "partId", "monthsOfGuarantee", "createdDate", "updatedDate")
+            "${process.env.DB_NAME}"."soldParts" (price, quantity, sum, "orderId", "partId", "daysOfGuarantee", "createdDate", "updatedDate")
           VALUES($1, $2, $3, $4, $5, $6, NOW(), NOW())
           RETURNING
             *;
@@ -304,7 +304,7 @@ const updateOrder = async (
           price * soldQuantity,
           updateOrder.rows[0].id,
           id,
-          monthsOfGuarantee,
+          daysOfGuarantee,
         ]
       );
 
@@ -340,11 +340,11 @@ const updateOrder = async (
 
     let jobTotal: number = 0;
     for (let i = 0; i < jobTypes.length; i += 1) {
-      const { id, price, soldQuantity, monthsOfGuarantee } = jobTypes[i];
+      const { id, price, soldQuantity, daysOfGuarantee } = jobTypes[i];
       const insertSoldJobTypes = await db.query(
         `
           INSERT INTO
-            "${process.env.DB_NAME}"."soldJobTypes" ("jobTypeId", price, quantity, sum, "orderId", "monthsOfGuarantee", "createdDate", "updatedDate")
+            "${process.env.DB_NAME}"."soldJobTypes" ("jobTypeId", price, quantity, sum, "orderId", "daysOfGuarantee", "createdDate", "updatedDate")
           VALUES($1, $2, $3, $4, $5, $6, NOW(), NOW())
           RETURNING
             *;
@@ -355,7 +355,7 @@ const updateOrder = async (
           soldQuantity,
           price * soldQuantity,
           updateOrder.rows[0].id,
-          monthsOfGuarantee,
+          daysOfGuarantee,
         ]
       );
 
@@ -813,75 +813,75 @@ const getOrders = async (
     for (let i = 0; i < orders.length; i += 1) {
       const orderJobs = await db.query(
         `
-            SELECT
-              *
-            FROM
-              "${process.env.DB_NAME}"."soldJobTypes"
-            WHERE
-              "orderId" = $1 AND
-              "isActive" = true
-            ORDER BY
-              id;
-          `,
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."soldJobTypes"
+          WHERE
+            "orderId" = $1 AND
+            "isActive" = true
+          ORDER BY
+            id;
+        `,
         [orders[i].id]
       );
 
       const orderParts = await db.query(
         `
-            SELECT
-              *
-            FROM
-              "${process.env.DB_NAME}"."soldParts"
-            WHERE
-              "orderId" = $1 AND
-              "isActive" = true
-            ORDER BY
-              id;
-          `,
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."soldParts"
+          WHERE
+            "orderId" = $1 AND
+            "isActive" = true
+          ORDER BY
+            id;
+        `,
         [orders[i].id]
       );
 
       const customer = await db.query(
         `
-            SELECT
-              *
-            FROM
-              "${process.env.DB_NAME}"."customers"
-            WHERE
-              "id" = $1;
-          `,
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."customers"
+          WHERE
+            "id" = $1;
+        `,
         [orders[i].customerId]
       );
 
       const serviceMan = await db.query(
         `
-            SELECT
-              id,
-              login,
-              phone,
-              "fullName",
-              "percentFromJob",
-              "percentFromParts",
-              "percentFromVisit"
-            FROM
-              "${process.env.DB_NAME}"."users"
-            WHERE
-              "id" = $1;
-          `,
+          SELECT
+            id,
+            login,
+            phone,
+            "fullName",
+            "percentFromJob",
+            "percentFromParts",
+            "percentFromVisit"
+          FROM
+            "${process.env.DB_NAME}"."users"
+          WHERE
+            "id" = $1;
+        `,
         [orders[i].serviceManId]
       );
 
       const createdBy = await db.query(
         `
-            SELECT
-              login,
-              "fullName",
-              phone
-            FROM
-              "${process.env.DB_NAME}"."users"
-            WHERE
-              "id" = $1;
-          `,
+          SELECT
+            login,
+            "fullName",
+            phone
+          FROM
+            "${process.env.DB_NAME}"."users"
+          WHERE
+            "id" = $1;
+        `,
         [orders[i].createdBy]
       );
 

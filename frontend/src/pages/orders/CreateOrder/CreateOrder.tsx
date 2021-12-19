@@ -340,19 +340,19 @@ const CreateOrder = () => {
 
             <TextField
               className="input form__field"
-              label="Комментарий"
-              variant="outlined"
-              value={orderData.comment}
-              onChange={handleChange('comment')}
-            />
-
-            <TextField
-              className="input form__field"
               label="Цена за визит"
               variant="outlined"
               value={orderData.visitPrice}
               type="number"
               onChange={handleChange('visitPrice')}
+            />
+
+            <TextField
+              className="input form__field"
+              label="Комментарий"
+              variant="outlined"
+              value={orderData.comment}
+              onChange={handleChange('comment')}
             />
           </CardContent>
         </Card>

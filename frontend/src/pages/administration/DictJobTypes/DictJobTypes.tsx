@@ -48,7 +48,7 @@ const DictBoilers = () => {
   const [selectedJob, setSelectedJob] = useState({
     code: 'DIAGNOSTIC',
     isActive: true,
-    monthsOfGuarantee: 0,
+    daysOfGuarantee: 0,
     name: 'Диагностика неисправности',
     price: 5000,
     price1: 4000,
@@ -151,7 +151,7 @@ const DictBoilers = () => {
               <TableCell>Цена 1</TableCell>
               <TableCell>Цена 2</TableCell>
               <TableCell>Цена 3</TableCell>
-              <TableCell>Гарантия (мес.)</TableCell>
+              <TableCell>Гарантия (дни)</TableCell>
               <TableCell>Дата обновления</TableCell>
               <TableCell></TableCell>
             </TableRow>
@@ -166,7 +166,7 @@ const DictBoilers = () => {
                 <TableCell>{job.price1}</TableCell>
                 <TableCell>{job.price2}</TableCell>
                 <TableCell>{job.price3}</TableCell>
-                <TableCell>{job.monthsOfGuarantee}</TableCell>
+                <TableCell>{job.daysOfGuarantee}</TableCell>
                 <TableCell>{formatDate(job.updatedDate || '', true)}</TableCell>
                 {(userRoleCode === 'SUPER_ADMIN' ||
                   userRoleCode === 'ADMIN') && (
@@ -225,10 +225,10 @@ const DictBoilers = () => {
 
             <TextField
               className="input form__field"
-              label="Гарантия (мес.)"
+              label="Гарантия (дни)"
               variant="outlined"
-              value={selectedJob.monthsOfGuarantee}
-              onChange={handleChange('monthsOfGuarantee')}
+              value={selectedJob.daysOfGuarantee}
+              onChange={handleChange('daysOfGuarantee')}
               type="number"
               required
             />

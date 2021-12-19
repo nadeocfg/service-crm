@@ -110,7 +110,7 @@ CREATE TABLE "service-crm"."dictBoilers" (
     article text NOT NULL,
     name text NOT NULL,
     price integer DEFAULT 0 NOT NULL,
-    "monthsOfGuarantee" integer DEFAULT 0 NOT NULL,
+    "daysOfGuarantee" integer DEFAULT 0 NOT NULL,
     quantity integer DEFAULT 0 NOT NULL,
     price1 integer,
     price2 integer,
@@ -165,7 +165,7 @@ CREATE TABLE "service-crm"."dictJobTypes" (
     "updatedDate" timestamp with time zone DEFAULT now(),
     price integer DEFAULT 0 NOT NULL,
     "createdBy" integer NOT NULL,
-    "monthsOfGuarantee" integer DEFAULT 0 NOT NULL,
+    "daysOfGuarantee" integer DEFAULT 0 NOT NULL,
     price1 integer,
     price2 integer,
     price3 integer,
@@ -253,7 +253,7 @@ CREATE TABLE "service-crm"."dictParts" (
     price integer DEFAULT 0 NOT NULL,
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
     "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
-    "monthsOfGuarantee" integer DEFAULT 0 NOT NULL,
+    "daysOfGuarantee" integer DEFAULT 0 NOT NULL,
     quantity integer DEFAULT 0 NOT NULL,
     price1 integer DEFAULT 0 NOT NULL,
     price2 integer DEFAULT 0 NOT NULL,
@@ -387,7 +387,7 @@ CREATE TABLE "service-crm"."soldBoilers" (
     sum integer DEFAULT 0 NOT NULL,
     "orderId" integer NOT NULL,
     "launchDate" date,
-    "monthsOfGuarantee" integer DEFAULT 0 NOT NULL,
+    "daysOfGuarantee" integer DEFAULT 0 NOT NULL,
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
     "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
     "isActive" boolean DEFAULT true NOT NULL
@@ -439,7 +439,7 @@ CREATE TABLE "service-crm"."soldJobTypes" (
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
     "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
     column_9 integer,
-    "monthsOfGuarantee" integer,
+    "daysOfGuarantee" integer,
     "isActive" boolean DEFAULT true NOT NULL
 );
 
@@ -488,7 +488,7 @@ CREATE TABLE "service-crm"."soldParts" (
     "partId" integer NOT NULL,
     "createdDate" timestamp with time zone DEFAULT now() NOT NULL,
     "updatedDate" timestamp with time zone DEFAULT now() NOT NULL,
-    "monthsOfGuarantee" integer DEFAULT 0 NOT NULL,
+    "daysOfGuarantee" integer DEFAULT 0 NOT NULL,
     "isActive" boolean DEFAULT true NOT NULL
 );
 
@@ -658,7 +658,7 @@ COPY "service-crm".customers (id, address, email, "createdDate", "updatedDate", 
 -- Data for Name: dictBoilers; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."dictBoilers" (id, article, name, price, "monthsOfGuarantee", quantity, price1, price2, price3, "createdDate", "updatedDate", "createdBy", "isActive") FROM stdin;
+COPY "service-crm"."dictBoilers" (id, article, name, price, "daysOfGuarantee", quantity, price1, price2, price3, "createdDate", "updatedDate", "createdBy", "isActive") FROM stdin;
 1	art00122	test boiler	100000	36	12	90000	80000	0	2021-06-11 15:45:46.160449+06	2021-06-11 16:37:32.844866+06	1	t
 2	part001	Запчасть	8000	12	12	7500	5000	2000	2021-06-11 17:11:02.922124+06	2021-06-11 17:14:26.700078+06	1	t
 \.
@@ -668,7 +668,7 @@ COPY "service-crm"."dictBoilers" (id, article, name, price, "monthsOfGuarantee",
 -- Data for Name: dictJobTypes; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."dictJobTypes" (id, code, name, "createdDate", "updatedDate", price, "createdBy", "monthsOfGuarantee", price1, price2, price3, "isActive") FROM stdin;
+COPY "service-crm"."dictJobTypes" (id, code, name, "createdDate", "updatedDate", price, "createdBy", "daysOfGuarantee", price1, price2, price3, "isActive") FROM stdin;
 3	DIAGNOSTIC1	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:24:14.644045+06	5000	1	36	4000	3000	2000	t
 1	DIAGNOSTIC	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
 6	DIAGNOSTIC4	Диагностика неисправности	2021-06-10 23:24:44.58152+06	2021-06-11 12:22:45.256123+06	5000	1	12	4000	3000	2000	t
@@ -714,7 +714,7 @@ COPY "service-crm"."dictOrderStatuses" (id, code, name, "createdDate", "updatedD
 -- Data for Name: dictParts; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."dictParts" (id, article, name, price, "createdDate", "updatedDate", "monthsOfGuarantee", quantity, price1, price2, price3, "createdBy", "isActive") FROM stdin;
+COPY "service-crm"."dictParts" (id, article, name, price, "createdDate", "updatedDate", "daysOfGuarantee", quantity, price1, price2, price3, "createdBy", "isActive") FROM stdin;
 1	part002	Запчасть	8000	2021-06-11 17:11:27.226079+06	2021-06-11 17:14:32.619224+06	20	17	7500	5000	2000	1	t
 \.
 
@@ -744,7 +744,7 @@ COPY "service-crm".orders (id, "customerId", "createdBy", address, "createdDate"
 -- Data for Name: soldBoilers; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."soldBoilers" (id, "boilerId", price, "serialNumber", quantity, sum, "orderId", "launchDate", "monthsOfGuarantee", "createdDate", "updatedDate", "isActive") FROM stdin;
+COPY "service-crm"."soldBoilers" (id, "boilerId", price, "serialNumber", quantity, sum, "orderId", "launchDate", "daysOfGuarantee", "createdDate", "updatedDate", "isActive") FROM stdin;
 \.
 
 
@@ -752,7 +752,7 @@ COPY "service-crm"."soldBoilers" (id, "boilerId", price, "serialNumber", quantit
 -- Data for Name: soldJobTypes; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."soldJobTypes" (id, "jobTypeId", price, quantity, sum, "orderId", "createdDate", "updatedDate", column_9, "monthsOfGuarantee", "isActive") FROM stdin;
+COPY "service-crm"."soldJobTypes" (id, "jobTypeId", price, quantity, sum, "orderId", "createdDate", "updatedDate", column_9, "daysOfGuarantee", "isActive") FROM stdin;
 \.
 
 
@@ -760,7 +760,7 @@ COPY "service-crm"."soldJobTypes" (id, "jobTypeId", price, quantity, sum, "order
 -- Data for Name: soldParts; Type: TABLE DATA; Schema: service-crm; Owner: postgres
 --
 
-COPY "service-crm"."soldParts" (id, price, quantity, sum, "orderId", "partId", "createdDate", "updatedDate", "monthsOfGuarantee", "isActive") FROM stdin;
+COPY "service-crm"."soldParts" (id, price, quantity, sum, "orderId", "partId", "createdDate", "updatedDate", "daysOfGuarantee", "isActive") FROM stdin;
 \.
 
 

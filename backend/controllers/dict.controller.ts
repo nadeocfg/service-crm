@@ -198,7 +198,7 @@ const createJobType = async (
   next: NextFunction
 ) => {
   try {
-    const { code, name, monthsOfGuarantee, price, price1, price2, price3 } =
+    const { code, name, daysOfGuarantee, price, price1, price2, price3 } =
       request.body;
     const createdBy = request.user?.id;
 
@@ -211,13 +211,13 @@ const createJobType = async (
     const insertJobType = await db.query(
       `
         INSERT INTO
-          "${process.env.DB_NAME}"."dictJobTypes" (code, name, price, "createdBy", "monthsOfGuarantee", price1, price2, price3, "createdDate", "updatedDate")
+          "${process.env.DB_NAME}"."dictJobTypes" (code, name, price, "createdBy", "daysOfGuarantee", price1, price2, price3, "createdDate", "updatedDate")
         VALUES($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
         RETURNING
           id,
           code,
           name,
-          "monthsOfGuarantee",
+          "daysOfGuarantee",
           price,
           price1,
           price2,
@@ -231,7 +231,7 @@ const createJobType = async (
         name,
         price,
         createdBy,
-        monthsOfGuarantee,
+        daysOfGuarantee,
         price1 || 0,
         price2 || 0,
         price3 || 0,
@@ -262,7 +262,7 @@ const updateJobType = async (
       price1,
       price2,
       price3,
-      monthsOfGuarantee,
+      daysOfGuarantee,
       isActive,
       id,
     } = request.body;
@@ -277,7 +277,7 @@ const updateJobType = async (
           price1 = $3,
           price2 = $4,
           price3 = $5,
-          "monthsOfGuarantee" = $6,
+          "daysOfGuarantee" = $6,
           "isActive" = $7,
           "updatedDate" = NOW()
         WHERE
@@ -291,7 +291,7 @@ const updateJobType = async (
         price1 || 0,
         price2 || 0,
         price3 || 0,
-        monthsOfGuarantee,
+        daysOfGuarantee,
         isActive,
         id,
       ]
@@ -437,7 +437,7 @@ const createBoiler = async (
       article,
       name,
       price,
-      monthsOfGuarantee,
+      daysOfGuarantee,
       quantity,
       price1,
       price2,
@@ -454,13 +454,13 @@ const createBoiler = async (
     const insertBoiler = await db.query(
       `
         INSERT INTO
-          "${process.env.DB_NAME}"."dictBoilers" (article, name, price, "monthsOfGuarantee", quantity, price1, price2, price3, "createdDate", "updatedDate", "createdBy")
+          "${process.env.DB_NAME}"."dictBoilers" (article, name, price, "daysOfGuarantee", quantity, price1, price2, price3, "createdDate", "updatedDate", "createdBy")
         VALUES($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW(), $9)
         RETURNING
           article,
           name,
           price,
-          "monthsOfGuarantee",
+          "daysOfGuarantee",
           quantity,
           price1,
           price2,
@@ -473,7 +473,7 @@ const createBoiler = async (
         article,
         name,
         price,
-        monthsOfGuarantee,
+        daysOfGuarantee,
         quantity,
         price1 || 0,
         price2 || 0,
@@ -505,7 +505,7 @@ const updateBoiler = async (
       article,
       name,
       price,
-      monthsOfGuarantee,
+      daysOfGuarantee,
       quantity,
       price1,
       price2,
@@ -521,7 +521,7 @@ const updateBoiler = async (
           article = $1,
           name = $2,
           price = $3,
-          "monthsOfGuarantee" = $4,
+          "daysOfGuarantee" = $4,
           quantity = $5,
           price1 = $6,
           price2 = $7,
@@ -537,7 +537,7 @@ const updateBoiler = async (
         article,
         name,
         price,
-        monthsOfGuarantee,
+        daysOfGuarantee,
         quantity,
         price1 || 0,
         price2 || 0,
@@ -687,7 +687,7 @@ const createPart = async (
       article,
       name,
       price,
-      monthsOfGuarantee,
+      daysOfGuarantee,
       quantity,
       price1,
       price2,
@@ -704,13 +704,13 @@ const createPart = async (
     const insertJobType = await db.query(
       `
         INSERT INTO
-          "${process.env.DB_NAME}"."dictParts" (article, name, price, "monthsOfGuarantee", quantity, price1, price2, price3, "createdDate", "updatedDate", "createdBy")
+          "${process.env.DB_NAME}"."dictParts" (article, name, price, "daysOfGuarantee", quantity, price1, price2, price3, "createdDate", "updatedDate", "createdBy")
         VALUES($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW(), $9)
         RETURNING
           article,
           name,
           price,
-          "monthsOfGuarantee",
+          "daysOfGuarantee",
           quantity,
           price1,
           price2,
@@ -723,7 +723,7 @@ const createPart = async (
         article,
         name,
         price,
-        monthsOfGuarantee,
+        daysOfGuarantee,
         quantity,
         price1 || 0,
         price2 || 0,
@@ -755,7 +755,7 @@ const updatePart = async (
       article,
       name,
       price,
-      monthsOfGuarantee,
+      daysOfGuarantee,
       quantity,
       price1,
       price2,
@@ -771,7 +771,7 @@ const updatePart = async (
           article = $1,
           name = $2,
           price = $3,
-          "monthsOfGuarantee" = $4,
+          "daysOfGuarantee" = $4,
           quantity = $5,
           price1 = $6,
           price2 = $7,
@@ -787,7 +787,7 @@ const updatePart = async (
         article,
         name,
         price,
-        monthsOfGuarantee,
+        daysOfGuarantee,
         quantity,
         price1 || 0,
         price2 || 0,

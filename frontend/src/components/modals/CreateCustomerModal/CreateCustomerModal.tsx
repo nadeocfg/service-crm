@@ -15,6 +15,9 @@ import ReactInputMask from 'react-input-mask';
 import { SET_CREATE_CUSTOMER_DATA } from '../../../store/storeConstants/customersConstants';
 import api from '../../../utils/axiosMiddleware';
 import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
+import SelectModal from '../SelectModal';
+import { getAllBoilers } from '../../../store/actions/dictsActions';
+import { getCustomersList } from '../../../store/actions/customersActions';
 
 interface CreateCustomerModalProps {
   btnTitle?: string;
@@ -28,11 +31,15 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
   const currentUser = useSelector(
     (store: StoreModel) => store.userStore.authResponse
   );
+  const boilersList = useSelector(
+    (store: StoreModel) => store.dictsStore.dictBoilers.boilers
+  );
   const dispatch = useDispatch();
 
   const handleChangeModal = () => {
     setOpen(!open);
   };
+  const [selectModal, setSelectModal] = useState(false);
 
   const handleChange = (name: string) => (event: any) => {
     dispatch({
@@ -76,6 +83,10 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
             type: 'success',
           },
         });
+
+        dispatch(getCustomersList(0, 10, ''));
+
+        handleChangeModal();
       })
       .catch((err) => {
         console.log({ ...err });
@@ -90,6 +101,24 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
           },
         });
       });
+  };
+
+  const changeModal = () => {
+    setSelectModal(!selectModal);
+  };
+
+  const onSelect = (name: string, value: any) => {
+    dispatch({
+      type: SET_CREATE_CUSTOMER_DATA,
+      payload: {
+        name: 'boiler',
+        value,
+      },
+    });
+  };
+
+  const getBoilers = (searchValue: string) => {
+    dispatch(getAllBoilers(0, 20, searchValue));
   };
 
   return (
@@ -108,15 +137,6 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
         <DialogTitle>Добавить клиента</DialogTitle>
         <form id="create-form" action="" onSubmit={submit}>
           <DialogContent className="form">
-            <TextField
-              className="input form__field"
-              label="Адрес"
-              variant="outlined"
-              value={createCustomerData.address}
-              onChange={handleChange('address')}
-              required
-            />
-
             <TextField
               className="input form__field"
               label="Email"
@@ -144,6 +164,16 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
               required
             />
 
+            <TextField
+              className="input form__field"
+              label="Котел"
+              variant="outlined"
+              onClick={changeModal}
+              onKeyUp={changeModal}
+              value={createCustomerData.boiler?.name || ''}
+              required
+            />
+
             <ReactInputMask
               mask="+7 (999) 999-99-99"
               onChange={handleChange('phone')}
@@ -168,6 +198,15 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
                 variant="outlined"
               />
             </ReactInputMask>
+
+            <TextField
+              className="input form__field"
+              label="Адрес"
+              variant="outlined"
+              value={createCustomerData.address}
+              onChange={handleChange('address')}
+              required
+            />
           </DialogContent>
           <DialogActions className="btn-container">
             <Btn classes="btn btn_white" onClick={handleChangeModal}>
@@ -179,6 +218,16 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
           </DialogActions>
         </form>
       </Dialog>
+
+      <SelectModal
+        open={selectModal}
+        handleChangeModal={changeModal}
+        onSelect={onSelect}
+        title={'Выберите котел'}
+        handleChange={getBoilers}
+        items={boilersList}
+        fieldName={'boiler'}
+      />
     </>
   );
 };

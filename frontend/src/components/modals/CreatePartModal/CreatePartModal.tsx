@@ -20,7 +20,7 @@ const CreatePartModal = () => {
     article: '',
     name: '',
     price: 0,
-    monthsOfGuarantee: 0,
+    daysOfGuarantee: 0,
     quantity: 0,
     price1: 0,
     price2: 0,
@@ -105,10 +105,10 @@ const CreatePartModal = () => {
 
             <TextField
               className="input form__field"
-              label="Гарантия (мес.)"
+              label="Гарантия (дни)"
               variant="outlined"
-              value={partData.monthsOfGuarantee}
-              onChange={handleChange('monthsOfGuarantee')}
+              value={partData.daysOfGuarantee}
+              onChange={handleChange('daysOfGuarantee')}
               type="number"
               required
             />

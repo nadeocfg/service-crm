@@ -7,6 +7,6 @@ export interface SoldJobModel {
   orderId: number;
   createdDate: string;
   updatedDate: string;
-  monthsOfGuarantee: number;
+  daysOfGuarantee: number;
   isActive: boolean;
 }

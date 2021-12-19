@@ -135,7 +135,7 @@ export interface JobItemModel {
   createdBy?: number;
   createdDate?: string;
   id?: number;
-  monthsOfGuarantee?: number;
+  daysOfGuarantee?: number;
   name?: string;
   price?: number;
   price1?: number;
@@ -150,7 +150,7 @@ export interface BoilerItemModel {
   article?: string;
   name?: string;
   price?: number;
-  monthsOfGuarantee?: number;
+  daysOfGuarantee?: number;
   quantity?: number;
   price1?: number;
   price2?: number;
@@ -166,7 +166,7 @@ export interface PartItemModel {
   article?: string;
   name?: string;
   price?: number;
-  monthsOfGuarantee?: number;
+  daysOfGuarantee?: number;
   quantity?: number;
   price1?: number;
   price2?: number;
@@ -205,6 +205,7 @@ export interface CustomersStoreModel {
     phone: string;
     phone2: string;
     boilerSerial: string;
+    boiler: BoilerItemModel;
   };
 }
 
@@ -220,6 +221,8 @@ export interface CustomerItemModel {
   phone2?: string;
   updatedDate?: string;
   boilerSerial?: string;
+  boilerId?: string;
+  boiler?: BoilerItemModel;
 }
 
 export interface OrderDataModel {

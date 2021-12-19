@@ -19,7 +19,7 @@ const CreateJobTypeModal = () => {
   const [jobTypeData, setJobTypeData] = useState({
     code: '',
     name: '',
-    monthsOfGuarantee: 0,
+    daysOfGuarantee: 0,
     price: 0,
     price1: 0,
     price2: 0,
@@ -104,10 +104,10 @@ const CreateJobTypeModal = () => {
 
             <TextField
               className="input form__field"
-              label="Гарантия (мес.)"
+              label="Гарантия (дни)"
               variant="outlined"
-              value={jobTypeData.monthsOfGuarantee}
-              onChange={handleChange('monthsOfGuarantee')}
+              value={jobTypeData.daysOfGuarantee}
+              onChange={handleChange('daysOfGuarantee')}
               type="number"
               required
             />

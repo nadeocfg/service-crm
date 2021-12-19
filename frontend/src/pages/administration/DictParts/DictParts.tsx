@@ -53,7 +53,7 @@ const DictParts = () => {
     article: '',
     name: '',
     price: 0,
-    monthsOfGuarantee: 0,
+    daysOfGuarantee: 0,
     quantity: 0,
     price1: 0,
     price2: 0,
@@ -155,7 +155,7 @@ const DictParts = () => {
               <TableCell>Цена 1</TableCell>
               <TableCell>Цена 2</TableCell>
               <TableCell>Цена 3</TableCell>
-              <TableCell>Гарантия (мес.)</TableCell>
+              <TableCell>Гарантия (дни)</TableCell>
               <TableCell>Количество</TableCell>
               <TableCell>Дата обновления</TableCell>
               <TableCell></TableCell>
@@ -171,7 +171,7 @@ const DictParts = () => {
                 <TableCell>{part.price1}</TableCell>
                 <TableCell>{part.price2}</TableCell>
                 <TableCell>{part.price3}</TableCell>
-                <TableCell>{part.monthsOfGuarantee}</TableCell>
+                <TableCell>{part.daysOfGuarantee}</TableCell>
                 <TableCell>{part.quantity}</TableCell>
                 <TableCell>
                   {formatDate(part.updatedDate || '', true)}
@@ -232,10 +232,10 @@ const DictParts = () => {
 
             <TextField
               className="input form__field"
-              label="Гарантия (мес.)"
+              label="Гарантия (дни)"
               variant="outlined"
-              value={partData.monthsOfGuarantee}
-              onChange={handleChange('monthsOfGuarantee')}
+              value={partData.daysOfGuarantee}
+              onChange={handleChange('daysOfGuarantee')}
               type="number"
               required
             />

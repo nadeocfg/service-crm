@@ -50,7 +50,7 @@ const DictBoilers = () => {
     article: '',
     name: '',
     price: 0,
-    monthsOfGuarantee: 0,
+    daysOfGuarantee: 0,
     quantity: 0,
     price1: 0,
     price2: 0,
@@ -152,7 +152,7 @@ const DictBoilers = () => {
               <TableCell>Цена 1</TableCell>
               <TableCell>Цена 2</TableCell>
               <TableCell>Цена 3</TableCell>
-              <TableCell>Гарантия (мес.)</TableCell>
+              <TableCell>Гарантия (дни)</TableCell>
               <TableCell>Количество</TableCell>
               <TableCell>Дата обновления</TableCell>
               <TableCell></TableCell>
@@ -168,7 +168,7 @@ const DictBoilers = () => {
                 <TableCell>{boiler.price1}</TableCell>
                 <TableCell>{boiler.price2}</TableCell>
                 <TableCell>{boiler.price3}</TableCell>
-                <TableCell>{boiler.monthsOfGuarantee}</TableCell>
+                <TableCell>{boiler.daysOfGuarantee}</TableCell>
                 <TableCell>{boiler.quantity}</TableCell>
                 <TableCell>
                   {formatDate(boiler.updatedDate || '', true)}
@@ -229,10 +229,10 @@ const DictBoilers = () => {
 
             <TextField
               className="input form__field"
-              label="Гарантия (мес.)"
+              label="Гарантия (дни)"
               variant="outlined"
-              value={boilerData.monthsOfGuarantee}
-              onChange={handleChange('monthsOfGuarantee')}
+              value={boilerData.daysOfGuarantee}
+              onChange={handleChange('daysOfGuarantee')}
               type="number"
               required
             />

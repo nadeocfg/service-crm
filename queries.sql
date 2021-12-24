@@ -313,3 +313,101 @@ SET
   "doneDate" = '2021-11-24 12:09:51.494406 +00:00'
 WHERE
   status = (SELECT id FROM "service-crm"."dictOrderStatuses" WHERE code = 'DONE')
+
+SELECT
+  orders.id,
+  orders.address,
+  orders."createdDate",
+  orders."updatedDate",
+  orders.comment,
+  orders."customerId",
+  orders."serviceManId",
+  orders."createdBy",
+  orders."phone",
+  status.name as "statusName",
+  customers."fullName",
+  customers."boilerSerial",
+  users."fullName" as "serviceManFullName"
+FROM
+  "service-crm"."orders" as orders
+LEFT JOIN
+  "service-crm"."dictOrderStatuses" as status
+ON
+  orders.status = status.id
+LEFT JOIN
+  "service-crm"."users" as users
+ON
+  orders."serviceManId" = users.id
+LEFT JOIN
+  "service-crm"."customers" as customers
+ON
+  orders."customerId" = customers.id
+WHERE
+  orders."serviceManId" = 24 AND
+  orders."isActive" = true AND
+  (LOWER(customers."fullName") LIKE '%%' OR
+  orders.id::text LIKE '%%' OR
+  LOWER(orders.address) LIKE '%%' OR
+  LOWER(users."fullName") LIKE '%%' OR
+  LOWER(customers."boilerSerial") LIKE '%%' OR
+  LOWER(orders.comment) LIKE '%%')
+ORDER BY
+  id desc
+LIMIT
+  10
+OFFSET
+  0;
+
+SELECT
+  count(*) AS total
+FROM
+  "service-crm"."orders" as orders
+LEFT JOIN
+  "service-crm"."customers" as customers
+ON
+  orders."customerId" = customers.id
+LEFT JOIN
+  "service-crm"."users" as users
+ON
+  orders."serviceManId" = users.id
+WHERE
+  orders."serviceManId" = 24 AND
+  orders."isActive" = true AND
+  (LOWER(customers."fullName") LIKE '%%' OR
+  orders.id::text LIKE '%%' OR
+  LOWER(orders.address) LIKE '%%' OR
+  LOWER(users."fullName") LIKE '%%' OR
+  LOWER(orders.comment) LIKE '%%');
+
+SELECT
+  count(*) AS total
+FROM
+  "service-crm"."orders"
+LEFT JOIN
+  "service-crm"."customers" as customers
+ON
+  orders."customerId" = customers.id
+LEFT JOIN
+  "service-crm"."users" as users
+ON
+  orders."serviceManId" = users.id
+WHERE
+  orders."serviceManId" = 24 AND
+  orders."isActive" = true AND
+  (LOWER(customers."fullName") LIKE '%%' OR
+  orders.id::text LIKE '%%' OR
+  LOWER(orders.address) LIKE '%%' OR
+  LOWER(users."fullName") LIKE '%%' OR
+  LOWER(orders.comment) LIKE '%%');
+
+SELECT
+  statuses.code
+FROM
+  "service-crm".orders
+LEFT JOIN
+  "service-crm"."dictOrderStatuses" as statuses
+ON
+  orders.status = statuses.id AND
+  orders."isActive" = true
+WHERE
+  orders.id = 54

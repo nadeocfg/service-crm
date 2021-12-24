@@ -55,7 +55,20 @@
       &__detail {
         display: flex;
         align-items: flex-end;
-        height: 32px;
+        margin-bottom: 12px;
+
+        &:last-of-type {
+          margin-bottom: 0;
+        }
+
+        .MuiFormControlLabel-root {
+          position: relative;
+          display: flex;
+
+          .MuiIconButton-root {
+            position: static;
+          }
+        }
       }
     }
   }

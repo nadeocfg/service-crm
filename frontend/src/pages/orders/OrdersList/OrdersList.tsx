@@ -225,14 +225,16 @@ const OrdersList = () => {
                   </IconButton>
 
                   {(userRoleCode === 'SUPER_ADMIN' ||
-                    userRoleCode === 'ADMIN') && (
-                    <IconButton
-                      aria-label="edit"
-                      onClick={() => editOrder(order)}
-                    >
-                      <EditIcon fontSize="inherit" />
-                    </IconButton>
-                  )}
+                    userRoleCode === 'ADMIN') &&
+                    order.statusCode !== 'DONE' &&
+                    order.statusCode !== 'CANCELED' && (
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => editOrder(order)}
+                      >
+                        <EditIcon fontSize="inherit" />
+                      </IconButton>
+                    )}
                 </TableCell>
               </TableRow>
             ))}

@@ -162,10 +162,9 @@ const DictBoilers = () => {
                 <TableCell>{job.id}</TableCell>
                 <TableCell>{job.code}</TableCell>
                 <TableCell>{job.name}</TableCell>
-                <TableCell>{job.price}</TableCell>
-                <TableCell>{job.price1}</TableCell>
-                <TableCell>{job.price2}</TableCell>
-                <TableCell>{job.price3}</TableCell>
+                {(job.prices || []).map((item) => (
+                  <TableCell>{item.value}</TableCell>
+                ))}
                 <TableCell>{job.daysOfGuarantee}</TableCell>
                 <TableCell>{formatDate(job.updatedDate || '', true)}</TableCell>
                 {(userRoleCode === 'SUPER_ADMIN' ||

@@ -5,6 +5,9 @@ import {
   TextField,
   IconButton,
   Input,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import Btn from '../../../components/Btn';
@@ -99,6 +102,20 @@ const CreateOrder = () => {
           value: value.address,
         },
       });
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'phone',
+          value: value.phone,
+        },
+      });
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: 'boiler',
+          value: value.boiler,
+        },
+      });
     }
 
     if (name === 'boiler') {
@@ -116,7 +133,14 @@ const CreateOrder = () => {
         type: SET_ORDER_DATA,
         payload: {
           name: 'parts',
-          value: [...orderData.parts, { ...value, soldQuantity: 1 }],
+          value: [
+            ...orderData.parts,
+            {
+              ...value,
+              soldQuantity: 1,
+              selectedPrice: value.prices[0].value + '',
+            },
+          ],
         },
       });
     }
@@ -126,7 +150,10 @@ const CreateOrder = () => {
         type: SET_ORDER_DATA,
         payload: {
           name: 'jobTypes',
-          value: [...orderData.jobTypes, { ...value, soldQuantity: 1 }],
+          value: [
+            ...orderData.jobTypes,
+            { ...value, soldQuantity: 1, selectedPrice: 'price' },
+          ],
         },
       });
     }
@@ -272,6 +299,20 @@ const CreateOrder = () => {
     }
   };
 
+  const handleChangePrice =
+    (el: PartItemModel, type: 'parts' | 'jobTypes') =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      el.selectedPrice = e.target.value;
+      dispatch({
+        type: SET_ORDER_DATA,
+        payload: {
+          name: type,
+          value: orderData[type],
+        },
+      });
+      return;
+    };
+
   return (
     <>
       <form action="" onSubmit={submitOrder} id="create-order-form">
@@ -399,7 +440,32 @@ const CreateOrder = () => {
                     Артикул: {el.article}
                   </div>
 
-                  <div className="order-part__detail">Цена: {el.price}</div>
+                  <div className="order-part__detail">
+                    <RadioGroup
+                      name="selectedPrice"
+                      value={el.selectedPrice}
+                      onChange={handleChangePrice(el, 'parts')}
+                      row
+                    >
+                      {(el.prices || []).map((item, index) => (
+                        <FormControlLabel
+                          key={index}
+                          label={item.name}
+                          value={item.value}
+                          color="primary"
+                          control={
+                            <Radio
+                              checked={el.selectedPrice === item.value + ''}
+                            />
+                          }
+                        />
+                      ))}
+                    </RadioGroup>
+                  </div>
+
+                  <div className="order-part__detail">
+                    Цена: {(el as any)[el.selectedPrice || 'price']}
+                  </div>
 
                   <div className="order-part__detail">
                     Количество:{' '}
@@ -439,7 +505,28 @@ const CreateOrder = () => {
 
                   <div className="order-part__detail">Код: {el.code}</div>
 
-                  <div className="order-part__detail">Цена: {el.price}</div>
+                  <div className="order-part__detail">
+                    <RadioGroup
+                      name="selectedPrice"
+                      value={el.selectedPrice}
+                      onChange={handleChangePrice(el, 'jobTypes')}
+                      row
+                    >
+                      {(el.prices || []).map((item, index) => (
+                        <FormControlLabel
+                          key={index}
+                          label={item.name}
+                          value={item.value}
+                          color="primary"
+                          control={
+                            <Radio
+                              checked={el.selectedPrice === item.value + ''}
+                            />
+                          }
+                        />
+                      ))}
+                    </RadioGroup>
+                  </div>
 
                   <div className="order-part__detail">
                     Количество:{' '}
@@ -467,7 +554,10 @@ const CreateOrder = () => {
                   <div className="list__item" key={el.id}>
                     {`${el.name} x ${el.soldQuantity}`}
                     <span></span>
-                    {formatSum(+(el?.soldQuantity || 0) * (el?.price || 0))}
+                    {formatSum(
+                      +(el?.soldQuantity || 0) *
+                        ((el as any).selectedPrice || 0)
+                    )}
                   </div>
                 ))}
               </div>
@@ -482,10 +572,13 @@ const CreateOrder = () => {
                 </div>
 
                 {orderData.jobTypes.map((el: PartItemModel) => (
-                  <div className="list__item" key={el.id + '' + el.price}>
+                  <div className="list__item" key={el.id}>
                     {`${el.name} x ${el.soldQuantity}`}
                     <span></span>
-                    {formatSum(+(el?.soldQuantity || 0) * (el?.price || 0))}
+                    {formatSum(
+                      +(el?.soldQuantity || 0) *
+                        ((el as any).selectedPrice || 0)
+                    )}
                   </div>
                 ))}
               </div>

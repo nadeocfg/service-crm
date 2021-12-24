@@ -17,6 +17,7 @@ export interface OrderItemModel {
     phone: string;
   };
   statusName: string;
+  statusCode: string;
   jobs: SoldJobModel[];
   parts: SoldPartModel[];
   customer: CustomerModel;

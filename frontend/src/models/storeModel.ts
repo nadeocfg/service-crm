@@ -137,12 +137,13 @@ export interface JobItemModel {
   id?: number;
   daysOfGuarantee?: number;
   name?: string;
-  price?: number;
-  price1?: number;
-  price2?: number;
-  price3?: number;
+  prices?: {
+    name: string;
+    value: number;
+  }[];
   updatedDate?: string;
   soldQuantity?: number | string;
+  selectedPrice?: string;
 }
 
 export interface BoilerItemModel {
@@ -165,17 +166,18 @@ export interface PartItemModel {
   id?: number;
   article?: string;
   name?: string;
-  price?: number;
   daysOfGuarantee?: number;
   quantity?: number;
-  price1?: number;
-  price2?: number;
-  price3?: number;
+  prices?: {
+    name: string;
+    value: number;
+  }[];
   createdDate?: string;
   updatedDate?: string;
   createdBy?: number;
   isActive?: boolean;
   soldQuantity?: string | number;
+  selectedPrice?: string;
 }
 
 export interface OrdersStoreModel {

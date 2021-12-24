@@ -358,7 +358,9 @@ const OrderView = () => {
                 <div className="list__item" key={el.id}>
                   {`${el.name} x ${el.soldQuantity}`}
                   <span></span>
-                  {formatSum(+(el?.soldQuantity || 0) * (el?.price || 0))}
+                  {formatSum(
+                    +(el?.soldQuantity || 0) * ((el as any).selectedPrice || 0)
+                  )}
                 </div>
               ))}
             </div>
@@ -373,10 +375,12 @@ const OrderView = () => {
               </div>
 
               {orderData.jobTypes.map((el: PartItemModel) => (
-                <div className="list__item" key={el.id + '' + el.price}>
+                <div className="list__item" key={el.id}>
                   {`${el.name} x ${el.soldQuantity}`}
                   <span></span>
-                  {formatSum(+(el?.soldQuantity || 0) * (el?.price || 0))}
+                  {formatSum(
+                    +(el?.soldQuantity || 0) * ((el as any).selectedPrice || 0)
+                  )}
                 </div>
               ))}
             </div>

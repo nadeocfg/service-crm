@@ -167,10 +167,9 @@ const DictParts = () => {
                 <TableCell>{part.id}</TableCell>
                 <TableCell>{part.article}</TableCell>
                 <TableCell>{part.name}</TableCell>
-                <TableCell>{part.price}</TableCell>
-                <TableCell>{part.price1}</TableCell>
-                <TableCell>{part.price2}</TableCell>
-                <TableCell>{part.price3}</TableCell>
+                {(part.prices || []).map((item) => (
+                  <TableCell>{item.value}</TableCell>
+                ))}
                 <TableCell>{part.daysOfGuarantee}</TableCell>
                 <TableCell>{part.quantity}</TableCell>
                 <TableCell>

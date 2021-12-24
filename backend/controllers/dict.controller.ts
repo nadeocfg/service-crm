@@ -107,9 +107,8 @@ const getJobTypes = async (
       });
     }
 
-    if (searchValue) {
-      const allJobs = await db.query(
-        `
+    const allJobs = await db.query(
+      `
           SELECT
             *
           FROM
@@ -125,11 +124,11 @@ const getJobTypes = async (
           OFFSET
             $2;
         `,
-        [count, offset, `%${searchValue}%`]
-      );
+      [count, offset, `%${searchValue}%`]
+    );
 
-      const total = await db.query(
-        `
+    const total = await db.query(
+      `
           SELECT
             count(*) AS total
           FROM
@@ -139,48 +138,48 @@ const getJobTypes = async (
             (code LIKE $1 OR
             name LIKE $1);
         `,
-        [`%${searchValue}%`]
-      );
+      [`%${searchValue}%`]
+    );
 
-      response.status(200).json({
-        jobTypes: allJobs.rows,
-        total: +total.rows[0].total,
-      });
-    } else {
-      const allJobs = await db.query(
-        `
-          SELECT
-            *
-          FROM
-            "${process.env.DB_NAME}"."dictJobTypes"
-          WHERE
-            "isActive" = true
-          ORDER BY
-            id
-          LIMIT
-            $1
-          OFFSET
-            $2;
-        `,
-        [count, offset]
-      );
+    const result = allJobs.rows.reduce((acc, item) => {
+      const prices = [
+        {
+          name: 'Цена',
+          value: item.price,
+        },
+        {
+          name: 'Цена 1',
+          value: item.price1,
+        },
+        {
+          name: 'Цена 2',
+          value: item.price2,
+        },
+        {
+          name: 'Цена 3',
+          value: item.price3,
+        },
+      ];
 
-      const total = await db.query(
-        `
-          SELECT
-            count(*) AS total
-          FROM
-            "${process.env.DB_NAME}"."dictJobTypes"
-          WHERE
-            "isActive" = true;
-        `
-      );
+      const resItem = {
+        ...item,
+        prices,
+      };
 
-      response.status(200).json({
-        jobTypes: allJobs.rows,
-        total: +total.rows[0].total,
-      });
-    }
+      delete resItem.price;
+      delete resItem.price1;
+      delete resItem.price2;
+      delete resItem.price3;
+
+      acc.push(resItem);
+
+      return acc;
+    }, []);
+
+    response.status(200).json({
+      jobTypes: result,
+      total: +total.rows[0].total,
+    });
   } catch (error: any) {
     response.status(404).json({
       message: error.message,
@@ -577,95 +576,79 @@ const getParts = async (
       });
     }
 
-    if (searchValue) {
-      const allParts = await db.query(
-        searchValue
-          ? `
-          SELECT
-            *
-          FROM
-            "${process.env.DB_NAME}"."dictParts"
-          WHERE
-            "isActive" = true AND
-            (article LIKE $3 OR
-            name LIKE $3)
-          ORDER BY
-            id
-          LIMIT
-            $1
-          OFFSET
-            $2;
-        `
-          : `
-          SELECT
-            *
-          FROM
-            "${process.env.DB_NAME}"."dictParts"
-          WHERE
-            "isActive" = true
-          ORDER BY
-            id
-          LIMIT
-            $1
-          OFFSET
-            $2;
-        `,
-        [count, offset, `%${searchValue}%`]
-      );
+    const allParts = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."dictParts"
+        WHERE
+          "isActive" = true AND
+          (article LIKE $3 OR
+          name LIKE $3)
+        ORDER BY
+          id
+        LIMIT
+          $1
+        OFFSET
+          $2;
+      `,
+      [count, offset, `%${searchValue}%`]
+    );
 
-      const total = await db.query(
-        `
-          SELECT
-            count(*) AS total
-          FROM
-            "${process.env.DB_NAME}"."dictParts"
-          WHERE
-            "isActive" = true AND
-            (article LIKE $1 OR
-            name LIKE $1);
-        `,
-        [`%${searchValue}%`]
-      );
+    const total = await db.query(
+      `
+        SELECT
+          count(*) AS total
+        FROM
+          "${process.env.DB_NAME}"."dictParts"
+        WHERE
+          "isActive" = true AND
+          (article LIKE $1 OR
+          name LIKE $1);
+      `,
+      [`%${searchValue}%`]
+    );
 
-      response.status(200).json({
-        parts: allParts.rows,
-        total: +total.rows[0].total,
-      });
-    } else {
-      const allParts = await db.query(
-        `
-          SELECT
-            *
-          FROM
-            "${process.env.DB_NAME}"."dictParts"
-          WHERE
-            "isActive" = true
-          ORDER BY
-            id
-          LIMIT
-            $1
-          OFFSET
-            $2;
-        `,
-        [count, offset]
-      );
+    const result = allParts.rows.reduce((acc, item) => {
+      const prices = [
+        {
+          name: 'Цена',
+          value: item.price,
+        },
+        {
+          name: 'Цена 1',
+          value: item.price1,
+        },
+        {
+          name: 'Цена 2',
+          value: item.price2,
+        },
+        {
+          name: 'Цена 3',
+          value: item.price3,
+        },
+      ];
 
-      const total = await db.query(
-        `
-          SELECT
-            count(*) AS total
-          FROM
-            "${process.env.DB_NAME}"."dictParts"
-          WHERE
-            "isActive" = true;
-        `
-      );
+      const resItem = {
+        ...item,
+        prices,
+      };
 
-      response.status(200).json({
-        parts: allParts.rows,
-        total: +total.rows[0].total,
-      });
-    }
+      delete resItem.price;
+      delete resItem.price1;
+      delete resItem.price2;
+      delete resItem.price3;
+
+      acc.push(resItem);
+
+      return acc;
+    }, []);
+
+    response.status(200).json({
+      parts: result,
+      total: +total.rows[0].total,
+    });
   } catch (error: any) {
     response.status(404).json({
       message: error.message,

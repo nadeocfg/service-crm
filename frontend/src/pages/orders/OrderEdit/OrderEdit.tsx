@@ -5,6 +5,9 @@ import {
   TextField,
   IconButton,
   Input,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import Btn from '../../../components/Btn';
@@ -32,6 +35,7 @@ import { setLoader } from '../../../store/actions/mainActions';
 import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
 import { formatSum } from '../../../utils/formatSum';
 import { getTotalSum } from '../../../utils/getOrderSum';
+import ReactInputMask from 'react-input-mask';
 
 const OrderEdit = () => {
   const [fetchFunction, setFetchFunction] = React.useState<any>(() => () => {});
@@ -144,14 +148,28 @@ const OrderEdit = () => {
     if (name === 'parts') {
       setOrderData({
         ...orderData,
-        parts: [...orderData.parts, { ...value, soldQuantity: 1 }],
+        parts: [
+          ...orderData.parts,
+          {
+            ...value,
+            soldQuantity: 1,
+            selectedPrice: value.prices[0].value + '',
+          },
+        ],
       });
     }
 
     if (name === 'jobTypes') {
       setOrderData({
         ...orderData,
-        jobTypes: [...orderData.jobTypes, { ...value, soldQuantity: 1 }],
+        jobTypes: [
+          ...orderData.jobTypes,
+          {
+            ...value,
+            soldQuantity: 1,
+            selectedPrice: value.prices[0].value + '',
+          },
+        ],
       });
     }
 
@@ -278,6 +296,17 @@ const OrderEdit = () => {
     }
   };
 
+  const handleChangePrice =
+    (el: PartItemModel, type: 'parts' | 'jobTypes') =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      el.selectedPrice = e.target.value;
+      setOrderData({
+        ...orderData,
+        [type]: [...orderData[type]],
+      });
+      return;
+    };
+
   return (
     <>
       <form action="" onSubmit={submitOrder} id="create-order-form">
@@ -317,6 +346,19 @@ const OrderEdit = () => {
               required
             />
 
+            <ReactInputMask
+              mask="+7 (999) 999-99-99"
+              onChange={handleChange('phone')}
+              value={orderData.phone}
+            >
+              <TextField
+                className="input form__field"
+                label="Телефон"
+                variant="outlined"
+                required
+              />
+            </ReactInputMask>
+
             <TextField
               className="input form__field"
               label="Котел"
@@ -333,19 +375,19 @@ const OrderEdit = () => {
 
             <TextField
               className="input form__field"
-              label="Комментарий"
-              variant="outlined"
-              value={orderData.comment}
-              onChange={handleChange('comment')}
-            />
-
-            <TextField
-              className="input form__field"
               label="Цена за визит"
               variant="outlined"
               value={orderData.visitPrice}
               type="number"
               onChange={handleChange('visitPrice')}
+            />
+
+            <TextField
+              className="input form__field"
+              label="Комментарий"
+              variant="outlined"
+              value={orderData.comment}
+              onChange={handleChange('comment')}
             />
           </CardContent>
         </Card>
@@ -393,7 +435,28 @@ const OrderEdit = () => {
                   </div>
 
                   <div className="order-part__detail">
-                    Цена: {formatSum(el.price || 0)}
+                    <RadioGroup
+                      name="selectedPrice"
+                      value={el.selectedPrice}
+                      onChange={handleChangePrice(el, 'parts')}
+                      row
+                    >
+                      {(el.prices || []).map((item, index) => (
+                        <FormControlLabel
+                          key={index}
+                          label={item.name}
+                          value={item.value}
+                          color="primary"
+                          control={
+                            <Radio
+                              checked={
+                                el.selectedPrice + '' === item.value + ''
+                              }
+                            />
+                          }
+                        />
+                      ))}
+                    </RadioGroup>
                   </div>
 
                   <div className="order-part__detail">
@@ -435,7 +498,28 @@ const OrderEdit = () => {
                   <div className="order-part__detail">Код: {el.code}</div>
 
                   <div className="order-part__detail">
-                    Цена: {formatSum(el.price || 0)}
+                    <RadioGroup
+                      name="selectedPrice"
+                      value={el.selectedPrice}
+                      onChange={handleChangePrice(el, 'jobTypes')}
+                      row
+                    >
+                      {(el.prices || []).map((item, index) => (
+                        <FormControlLabel
+                          key={index}
+                          label={item.name}
+                          value={item.value}
+                          color="primary"
+                          control={
+                            <Radio
+                              checked={
+                                el.selectedPrice + '' === item.value + ''
+                              }
+                            />
+                          }
+                        />
+                      ))}
+                    </RadioGroup>
                   </div>
 
                   <div className="order-part__detail">
@@ -464,7 +548,10 @@ const OrderEdit = () => {
                   <div className="list__item" key={el.id}>
                     {`${el.name} x ${el.soldQuantity}`}
                     <span></span>
-                    {formatSum(+(el?.soldQuantity || 0) * (el?.price || 0))}
+                    {formatSum(
+                      +(el?.soldQuantity || 0) *
+                        ((el as any).selectedPrice || 0)
+                    )}
                   </div>
                 ))}
               </div>
@@ -479,10 +566,13 @@ const OrderEdit = () => {
                 </div>
 
                 {orderData.jobTypes.map((el: PartItemModel) => (
-                  <div className="list__item" key={el.id + '' + el.price}>
+                  <div className="list__item" key={el.id}>
                     {`${el.name} x ${el.soldQuantity}`}
                     <span></span>
-                    {formatSum(+(el?.soldQuantity || 0) * (el?.price || 0))}
+                    {formatSum(
+                      +(el?.soldQuantity || 0) *
+                        ((el as any).selectedPrice || 0)
+                    )}
                   </div>
                 ))}
               </div>

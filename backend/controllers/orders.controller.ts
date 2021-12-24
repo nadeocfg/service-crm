@@ -85,7 +85,8 @@ const createOrder = async (
 
     let partsTotal: number = 0;
     for (let i = 0; i < parts.length; i += 1) {
-      const { price, soldQuantity, id, daysOfGuarantee, quantity } = parts[i];
+      const { selectedPrice, soldQuantity, id, daysOfGuarantee, quantity } =
+        parts[i];
       const insertSoldPart = await db.query(
         `
           INSERT INTO
@@ -95,9 +96,9 @@ const createOrder = async (
             *;
         `,
         [
-          price,
+          selectedPrice,
           soldQuantity,
-          price * soldQuantity,
+          selectedPrice * soldQuantity,
           insertOrder.rows[0].id,
           id,
           daysOfGuarantee,
@@ -116,12 +117,12 @@ const createOrder = async (
         [soldQuantity, id]
       );
 
-      partsTotal += price * soldQuantity;
+      partsTotal += selectedPrice * soldQuantity;
     }
 
     let jobTotal: number = 0;
     for (let i = 0; i < jobTypes.length; i += 1) {
-      const { id, price, soldQuantity, daysOfGuarantee } = jobTypes[i];
+      const { id, selectedPrice, soldQuantity, daysOfGuarantee } = jobTypes[i];
       const insertSoldJobTypes = await db.query(
         `
           INSERT INTO
@@ -132,15 +133,15 @@ const createOrder = async (
         `,
         [
           id,
-          price,
+          selectedPrice,
           soldQuantity,
-          price * soldQuantity,
+          selectedPrice * soldQuantity,
           insertOrder.rows[0].id,
           daysOfGuarantee,
         ]
       );
 
-      jobTotal += price * soldQuantity;
+      jobTotal += selectedPrice * soldQuantity;
     }
 
     const serviceManPercents: any = await db.query(
@@ -222,6 +223,7 @@ const updateOrder = async (
       jobTypes,
       visitPrice,
       orderId,
+      phone,
     } = request.body;
 
     const requiredKeys = [
@@ -232,11 +234,42 @@ const updateOrder = async (
       'parts',
       'jobTypes',
       'orderId',
+      'phone',
     ];
 
     for (let i = 0; i < requiredKeys.length; i += 1) {
       if (!Object.keys(request.body).includes(requiredKeys[i])) {
-        throw Error(`Request body not have required key: ${requiredKeys[i]}`);
+        return response.status(400).json({
+          message: `Request body not have required key: ${requiredKeys[i]}`,
+        });
+      }
+    }
+
+    const checkStatus = await db.query(
+      `
+        SELECT
+          statuses.code
+        FROM
+          "${process.env.DB_NAME}".orders
+        LEFT JOIN
+          "${process.env.DB_NAME}"."dictOrderStatuses" as statuses
+        ON
+          orders.status = statuses.id
+        WHERE
+          orders.id = $1 AND
+          orders."isActive" = true;
+      `,
+      [orderId]
+    );
+
+    for (let i = 0; i < checkStatus.rows.length; i += 1) {
+      if (
+        checkStatus.rows[i].code === 'DONE' ||
+        checkStatus.rows[i].code === 'CANCELED'
+      ) {
+        return response.status(400).json({
+          message: `Order cannot be edit on status DONE or CANCELED`,
+        });
       }
     }
 
@@ -249,13 +282,14 @@ const updateOrder = async (
           address = $2,
           "updatedDate" = NOW(),
           "serviceManId" = $3,
+          phone = $6,
           comment = $4
         WHERE
           orders.id = $5
         RETURNING
           *;
       `,
-      [customer.id, address, serviceMan.id, comment, orderId]
+      [customer.id, address, serviceMan.id, comment, orderId, phone]
     );
 
     const disableOldSoldParts = await db.query(
@@ -289,7 +323,8 @@ const updateOrder = async (
 
     let partsTotal: number = 0;
     for (let i = 0; i < parts.length; i += 1) {
-      const { price, soldQuantity, id, daysOfGuarantee, quantity } = parts[i];
+      const { selectedPrice, soldQuantity, id, daysOfGuarantee, quantity } =
+        parts[i];
       const insertSoldPart = await db.query(
         `
           INSERT INTO
@@ -299,9 +334,9 @@ const updateOrder = async (
             *;
         `,
         [
-          price,
+          selectedPrice,
           soldQuantity,
-          price * soldQuantity,
+          selectedPrice * soldQuantity,
           updateOrder.rows[0].id,
           id,
           daysOfGuarantee,
@@ -320,7 +355,7 @@ const updateOrder = async (
         [soldQuantity, id]
       );
 
-      partsTotal += price * soldQuantity;
+      partsTotal += selectedPrice * soldQuantity;
     }
 
     const disableOldSoldJobTypes = await db.query(
@@ -340,7 +375,7 @@ const updateOrder = async (
 
     let jobTotal: number = 0;
     for (let i = 0; i < jobTypes.length; i += 1) {
-      const { id, price, soldQuantity, daysOfGuarantee } = jobTypes[i];
+      const { id, selectedPrice, soldQuantity, daysOfGuarantee } = jobTypes[i];
       const insertSoldJobTypes = await db.query(
         `
           INSERT INTO
@@ -351,15 +386,15 @@ const updateOrder = async (
         `,
         [
           id,
-          price,
+          selectedPrice,
           soldQuantity,
-          price * soldQuantity,
+          selectedPrice * soldQuantity,
           updateOrder.rows[0].id,
           daysOfGuarantee,
         ]
       );
 
-      jobTotal += price * soldQuantity;
+      jobTotal += selectedPrice * soldQuantity;
     }
 
     const serviceManPercents: any = await db.query(
@@ -507,7 +542,8 @@ const getOrderById = async (
       `
         SELECT
           "soldParts"."partId" as "partId",
-          "soldParts"."quantity" as "quantity"
+          "soldParts"."quantity" as "quantity",
+          "soldParts"."price" as "price"
         FROM
           "${process.env.DB_NAME}"."soldParts" as "soldParts"
         WHERE
@@ -531,9 +567,45 @@ const getOrderById = async (
         [soldParts.rows[i].partId]
       );
 
+      const result = partInfo.rows.reduce((acc, item) => {
+        const prices = [
+          {
+            name: 'Цена',
+            value: item.price,
+          },
+          {
+            name: 'Цена 1',
+            value: item.price1,
+          },
+          {
+            name: 'Цена 2',
+            value: item.price2,
+          },
+          {
+            name: 'Цена 3',
+            value: item.price3,
+          },
+        ];
+
+        const resItem = {
+          ...item,
+          prices,
+        };
+
+        delete resItem.price;
+        delete resItem.price1;
+        delete resItem.price2;
+        delete resItem.price3;
+
+        acc.push(resItem);
+
+        return acc;
+      }, []);
+
       parts.push({
-        ...partInfo.rows[0],
+        ...result[0],
         soldQuantity: soldParts.rows[i].quantity,
+        selectedPrice: soldParts.rows[i].price,
       });
     }
 
@@ -541,7 +613,8 @@ const getOrderById = async (
       `
         SELECT
           "jobTypeId",
-          quantity
+          quantity,
+          price
         FROM
           "${process.env.DB_NAME}"."soldJobTypes" as "soldJobTypes"
         WHERE
@@ -565,9 +638,45 @@ const getOrderById = async (
         [soldJobTypes.rows[i].jobTypeId]
       );
 
+      const result = jobInfo.rows.reduce((acc, item) => {
+        const prices = [
+          {
+            name: 'Цена',
+            value: item.price,
+          },
+          {
+            name: 'Цена 1',
+            value: item.price1,
+          },
+          {
+            name: 'Цена 2',
+            value: item.price2,
+          },
+          {
+            name: 'Цена 3',
+            value: item.price3,
+          },
+        ];
+
+        const resItem = {
+          ...item,
+          prices,
+        };
+
+        delete resItem.price;
+        delete resItem.price1;
+        delete resItem.price2;
+        delete resItem.price3;
+
+        acc.push(resItem);
+
+        return acc;
+      }, []);
+
       jobTypes.push({
-        ...jobInfo.rows[0],
+        ...result[0],
         soldQuantity: soldJobTypes.rows[i].quantity,
+        selectedPrice: soldJobTypes.rows[i].price,
       });
     }
 
@@ -670,6 +779,7 @@ const getOrders = async (
             orders."createdBy",
             orders."phone",
             status.name as "statusName",
+            status.code as "statusCode",
             customers."fullName",
             customers."boilerSerial",
             users."fullName" as "serviceManFullName"
@@ -745,6 +855,7 @@ const getOrders = async (
             orders."createdBy",
             orders."phone",
             status.name as "statusName",
+            status.code as "statusCode",
             customers."fullName",
             customers."boilerSerial",
             users."fullName" as "serviceManFullName"
@@ -769,7 +880,7 @@ const getOrders = async (
             orders.id::text LIKE $4 OR
             LOWER(orders.address) LIKE $4 OR
             LOWER(users."fullName") LIKE $4 OR
-            LOWER(customers."boilerSerial") LIKE $3 OR
+            LOWER(customers."boilerSerial") LIKE $4 OR
             LOWER(orders.comment) LIKE $4)
           ORDER BY
             ${format('%I', sortBy)} ${format('%s', order)}
@@ -786,15 +897,15 @@ const getOrders = async (
           SELECT
             count(*) AS total
           FROM
-            "${process.env.DB_NAME}"."orders"
+            "${process.env.DB_NAME}"."orders" as orders
           LEFT JOIN
             "${process.env.DB_NAME}"."customers" as customers
+          ON
+            orders."customerId" = customers.id
           LEFT JOIN
             "${process.env.DB_NAME}"."users" as users
           ON
             orders."serviceManId" = users.id
-          ON
-            orders."customerId" = customers.id
           WHERE
             orders."serviceManId" = $1 AND
             orders."isActive" = true AND

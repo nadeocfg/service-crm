@@ -11,6 +11,7 @@ export interface StoreModel {
   ordersStore: OrdersStoreModel;
   customersStore: CustomersStoreModel;
   paidOutsStore: PaidOutsStoreModel;
+  settingsStore: SettingsStore;
 }
 
 export interface MainStoreModel {
@@ -269,4 +270,17 @@ export interface OrderStatusHistoryItem {
   id: number;
   orderId: number;
   status: string;
+}
+
+export interface SettingsStore {
+  settings: SettingsItem[];
+}
+
+export interface SettingsItem {
+  id: number;
+  name: string;
+  value: string;
+  description: string;
+  createdDate: string;
+  updatedDate: string;
 }

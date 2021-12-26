@@ -12,6 +12,7 @@ import {
   getAllRoles,
 } from './dictsActions';
 import { setLoader } from './mainActions';
+import { getSettings } from './settingsActions';
 
 export const userSignIn =
   (login: string, password: string) => async (dispatch: Dispatch<any>) => {
@@ -36,6 +37,7 @@ export const userSignIn =
           dispatch(getAllBoilers());
           dispatch(getAllParts());
           dispatch(getAllOrderStatuses());
+          dispatch(getSettings());
 
           window.localStorage.setItem('AUTH_DATA', JSON.stringify(res.data));
         })
@@ -93,6 +95,7 @@ export const getUserByToken =
           dispatch(getAllBoilers());
           dispatch(getAllParts());
           dispatch(getAllOrderStatuses());
+          dispatch(getSettings());
 
           window.localStorage.setItem('AUTH_DATA', JSON.stringify(res.data));
         })

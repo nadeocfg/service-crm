@@ -151,6 +151,7 @@ const Appbar = () => {
                       }
                     >
                       <ListItemIcon>
+                        {route.code === 'settings' && <SettingsIcon />}
                         {route.code === 'dictRoles' && <GroupIcon />}
                         {route.code === 'dictJobTypes' && <WorkIcon />}
                         {route.code === 'dictBoilers' && <BathtubIcon />}

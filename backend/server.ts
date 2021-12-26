@@ -7,6 +7,7 @@ import dictRoutes from './routes/dict.routes';
 import customersRoutes from './routes/customers.routes';
 import ordersRoutes from './routes/orders.routes';
 import paidsRoutes from './routes/paidOuts.routes';
+import settingsRoutes from './routes/settings.routes';
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -24,6 +25,7 @@ app.use('/api/dicts', dictRoutes);
 app.use('/api/customers', customersRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/paids', paidsRoutes);
+app.use('/api/settings', settingsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

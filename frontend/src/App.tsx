@@ -22,6 +22,7 @@ import Customers from './pages/Customers';
 import OrderView from './pages/orders/OrderView';
 import OrderEdit from './pages/orders/OrderEdit';
 import PaidOuts from './pages/PaidOuts';
+import Settings from './pages/administration/Settings';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -95,6 +96,9 @@ const App = () => {
 
               <Route exact path="/administration/roles">
                 <DictRoles />
+              </Route>
+              <Route exact path="/administration/settings">
+                <Settings />
               </Route>
               <Route exact path="/administration/job-types">
                 <DictJobTypes />

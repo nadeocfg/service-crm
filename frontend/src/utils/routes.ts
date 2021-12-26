@@ -28,6 +28,11 @@ export const routes = [
 
 export const adminRoutes = [
   {
+    path: '/administration/settings',
+    code: 'settings',
+    name: 'Настройки',
+  },
+  {
     path: '/administration/roles',
     code: 'dictRoles',
     name: 'Роли',

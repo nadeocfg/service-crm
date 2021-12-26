@@ -196,4 +196,65 @@ const getPaidsByUser = async (
   }
 };
 
-export { getPaidsByUser };
+// @desc   paid out to service man
+// @route  POST /api/paids
+// @access Private
+const paidOut = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { paidOutId } = request.body;
+
+    if (!paidOutId) {
+      return response.status(400).json({
+        message: 'Cannot find paid out id',
+      });
+    }
+
+    const checkPaid = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."serviceManPaidOuts"
+        WHERE
+          id = $1;
+      `,
+      [paidOutId]
+    );
+
+    if (checkPaid.rows.length > 0 && checkPaid.rows[0].isPaid) {
+      return response.status(400).json({
+        message: `Paid out with id ${paidOutId}, is already paid`,
+      });
+    }
+
+    const paidOut = await db.query(
+      `
+        UPDATE
+          "${process.env.DB_NAME}"."serviceManPaidOuts"
+        SET
+          "isPaid" = true,
+          "updatedDate" = NOW()
+        WHERE
+          id = $1
+        RETURNING
+          *
+      `,
+      [paidOutId]
+    );
+
+    response.json({
+      ...paidOut.rows[0],
+    });
+  } catch (error: any) {
+    response.status(400).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+export { getPaidsByUser, paidOut };

@@ -411,3 +411,13 @@ ON
   orders."isActive" = true
 WHERE
   orders.id = 54
+
+UPDATE
+  "service-crm"."serviceManPaidOuts"
+SET
+  "isPaid" = true,
+  "updatedDate" = NOW()
+WHERE
+  id = 3
+RETURNING
+  *

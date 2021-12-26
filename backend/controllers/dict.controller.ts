@@ -255,16 +255,12 @@ const updateJobType = async (
   next: NextFunction
 ) => {
   try {
-    const {
-      name,
-      price,
-      price1,
-      price2,
-      price3,
-      daysOfGuarantee,
-      isActive,
-      id,
-    } = request.body;
+    const { name, prices, daysOfGuarantee, isActive, id } = request.body;
+
+    const price = prices[0].value;
+    const price1 = prices[1].value;
+    const price2 = prices[2].value;
+    const price3 = prices[3].value;
 
     const updateQuery = await db.query(
       `
@@ -733,18 +729,13 @@ const updatePart = async (
   next: NextFunction
 ) => {
   try {
-    const {
-      id,
-      article,
-      name,
-      price,
-      daysOfGuarantee,
-      quantity,
-      price1,
-      price2,
-      price3,
-      isActive,
-    } = request.body;
+    const { id, article, name, daysOfGuarantee, quantity, prices, isActive } =
+      request.body;
+
+    const price = prices[0].value;
+    const price1 = prices[1].value;
+    const price2 = prices[2].value;
+    const price3 = prices[3].value;
 
     const updateQuery = await db.query(
       `

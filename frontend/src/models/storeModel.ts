@@ -144,6 +144,7 @@ export interface JobItemModel {
   updatedDate?: string;
   soldQuantity?: number | string;
   selectedPrice?: string;
+  isActive?: boolean;
 }
 
 export interface BoilerItemModel {

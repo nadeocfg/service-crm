@@ -16,9 +16,9 @@ import {
   FormControlLabel,
   Checkbox,
 } from '@material-ui/core';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { StoreModel } from '../../../models/storeModel';
+import { PartItemModel, StoreModel } from '../../../models/storeModel';
 import {
   getAllBoilers,
   getAllParts,
@@ -49,17 +49,7 @@ const DictParts = () => {
   });
 
   const [open, setOpen] = useState(false);
-  const [partData, setPartData] = useState({
-    article: '',
-    name: '',
-    price: 0,
-    daysOfGuarantee: 0,
-    quantity: 0,
-    price1: 0,
-    price2: 0,
-    price3: 0,
-    isActive: true,
-  });
+  const [partData, setPartData] = useState<PartItemModel>();
 
   const handleChangeModal = () => {
     setOpen(!open);
@@ -133,6 +123,22 @@ const DictParts = () => {
     setPartData(boiler);
     handleChangeModal();
   };
+
+  const handleChangePrice =
+    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (partData && partData?.prices && partData?.prices[index]) {
+        setPartData({
+          ...partData,
+          prices: partData.prices.map((item, i) => {
+            if (i === index) {
+              item.value = +e.target.value;
+            }
+
+            return item;
+          }),
+        });
+      }
+    };
 
   return (
     <>
@@ -215,7 +221,7 @@ const DictParts = () => {
               className="input form__field"
               label="Артикул"
               variant="outlined"
-              value={partData.article}
+              value={partData?.article || ''}
               onChange={handleChange('article')}
               required
             />
@@ -224,7 +230,7 @@ const DictParts = () => {
               className="input form__field"
               label="Наименование"
               variant="outlined"
-              value={partData.name}
+              value={partData?.name || ''}
               onChange={handleChange('name')}
               required
             />
@@ -233,7 +239,7 @@ const DictParts = () => {
               className="input form__field"
               label="Гарантия (дни)"
               variant="outlined"
-              value={partData.daysOfGuarantee}
+              value={partData?.daysOfGuarantee || ''}
               onChange={handleChange('daysOfGuarantee')}
               type="number"
               required
@@ -243,54 +249,30 @@ const DictParts = () => {
               className="input form__field"
               label="Количество"
               variant="outlined"
-              value={partData.quantity}
+              value={partData?.quantity || ''}
               onChange={handleChange('quantity')}
               type="number"
               required
             />
 
-            <TextField
-              className="input form__field"
-              label="Цена"
-              variant="outlined"
-              value={partData.price}
-              onChange={handleChange('price')}
-              type="number"
-              required
-            />
-
-            <TextField
-              className="input form__field"
-              label="Цена 1"
-              variant="outlined"
-              value={partData.price1}
-              onChange={handleChange('price1')}
-              type="number"
-            />
-
-            <TextField
-              className="input form__field"
-              label="Цена 2"
-              variant="outlined"
-              value={partData.price2}
-              onChange={handleChange('price2')}
-              type="number"
-            />
-
-            <TextField
-              className="input form__field"
-              label="Цена 3"
-              variant="outlined"
-              value={partData.price3}
-              onChange={handleChange('price3')}
-              type="number"
-            />
+            {partData?.prices?.map((item, index) => (
+              <TextField
+                key={index}
+                className="input form__field"
+                label={item.name}
+                variant="outlined"
+                value={item?.value || 0}
+                onChange={handleChangePrice(index)}
+                type="number"
+                required
+              />
+            ))}
 
             <FormControlLabel
               className="input form__field form__field_checkbox"
               control={
                 <Checkbox
-                  checked={partData.isActive}
+                  checked={partData?.isActive || false}
                   onChange={handleChange('isActive')}
                   name="checkbox"
                   color="primary"

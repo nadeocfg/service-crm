@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Btn from '../../../components/Btn';
 import CreateJobTypeModal from '../../../components/modals/CreateJobTypeModal';
 import Transition from '../../../components/Transition';
-import { StoreModel } from '../../../models/storeModel';
+import { JobItemModel, StoreModel } from '../../../models/storeModel';
 import { getAllJobTypes } from '../../../store/actions/dictsActions';
 import { formatDate } from '../../../utils/formatDate';
 import EditIcon from '@material-ui/icons/Edit';
@@ -45,16 +45,7 @@ const DictBoilers = () => {
     rowsPerPageOptions: [10, 20, 50],
   });
   const [open, setOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState({
-    code: 'DIAGNOSTIC',
-    isActive: true,
-    daysOfGuarantee: 0,
-    name: 'Диагностика неисправности',
-    price: 5000,
-    price1: 4000,
-    price2: 3000,
-    price3: 2000,
-  });
+  const [selectedJob, setSelectedJob] = useState<JobItemModel>();
 
   const handleChangeModal = () => {
     setOpen(!open);
@@ -129,6 +120,22 @@ const DictBoilers = () => {
 
     dispatch(getAllJobTypes(page, pagination.rowsPerPage));
   };
+
+  const handleChangePrice =
+    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (selectedJob && selectedJob?.prices && selectedJob?.prices[index]) {
+        setSelectedJob({
+          ...selectedJob,
+          prices: selectedJob.prices.map((item, i) => {
+            if (i === index) {
+              item.value = +e.target.value;
+            }
+
+            return item;
+          }),
+        });
+      }
+    };
 
   return (
     <>
@@ -207,7 +214,7 @@ const DictBoilers = () => {
               className="input form__field"
               label="Код"
               variant="outlined"
-              value={selectedJob.code}
+              value={selectedJob?.code || ''}
               onChange={handleChange('code')}
               required
               disabled
@@ -217,7 +224,7 @@ const DictBoilers = () => {
               className="input form__field"
               label="Наименование"
               variant="outlined"
-              value={selectedJob.name}
+              value={selectedJob?.name || ''}
               onChange={handleChange('name')}
               required
             />
@@ -226,54 +233,30 @@ const DictBoilers = () => {
               className="input form__field"
               label="Гарантия (дни)"
               variant="outlined"
-              value={selectedJob.daysOfGuarantee}
+              value={selectedJob?.daysOfGuarantee || ''}
               onChange={handleChange('daysOfGuarantee')}
               type="number"
               required
             />
 
-            <TextField
-              className="input form__field"
-              label="Цена"
-              variant="outlined"
-              value={selectedJob.price}
-              onChange={handleChange('price')}
-              type="number"
-              required
-            />
-
-            <TextField
-              className="input form__field"
-              label="Цена 1"
-              variant="outlined"
-              value={selectedJob.price1}
-              onChange={handleChange('price1')}
-              type="number"
-            />
-
-            <TextField
-              className="input form__field"
-              label="Цена 2"
-              variant="outlined"
-              value={selectedJob.price2}
-              onChange={handleChange('price2')}
-              type="number"
-            />
-
-            <TextField
-              className="input form__field"
-              label="Цена 3"
-              variant="outlined"
-              value={selectedJob.price3}
-              onChange={handleChange('price3')}
-              type="number"
-            />
+            {selectedJob?.prices?.map((item, index) => (
+              <TextField
+                key={index}
+                className="input form__field"
+                label={item.name}
+                variant="outlined"
+                value={item?.value || 0}
+                onChange={handleChangePrice(index)}
+                type="number"
+                required
+              />
+            ))}
 
             <FormControlLabel
               className="input form__field form__field_checkbox"
               control={
                 <Checkbox
-                  checked={selectedJob.isActive}
+                  checked={selectedJob?.isActive || false}
                   onChange={handleChange('isActive')}
                   name="checkbox"
                   color="primary"

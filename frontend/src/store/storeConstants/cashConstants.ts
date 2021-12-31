@@ -1,0 +1,2 @@
+export const SET_CASH_SEARCH_FIELD = 'SET_CASH_SEARCH_FIELD';
+export const SET_CASH_LIST = 'SET_CASH_LIST';

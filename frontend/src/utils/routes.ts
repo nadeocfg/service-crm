@@ -57,4 +57,9 @@ export const adminRoutes = [
     code: 'dictOrderStatuses',
     name: 'Статусы заказов',
   },
+  {
+    path: '/administration/cash',
+    code: 'cash',
+    name: 'Касса',
+  },
 ];

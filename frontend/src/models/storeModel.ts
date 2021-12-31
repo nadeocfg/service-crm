@@ -12,6 +12,7 @@ export interface StoreModel {
   customersStore: CustomersStoreModel;
   paidOutsStore: PaidOutsStoreModel;
   settingsStore: SettingsStore;
+  cashStore: CashStoreModel;
 }
 
 export interface MainStoreModel {
@@ -283,4 +284,10 @@ export interface SettingsItem {
   description: string;
   createdDate: string;
   updatedDate: string;
+}
+
+export interface CashStoreModel {
+  cashList: any[];
+  total: number;
+  searchField: string;
 }

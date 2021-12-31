@@ -8,8 +8,6 @@ LEFT JOIN
 ON
   orders.status = status.id;
 
-GRANT USAGE ON SCHEMA "service-crm" TO;
-
 SELECT * FROM pg_roles;
 
 SELECT * FROM pg_user;
@@ -312,7 +310,7 @@ UPDATE
 SET
   "doneDate" = '2021-11-24 12:09:51.494406 +00:00'
 WHERE
-  status = (SELECT id FROM "service-crm"."dictOrderStatuses" WHERE code = 'DONE')
+  status = (SELECT id FROM "service-crm"."dictOrderStatuses" WHERE code = 'DONE');
 
 SELECT
   orders.id,
@@ -410,7 +408,7 @@ ON
   orders.status = statuses.id AND
   orders."isActive" = true
 WHERE
-  orders.id = 54
+  orders.id = 54;
 
 UPDATE
   "service-crm"."serviceManPaidOuts"
@@ -420,4 +418,51 @@ SET
 WHERE
   id = 3
 RETURNING
-  *
+  *;
+
+---------------------- CLEAR DATABASE ----------------
+
+DELETE FROM
+  "service-crm"."serviceManPaidOuts";
+
+DELETE FROM
+  "service-crm"."soldBoilers";
+
+DELETE FROM
+  "service-crm"."soldJobTypes";
+
+DELETE FROM
+  "service-crm"."soldParts";
+
+DELETE FROM
+  "service-crm"."ordersStatusHistory";
+
+DELETE FROM
+  "service-crm"."orders";
+
+DELETE FROM
+  "service-crm"."dictRoles"
+WHERE
+  id <> 1 AND
+  id <> 2 AND
+  id <> 3;
+
+DELETE FROM
+  "service-crm"."dictParts";
+
+DELETE FROM
+  "service-crm"."dictJobTypes";
+
+DELETE FROM
+  "service-crm".customers;
+
+DELETE FROM
+  "service-crm"."dictBoilers";
+
+DELETE FROM
+  "service-crm"."users"
+WHERE
+  id <> 1 AND
+  id <> 32;
+
+---------------------------------------------------------------------------------

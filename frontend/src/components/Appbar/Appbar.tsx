@@ -34,6 +34,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 
 const Appbar = () => {
   const open = useSelector((state: StoreModel) => state.mainStore.isDrawerOpen);
@@ -151,6 +152,7 @@ const Appbar = () => {
                       }
                     >
                       <ListItemIcon>
+                        {route.code === 'cash' && <PointOfSaleIcon />}
                         {route.code === 'settings' && <SettingsIcon />}
                         {route.code === 'dictRoles' && <GroupIcon />}
                         {route.code === 'dictJobTypes' && <WorkIcon />}

@@ -23,6 +23,7 @@ import OrderView from './pages/orders/OrderView';
 import OrderEdit from './pages/orders/OrderEdit';
 import PaidOuts from './pages/PaidOuts';
 import Settings from './pages/administration/Settings';
+import Cash from './pages/administration/Cash';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -111,6 +112,9 @@ const App = () => {
               </Route>
               <Route exact path="/administration/order-statuses">
                 <DictOrderStatuses />
+              </Route>
+              <Route exact path="/administration/cash">
+                <Cash />
               </Route>
 
               <Redirect to="/" />

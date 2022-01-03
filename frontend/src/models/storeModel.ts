@@ -287,7 +287,16 @@ export interface SettingsItem {
 }
 
 export interface CashStoreModel {
-  cashList: any[];
+  cashList: CashListItemModel[];
   total: number;
   searchField: string;
+}
+
+export interface CashListItemModel {
+  id: number;
+  fullName: string;
+  readySum: number;
+  notReadySum: number;
+  paidSum: number;
+  updatedDate: string;
 }

@@ -196,7 +196,7 @@ const getPaidsByUser = async (
   }
 };
 
-// @desc   paid out to service man
+// @desc   move service man paid out to cash table
 // @route  POST /api/paids
 // @access Private
 const paidOut = async (
@@ -244,6 +244,25 @@ const paidOut = async (
           *
       `,
       [paidOutId]
+    );
+
+    const updateCash = await db.query(
+      `
+        UPDATE
+          "${process.env.DB_NAME}"."cash"
+        SET
+          "readySum" = "readySum" + $1,
+          "notReadySum" = "notReadySum" - $1,
+          "updatedDate" = NOW()
+        WHERE
+          "userId" = $2
+        RETURNING
+          *
+      `,
+      [
+        +paidOut.rows[0].parts + +paidOut.rows[0].job + +paidOut.rows[0].visit,
+        checkPaid.rows[0].userId,
+      ]
     );
 
     response.json({

@@ -13,6 +13,7 @@ export const getCashList =
     sort: SortModel = { name: 'id', order: 'desc' }
   ) =>
   async (dispatch: Dispatch<any>) => {
+    console.log('start request');
     try {
       dispatch(setLoader(true));
 
@@ -24,7 +25,7 @@ export const getCashList =
       };
 
       api
-        .post(`/api/customers/find`, data)
+        .post(`/api/cash`, data)
         .then((res) => {
           dispatch({
             type: SET_CASH_LIST,

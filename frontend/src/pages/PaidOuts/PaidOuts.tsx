@@ -208,12 +208,12 @@ const PaidOuts = () => {
                   {formatDate(paidOut.updatedDate || '', true)}
                 </TableCell>
                 <TableCell>
-                  {paidOut.isPaid ? 'Выплачено' : 'Не выплачено'}
+                  {paidOut.isPaid ? 'Переведена' : 'Не переведена'}
                 </TableCell>
                 <TableCell>
                   {paidOut.canBePaid
-                    ? 'Готова к выплате'
-                    : 'Не готова к выплате'}
+                    ? 'Готова к переводу'
+                    : 'Не готова к переводу'}
                 </TableCell>
                 <TableCell>
                   <IconButton
@@ -256,15 +256,15 @@ const PaidOuts = () => {
         keepMounted
         onClose={handleChangeModal}
       >
-        <DialogTitle>{`Выплатить ${paidModal.paidOut?.fullName} ${formatSum(
+        <DialogTitle>{`Сделать перевод ${formatSum(
           paidModal.paidOut?.sum || 0
-        )} ?`}</DialogTitle>
+        )} на общий счет ${paidModal.paidOut?.fullName} ?`}</DialogTitle>
         <DialogActions className="btn-container">
           <Btn classes="btn btn_white" onClick={handleChangeModal}>
             Отмена
           </Btn>
           <Btn classes="btn btn_primary" onClick={paid}>
-            Выплатить
+            Перевести
           </Btn>
         </DialogActions>
       </Dialog>

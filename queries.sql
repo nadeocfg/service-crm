@@ -466,3 +466,16 @@ WHERE
   id <> 32;
 
 ---------------------------------------------------------------------------------
+
+SELECT
+  count(*) AS total
+FROM
+  "service-crm".cash as cash
+LEFT JOIN
+  "service-crm".users as users
+ON
+  users.id = cash."userId"
+WHERE
+  users."isActive" = true AND
+  (LOWER(users."fullName") LIKE '%%' OR
+  cash.id::text LIKE '%%')

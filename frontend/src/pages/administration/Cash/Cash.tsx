@@ -19,6 +19,8 @@ import TableSort from '../../../components/TableSort';
 import { SortModel } from '../../../models/orderModel';
 import { SET_CASH_SEARCH_FIELD } from '../../../store/storeConstants/cashConstants';
 import { getCashList } from '../../../store/actions/cashActions';
+import { formatDate } from '../../../utils/formatDate';
+import { formatSum } from '../../../utils/formatSum';
 
 const Cash = () => {
   const dispatch = useDispatch();
@@ -38,11 +40,13 @@ const Cash = () => {
   });
 
   useEffect(() => {
-    getCashList(
-      pagination.currentPage,
-      pagination.rowsPerPage,
-      searchField,
-      sort
+    dispatch(
+      getCashList(
+        pagination.currentPage,
+        pagination.rowsPerPage,
+        searchField,
+        sort
+      )
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,41 +153,24 @@ const Cash = () => {
                 <TableSort
                   sort={sort}
                   handleChangeSort={handleChangeSort}
-                  label="Серийный номер"
-                  sortBy="boilerSerial"
-                />
-              </TableCell>
-              <TableCell>Котел</TableCell>
-              <TableCell>
-                <TableSort
-                  sort={sort}
-                  handleChangeSort={handleChangeSort}
-                  label="Телефон"
-                  sortBy="phone"
+                  label="Сумма готовая к выплате"
+                  sortBy="readySum"
                 />
               </TableCell>
               <TableCell>
                 <TableSort
                   sort={sort}
                   handleChangeSort={handleChangeSort}
-                  label="Телефон 2"
-                  sortBy="phone2"
+                  label="Сумма не готовая к выплате"
+                  sortBy="notReadySum"
                 />
               </TableCell>
               <TableCell>
                 <TableSort
                   sort={sort}
                   handleChangeSort={handleChangeSort}
-                  label="Адрес"
-                  sortBy="address"
-                />
-              </TableCell>
-              <TableCell>
-                <TableSort
-                  sort={sort}
-                  handleChangeSort={handleChangeSort}
-                  label="Email"
-                  sortBy="email"
+                  label="Выплаченная сумма"
+                  sortBy="paidSum"
                 />
               </TableCell>
               <TableCell>
@@ -201,6 +188,13 @@ const Cash = () => {
             {cashList.map((cash) => (
               <TableRow key={cash.id}>
                 <TableCell>{cash.id}</TableCell>
+                <TableCell>{cash.fullName}</TableCell>
+                <TableCell>{formatSum(cash.readySum)}</TableCell>
+                <TableCell>{formatSum(cash.notReadySum)}</TableCell>
+                <TableCell>{formatSum(cash.paidSum)}</TableCell>
+                <TableCell>
+                  {formatDate(cash.updatedDate || '', true)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -32,6 +32,9 @@ const App = () => {
   const isAuthorized = useSelector(
     (store: StoreModel) => store.userStore.isAuthorized
   );
+  const userRole = useSelector(
+    (store: StoreModel) => store.userStore.authResponse.roleCode
+  );
   const isLoading = useSelector(
     (store: StoreModel) => store.mainStore.isLoading
   );
@@ -95,27 +98,31 @@ const App = () => {
                 <PaidOuts />
               </Route>
 
-              <Route exact path="/administration/roles">
-                <DictRoles />
-              </Route>
-              <Route exact path="/administration/settings">
-                <Settings />
-              </Route>
-              <Route exact path="/administration/job-types">
-                <DictJobTypes />
-              </Route>
-              <Route exact path="/administration/boilers">
-                <DictBoilers />
-              </Route>
-              <Route exact path="/administration/parts">
-                <DictParts />
-              </Route>
-              <Route exact path="/administration/order-statuses">
-                <DictOrderStatuses />
-              </Route>
-              <Route exact path="/administration/cash">
-                <Cash />
-              </Route>
+              {(userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') && (
+                <>
+                  <Route exact path="/administration/roles">
+                    <DictRoles />
+                  </Route>
+                  <Route exact path="/administration/settings">
+                    <Settings />
+                  </Route>
+                  <Route exact path="/administration/job-types">
+                    <DictJobTypes />
+                  </Route>
+                  <Route exact path="/administration/boilers">
+                    <DictBoilers />
+                  </Route>
+                  <Route exact path="/administration/parts">
+                    <DictParts />
+                  </Route>
+                  <Route exact path="/administration/order-statuses">
+                    <DictOrderStatuses />
+                  </Route>
+                  <Route exact path="/administration/cash">
+                    <Cash />
+                  </Route>
+                </>
+              )}
 
               <Redirect to="/" />
             </Switch>

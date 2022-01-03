@@ -17,7 +17,7 @@ const cashReducer = (state = initialState, action: ReduxActionModel) => {
     case SET_CASH_LIST:
       return {
         ...state,
-        cashList: action.payload.customers,
+        cashList: action.payload.cashList,
         total: action.payload.total,
       };
 

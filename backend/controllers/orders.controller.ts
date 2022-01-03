@@ -68,12 +68,12 @@ const createOrder = async (
     const insertOrderHistory = await db.query(
       `
         INSERT INTO
-          "service-crm"."ordersStatusHistory" ("orderId", "status", "comment", "createdBy")
+          "${process.env.DB_NAME}"."ordersStatusHistory" ("orderId", "status", "comment", "createdBy")
         VALUES($1, (
           SELECT
             status.id
           FROM
-            "service-crm"."dictOrderStatuses" as status
+            "${process.env.DB_NAME}"."dictOrderStatuses" as status
           WHERE
             status.code = $2
         ), $3, $4)
@@ -1135,13 +1135,13 @@ const executeAction = async (
     const changeStatus = await db.query(
       `
         UPDATE
-          "service-crm"."orders" as orders
+          "${process.env.DB_NAME}"."orders" as orders
         SET
           status = (
             SELECT
               status.id
             FROM
-              "service-crm"."dictOrderStatuses" as status
+              "${process.env.DB_NAME}"."dictOrderStatuses" as status
             WHERE
               status.code = $1
           ),
@@ -1155,15 +1155,81 @@ const executeAction = async (
       [code, orderId]
     );
 
+    // UPDATE CASH TABLE IF ORDER STATUS === 'DONE'
+    if (code === 'DONE') {
+      const paidOutSum = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."serviceManPaidOuts"
+          WHERE
+            "orderId" = $1;
+        `,
+        [orderId]
+      );
+
+      const getCashItem = await db.query(
+        `
+          SELECT
+            *
+          FROM
+            "${process.env.DB_NAME}"."cash"
+          WHERE
+            "userId" = $1;
+        `,
+        [order.rows[0]?.serviceManId]
+      );
+
+      if (getCashItem.rows.length === 0) {
+        const insertRow = await db.query(
+          `
+            INSERT INTO
+              "${process.env.DB_NAME}"."cash" ("userId", "notReadySum", "createdDate", "updatedDate")
+            VALUES($1, $2, NOW(), NOW())
+            RETURNING
+              *;
+          `,
+          [
+            order.rows[0]?.serviceManId,
+            +paidOutSum.rows[0].parts +
+              +paidOutSum.rows[0].job +
+              +paidOutSum.rows[0].visit || 0,
+          ]
+        );
+      } else {
+        const updateRow = await db.query(
+          `
+            UPDATE
+              "${process.env.DB_NAME}"."cash"
+            SET
+              "notReadySum" = $1,
+              "updatedDate" = NOW()
+            WHERE
+              "userId" = $2
+            RETURNING
+              *;
+          `,
+          [
+            +getCashItem.rows[0].notReadySum +
+              +paidOutSum.rows[0].parts +
+              +paidOutSum.rows[0].job +
+              +paidOutSum.rows[0].visit || getCashItem.rows[0].readySum,
+            order.rows[0]?.serviceManId,
+          ]
+        );
+      }
+    }
+
     const insertOrderHistory = await db.query(
       `
         INSERT INTO
-          "service-crm"."ordersStatusHistory" ("orderId", "status", "comment", "createdBy")
+          "${process.env.DB_NAME}"."ordersStatusHistory" ("orderId", "status", "comment", "createdBy")
         VALUES($1, (
           SELECT
             status.id
           FROM
-            "service-crm"."dictOrderStatuses" as status
+            "${process.env.DB_NAME}"."dictOrderStatuses" as status
           WHERE
             status.code = $2
         ), $3, $4)

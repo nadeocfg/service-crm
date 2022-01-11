@@ -78,4 +78,86 @@ const getCashList = async (
   }
 };
 
-export { getCashList };
+// @desc   pay to service man
+// @route  POST /api/cash/pay
+// @access Private
+const payToServiceMan = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id, requestedAmount } = request.body;
+
+    if (requestedAmount <= 0) {
+      return response.status(400).json({
+        message: `Выплата не может быть меньше 0`,
+      });
+    }
+
+    const cashItem = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}".cash as cash
+        WHERE
+          cash.id = $1;
+      `,
+      [id]
+    );
+
+    if (cashItem.rows.length === 0) {
+      return response.status(404).json({
+        message: `Касса с id:${id} не найдена`,
+      });
+    }
+
+    if (cashItem.rows[0].readySum < requestedAmount) {
+      return response.status(400).json({
+        message: `Запрошенная сумма не может быть больше доступной`,
+      });
+    }
+
+    const updateCashItem = await db.query(
+      `
+        UPDATE
+          "${process.env.DB_NAME}"."cash"
+        SET
+          "readySum" = "readySum" - $1,
+          "paidSum" = "paidSum" + $1,
+          "updatedDate" = NOW()
+        WHERE
+          id = $2
+        RETURNING
+          *;
+      `,
+      [requestedAmount, id]
+    );
+
+    const insertCashHistory = await db.query(
+      `
+        INSERT INTO
+          "${process.env.DB_NAME}"."cashHistoryLog"("createdBy", "serviceManId", "requestedAmount", "readySumAfter")
+        VALUES($1, $2, $3, $4)
+        RETURNING
+          *;
+      `,
+      [
+        request.user?.id,
+        updateCashItem.rows[0].userId,
+        requestedAmount,
+        updateCashItem.rows[0].readySum,
+      ]
+    );
+
+    return response.json(updateCashItem.rows[0]);
+  } catch (error: any) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+export { getCashList, payToServiceMan };

@@ -1,4 +1,9 @@
 import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
   InputBase,
   Paper,
   Table,
@@ -8,9 +13,11 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TextField,
+  Tooltip,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { StoreModel } from '../../../models/storeModel';
+import { CashListItemModel, StoreModel } from '../../../models/storeModel';
 import SearchIcon from '@material-ui/icons/Search';
 import Btn from '../../../components/Btn';
 import React, { useEffect, useState } from 'react';
@@ -18,14 +25,22 @@ import CreateCustomerModal from '../../../components/modals/CreateCustomerModal'
 import TableSort from '../../../components/TableSort';
 import { SortModel } from '../../../models/orderModel';
 import { SET_CASH_SEARCH_FIELD } from '../../../store/storeConstants/cashConstants';
-import { getCashList } from '../../../store/actions/cashActions';
+import {
+  getCashList,
+  payToServiceMan,
+} from '../../../store/actions/cashActions';
 import { formatDate } from '../../../utils/formatDate';
 import { formatSum } from '../../../utils/formatSum';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import Transition from '../../../components/Transition';
 
 const Cash = () => {
   const dispatch = useDispatch();
   const searchField = useSelector(
     (store: StoreModel) => store.cashStore.searchField
+  );
+  const userRoleCode = useSelector(
+    (state: StoreModel) => state.userStore.authResponse.roleCode
   );
   const total = useSelector((store: StoreModel) => store.cashStore.total);
   const cashList = useSelector((store: StoreModel) => store.cashStore.cashList);
@@ -37,6 +52,15 @@ const Cash = () => {
   const [sort, setSort] = useState<SortModel>({
     name: 'id',
     order: 'desc',
+  });
+  const [cashModal, setCashModal] = useState<{
+    show: boolean;
+    requestedAmount: number;
+    cashItem: CashListItemModel | null;
+  }>({
+    show: false,
+    requestedAmount: 0,
+    cashItem: null,
   });
 
   useEffect(() => {
@@ -109,6 +133,43 @@ const Cash = () => {
         sort
       )
     );
+  };
+
+  const pay = () => {
+    dispatch(payToServiceMan(cashModal.cashItem, cashModal.requestedAmount));
+
+    setCashModal({
+      ...cashModal,
+      cashItem: null,
+      requestedAmount: 0,
+      show: !cashModal.show,
+    });
+  };
+
+  const handleChangeModal = (cashItem?: CashListItemModel) => {
+    if (cashItem) {
+      setCashModal({
+        ...cashModal,
+        cashItem,
+        show: !cashModal.show,
+      });
+    } else {
+      setCashModal({
+        ...cashModal,
+        cashItem: null,
+        requestedAmount: 0,
+        show: !cashModal.show,
+      });
+    }
+
+    return true;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCashModal({
+      ...cashModal,
+      requestedAmount: +e.target.value,
+    });
   };
 
   return (
@@ -195,6 +256,20 @@ const Cash = () => {
                 <TableCell>
                   {formatDate(cash.updatedDate || '', true)}
                 </TableCell>
+                <TableCell>
+                  {(userRoleCode === 'ADMIN' ||
+                    userRoleCode === 'SUPER_ADMIN') && (
+                    <Tooltip title="Выплатить">
+                      <IconButton
+                        aria-label="view"
+                        onClick={() => handleChangeModal(cash)}
+                        disabled={cash.readySum <= 0}
+                      >
+                        <AttachMoneyIcon fontSize="inherit" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -210,6 +285,41 @@ const Cash = () => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+
+      <Dialog
+        open={cashModal.show}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => handleChangeModal(undefined)}
+      >
+        <DialogTitle>{`Введите сумму выплаты для ${cashModal.cashItem?.fullName}`}</DialogTitle>
+        <DialogContent>
+          <TextField
+            className="input"
+            label="Сумма выплаты"
+            variant="outlined"
+            value={cashModal.requestedAmount}
+            onChange={handleChange}
+            type="number"
+            required
+          />
+        </DialogContent>
+        <DialogActions className="btn-container">
+          <Btn
+            classes="btn btn_white"
+            onClick={() => handleChangeModal(undefined)}
+          >
+            Отмена
+          </Btn>
+          <Btn
+            classes="btn btn_primary"
+            onClick={pay}
+            disabled={cashModal.requestedAmount <= 0}
+          >
+            Выплатить
+          </Btn>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

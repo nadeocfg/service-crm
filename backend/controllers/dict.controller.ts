@@ -19,9 +19,7 @@ const getDictRoles = async (
         SELECT
           *
         FROM
-          "${process.env.DB_NAME}"."dictRoles"
-        WHERE
-          "isActive" = true;
+          "${process.env.DB_NAME}"."dictRoles";
       `
     );
 
@@ -114,9 +112,8 @@ const getJobTypes = async (
           FROM
             "${process.env.DB_NAME}"."dictJobTypes"
           WHERE
-            "isActive" = true AND
-            (code LIKE $3 OR
-            name LIKE $3)
+            code LIKE $3 OR
+            name LIKE $3
           ORDER BY
             id
           LIMIT
@@ -134,9 +131,8 @@ const getJobTypes = async (
           FROM
             "${process.env.DB_NAME}"."dictJobTypes"
           WHERE
-            "isActive" = true AND
-            (code LIKE $1 OR
-            name LIKE $1);
+            code LIKE $1 OR
+            name LIKE $1;
         `,
       [`%${searchValue}%`]
     );
@@ -322,95 +318,42 @@ const getBoilers = async (
       });
     }
 
-    if (searchValue) {
-      const allBoilers = await db.query(
-        searchValue
-          ? `
-          SELECT
-            *
-          FROM
-            "${process.env.DB_NAME}"."dictBoilers"
-          WHERE
-            "isActive" = true AND
-            (article LIKE $3 OR
-            name LIKE $3)
-          ORDER BY
-            id
-          LIMIT
-            $1
-          OFFSET
-            $2;
-        `
-          : `
-          SELECT
-            *
-          FROM
-            "${process.env.DB_NAME}"."dictBoilers"
-          WHERE
-            "isActive" = true
-          ORDER BY
-            id
-          LIMIT
-            $1
-          OFFSET
-            $2;
-        `,
-        [count, offset, `%${searchValue}%`]
-      );
+    const allBoilers = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."dictBoilers"
+        WHERE
+          article LIKE $3 OR
+          name LIKE $3
+        ORDER BY
+          id
+        LIMIT
+          $1
+        OFFSET
+          $2;
+      `,
+      [count, offset, `%${searchValue}%`]
+    );
 
-      const total = await db.query(
-        `
-          SELECT
-            count(*) AS total
-          FROM
-            "${process.env.DB_NAME}"."dictBoilers"
-          WHERE
-            "isActive" = true AND
-            (article LIKE $1 OR
-            name LIKE $1);
-        `,
-        [`%${searchValue}%`]
-      );
+    const total = await db.query(
+      `
+        SELECT
+          count(*) AS total
+        FROM
+          "${process.env.DB_NAME}"."dictBoilers"
+        WHERE
+          article LIKE $1 OR
+          name LIKE $1;
+      `,
+      [`%${searchValue}%`]
+    );
 
-      response.status(200).json({
-        boilers: allBoilers.rows,
-        total: +total.rows[0].total,
-      });
-    } else {
-      const allBoilers = await db.query(
-        `
-          SELECT
-            *
-          FROM
-            "${process.env.DB_NAME}"."dictBoilers"
-          WHERE
-            "isActive" = true
-          ORDER BY
-            id
-          LIMIT
-            $1
-          OFFSET
-            $2;
-        `,
-        [count, offset]
-      );
-
-      const total = await db.query(
-        `
-          SELECT
-            count(*) AS total
-          FROM
-            "${process.env.DB_NAME}"."dictBoilers"
-          WHERE
-            "isActive" = true;
-        `
-      );
-
-      response.status(200).json({
-        boilers: allBoilers.rows,
-        total: +total.rows[0].total,
-      });
-    }
+    response.status(200).json({
+      boilers: allBoilers.rows,
+      total: +total.rows[0].total,
+    });
   } catch (error: any) {
     response.status(404).json({
       message: error.message,
@@ -579,9 +522,8 @@ const getParts = async (
         FROM
           "${process.env.DB_NAME}"."dictParts"
         WHERE
-          "isActive" = true AND
-          (article LIKE $3 OR
-          name LIKE $3)
+          article LIKE $3 OR
+          name LIKE $3
         ORDER BY
           id
         LIMIT
@@ -599,9 +541,8 @@ const getParts = async (
         FROM
           "${process.env.DB_NAME}"."dictParts"
         WHERE
-          "isActive" = true AND
-          (article LIKE $1 OR
-          name LIKE $1);
+          article LIKE $1 OR
+          name LIKE $1;
       `,
       [`%${searchValue}%`]
     );
@@ -794,9 +735,7 @@ const getOrderStatuses = async (
         SELECT
           *
         FROM
-          "${process.env.DB_NAME}"."dictOrderStatuses"
-        WHERE
-          "isActive" = true;
+          "${process.env.DB_NAME}"."dictOrderStatuses";
       `
     );
 

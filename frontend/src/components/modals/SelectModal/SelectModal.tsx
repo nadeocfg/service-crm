@@ -99,7 +99,7 @@ const SelectModal = ({
                 button
                 alignItems="flex-start"
                 onClick={() => onClick(fieldName, el)}
-                disabled={el.quantity <= 0}
+                disabled={el.quantity <= 0 || !el.isActive}
                 key={index}
               >
                 <ListItemText

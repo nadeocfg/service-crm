@@ -19,10 +19,7 @@ import {
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PartItemModel, StoreModel } from '../../../models/storeModel';
-import {
-  getAllBoilers,
-  getAllParts,
-} from '../../../store/actions/dictsActions';
+import { getAllParts } from '../../../store/actions/dictsActions';
 import { formatDate } from '../../../utils/formatDate';
 import EditIcon from '@material-ui/icons/Edit';
 import Transition from '../../../components/Transition';
@@ -77,7 +74,7 @@ const DictParts = () => {
       rowsPerPage: +event.target.value,
     });
 
-    dispatch(getAllBoilers(pagination.currentPage, +event.target.value));
+    dispatch(getAllParts(pagination.currentPage, +event.target.value));
   };
 
   const handleChangePage = (event: any, page: number) => {
@@ -86,10 +83,10 @@ const DictParts = () => {
       currentPage: page,
     });
 
-    dispatch(getAllBoilers(page, pagination.rowsPerPage));
+    dispatch(getAllParts(page, pagination.rowsPerPage));
   };
 
-  const updateBoiler = (event: any) => {
+  const updatePart = (event: any) => {
     event.preventDefault();
 
     api
@@ -215,7 +212,7 @@ const DictParts = () => {
         onClose={handleChangeModal}
       >
         <DialogTitle>Редактирование запчасти</DialogTitle>
-        <form id="job-type-form" action="" onSubmit={updateBoiler}>
+        <form id="job-type-form" action="" onSubmit={updatePart}>
           <DialogContent className="form">
             <TextField
               className="input form__field"

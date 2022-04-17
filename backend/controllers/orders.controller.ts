@@ -525,19 +525,6 @@ const getOrderById = async (
       });
     }
 
-    const boiler = await db.query(
-      `
-        SELECT
-          *
-        FROM
-          "${process.env.DB_NAME}"."dictBoilers" as "dictBoilers"
-        WHERE
-          "dictBoilers".id = $1 AND
-          "dictBoilers"."isActive" = true;
-      `,
-      [getOrderById.rows[0].boilerId]
-    );
-
     const soldParts = await db.query(
       `
         SELECT
@@ -692,6 +679,19 @@ const getOrderById = async (
       [getOrderById.rows[0].customerId]
     );
 
+    const boiler = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."dictBoilers" as "dictBoilers"
+        WHERE
+          "dictBoilers".id = $1 AND
+          "dictBoilers"."isActive" = true;
+      `,
+      [getOrderById.rows[0].boilerId]
+    );
+
     const serviceMan = await db.query(
       `
         SELECT
@@ -723,9 +723,11 @@ const getOrderById = async (
       ...getOrderById.rows[0],
       parts,
       jobTypes,
-      customer: customer.rows[0],
+      customer: {
+        ...customer.rows[0],
+        boiler: boiler.rows[0],
+      },
       serviceMan: serviceMan.rows[0],
-      boiler: boiler.rows[0],
     };
 
     response.json(result);

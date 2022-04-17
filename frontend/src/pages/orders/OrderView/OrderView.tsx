@@ -19,11 +19,12 @@ import {
   TableRow,
   TextField,
 } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   OrderDataModel,
   OrderStatusHistoryItem,
   PartItemModel,
+  StoreModel,
 } from '../../../models/storeModel';
 import { useEffect, useState } from 'react';
 import { setLoader } from '../../../store/actions/mainActions';
@@ -38,10 +39,14 @@ import { useParams } from 'react-router';
 import { OrderActionModel } from '../../../models/orderActionModel';
 import Btn from '../../../components/Btn';
 import Transition from '../../../components/Transition';
+import UpdateCustomerModal from '../../../components/UpdateCustomerModal';
 
 const OrderView = () => {
   const dispatch = useDispatch();
   const params: { id: string | undefined } = useParams();
+  const userRole = useSelector(
+    (store: StoreModel) => store.userStore.authResponse.roleCode
+  );
   const [orderData, setOrderData] = useState<OrderDataModel>({
     customer: {},
     address: '',
@@ -291,7 +296,19 @@ const OrderView = () => {
       </Card>
 
       <Card>
-        <CardHeader title="Данные о клиенте:" />
+        <CardHeader
+          title={`Данные о клиенте:`}
+          action={
+            userRole === 'ADMIN' || userRole === 'SUPER_ADMIN' ? (
+              <UpdateCustomerModal
+                customer={orderData.customer}
+                callback={getOrderData}
+              />
+            ) : (
+              ''
+            )
+          }
+        />
         <CardContent>
           <List className="info-list">
             <ListItem>
@@ -320,7 +337,7 @@ const OrderView = () => {
             </ListItem>
             <ListItem>
               <ListItemText
-                primary={orderData.boiler?.name || ''}
+                primary={orderData.customer.boiler?.name || ''}
                 secondary={'Модель бойлера'}
               />
             </ListItem>

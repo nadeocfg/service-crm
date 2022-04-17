@@ -9,36 +9,22 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  FormControlLabel,
-  Checkbox,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { CustomerItemModel, StoreModel } from '../../models/storeModel';
 import SearchIcon from '@material-ui/icons/Search';
-import EditIcon from '@material-ui/icons/Edit';
 import Btn from '../../components/Btn';
 import { formatDate } from '../../utils/formatDate';
 import React, { useEffect, useState } from 'react';
 import CreateCustomerModal from '../../components/modals/CreateCustomerModal';
 import { SET_CUSTOMERS_SEARCH_FIELD } from '../../store/storeConstants/customersConstants';
 import { getCustomersList } from '../../store/actions/customersActions';
-import Transition from '../../components/Transition';
-import api from '../../utils/axiosMiddleware';
-import { setLoader } from '../../store/actions/mainActions';
-import { ADD_NOTIFY } from '../../store/storeConstants/snackbarConstants';
-import ReactInputMask from 'react-input-mask';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import history from '../../utils/history';
 import { SET_ORDER_DATA } from '../../store/storeConstants/ordersConstants';
 import TableSort from '../../components/TableSort';
 import { SortModel } from '../../models/orderModel';
-import SelectModal from '../../components/modals/SelectModal';
-import { getAllBoilers } from '../../store/actions/dictsActions';
+import UpdateCustomerModal from '../../components/UpdateCustomerModal';
 
 const Customers = () => {
   const dispatch = useDispatch();
@@ -52,30 +38,15 @@ const Customers = () => {
   const userRoleCode = useSelector(
     (store: StoreModel) => store.userStore.authResponse.roleCode
   );
-  const boilersList = useSelector(
-    (store: StoreModel) => store.dictsStore.dictBoilers.boilers
-  );
   const [pagination, setPagination] = useState({
     currentPage: 0,
     rowsPerPage: 10,
     rowsPerPageOptions: [10, 20, 50],
   });
-  const [open, setOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<CustomerItemModel>({
-    address: '',
-    fullName: '',
-    email: '',
-    isActive: false,
-    phone: '',
-    phone2: '',
-    boilerSerial: '',
-    boiler: {},
-  });
   const [sort, setSort] = useState<SortModel>({
     name: 'id',
     order: 'desc',
   });
-  const [selectModal, setSelectModal] = useState(false);
 
   useEffect(() => {
     dispatch(
@@ -135,81 +106,6 @@ const Customers = () => {
     dispatch(getCustomersList(page, pagination.rowsPerPage, searchField, sort));
   };
 
-  const handleChangeModal = (customer?: CustomerItemModel) => {
-    if (customer) {
-      setSelectedCustomer({ ...customer });
-    } else {
-      setSelectedCustomer({
-        address: '',
-        fullName: '',
-        email: '',
-        isActive: false,
-        phone: '',
-        phone2: '',
-        boiler: {},
-      });
-    }
-
-    setOpen(!open);
-  };
-
-  const handleChange = (name: string) => (event: React.ChangeEvent<any>) => {
-    if (name === 'isActive') {
-      return setSelectedCustomer({
-        ...selectedCustomer,
-        [name]: event.target.checked,
-      });
-    }
-
-    setSelectedCustomer({
-      ...selectedCustomer,
-      [name]: event.target.value,
-    });
-  };
-
-  const updateCustomer = (event: any) => {
-    event.preventDefault();
-
-    dispatch(setLoader(true));
-
-    api
-      .post(`/api/customers/update`, selectedCustomer)
-      .then((res) => {
-        dispatch({
-          type: ADD_NOTIFY,
-          payload: {
-            message: 'Клиент успешно обновлен',
-            type: 'success',
-          },
-        });
-
-        handleChangeModal();
-
-        dispatch(
-          getCustomersList(
-            pagination.currentPage,
-            pagination.rowsPerPage,
-            searchField,
-            sort
-          )
-        );
-      })
-      .catch((err) => {
-        dispatch({
-          type: ADD_NOTIFY,
-          payload: {
-            message: err.response?.data?.message
-              ? err.response.data.message
-              : 'Ошибка',
-            type: 'error',
-          },
-        });
-      })
-      .finally(() => {
-        dispatch(setLoader(false));
-      });
-  };
-
   const createOrder = (customer: CustomerItemModel) => {
     dispatch({
       type: SET_ORDER_DATA,
@@ -263,21 +159,6 @@ const Customers = () => {
         }
       )
     );
-  };
-
-  const changeModal = () => {
-    setSelectModal(!selectModal);
-  };
-
-  const onSelect = (name: string, value: any) => {
-    setSelectedCustomer({
-      ...selectedCustomer,
-      boiler: value,
-    });
-  };
-
-  const getBoilers = (searchValue: string) => {
-    dispatch(getAllBoilers(0, 20, searchValue));
   };
 
   return (
@@ -387,12 +268,13 @@ const Customers = () => {
                 {(userRoleCode === 'SUPER_ADMIN' ||
                   userRoleCode === 'ADMIN') && (
                   <TableCell>
-                    <IconButton
-                      aria-label="edit"
-                      onClick={() => handleChangeModal(customer)}
-                    >
-                      <EditIcon fontSize="inherit" />
-                    </IconButton>
+                    <UpdateCustomerModal
+                      customer={customer}
+                      pagination={pagination}
+                      searchField={searchField}
+                      sort={sort}
+                    />
+
                     <IconButton
                       aria-label="edit"
                       onClick={() => createOrder(customer)}
@@ -415,120 +297,6 @@ const Customers = () => {
         page={pagination.currentPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-
-      <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={() => handleChangeModal()}
-      >
-        <DialogTitle>Редактирование клиента</DialogTitle>
-        <form id="job-type-form" action="" onSubmit={updateCustomer}>
-          <DialogContent className="form">
-            <TextField
-              className="input form__field"
-              label="Email"
-              variant="outlined"
-              value={selectedCustomer.email}
-              onChange={handleChange('email')}
-              type="email"
-            />
-
-            <TextField
-              className="input form__field"
-              label="ФИО"
-              variant="outlined"
-              value={selectedCustomer.fullName}
-              onChange={handleChange('fullName')}
-              required
-            />
-
-            <TextField
-              className="input form__field"
-              label="Серийный номер"
-              variant="outlined"
-              value={selectedCustomer.boilerSerial}
-              onChange={handleChange('boilerSerial')}
-              required
-            />
-
-            <TextField
-              className="input form__field"
-              label="Котел"
-              variant="outlined"
-              onClick={changeModal}
-              onKeyUp={changeModal}
-              value={selectedCustomer.boiler?.name || ''}
-              required
-            />
-
-            <ReactInputMask
-              mask="+7 (999) 999-99-99"
-              onChange={handleChange('phone')}
-              value={selectedCustomer.phone}
-            >
-              <TextField
-                className="input form__field"
-                label="Телефон"
-                variant="outlined"
-                required
-              />
-            </ReactInputMask>
-
-            <ReactInputMask
-              mask="+7 (999) 999-99-99"
-              onChange={handleChange('phone2')}
-              value={selectedCustomer.phone2}
-            >
-              <TextField
-                className="input form__field"
-                label="Телефон 2"
-                variant="outlined"
-              />
-            </ReactInputMask>
-
-            <TextField
-              className="input form__field"
-              label="Адрес"
-              variant="outlined"
-              value={selectedCustomer.address}
-              onChange={handleChange('address')}
-              required
-            />
-
-            <FormControlLabel
-              className="input form__field form__field_checkbox"
-              control={
-                <Checkbox
-                  checked={selectedCustomer.isActive}
-                  onChange={handleChange('isActive')}
-                  name="checkbox"
-                  color="primary"
-                />
-              }
-              label="Активный"
-            />
-          </DialogContent>
-          <DialogActions className="btn-container">
-            <Btn classes="btn btn_white" onClick={() => handleChangeModal()}>
-              Отмена
-            </Btn>
-            <Btn classes="btn btn_primary" type="submit">
-              Сохранить
-            </Btn>
-          </DialogActions>
-        </form>
-      </Dialog>
-
-      <SelectModal
-        open={selectModal}
-        handleChangeModal={changeModal}
-        onSelect={onSelect}
-        title={'Выберите котел'}
-        handleChange={getBoilers}
-        items={boilersList}
-        fieldName={'boiler'}
       />
     </>
   );

@@ -206,7 +206,7 @@ const OrdersList = () => {
                   sort={sort}
                   handleChangeSort={handleChangeSort}
                   label="Статус"
-                  sortBy="name"
+                  sortBy="statusName"
                 />
               </TableCell>
               <TableCell>Комментарий</TableCell>

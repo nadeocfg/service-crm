@@ -176,6 +176,14 @@ const OrdersList = () => {
                   sortBy="boilerSerial"
                 />
               </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
+                  label="Наименование котла"
+                  sortBy="boilerName"
+                />
+              </TableCell>
               <TableCell>Адрес</TableCell>
               <TableCell>
                 <TableSort
@@ -211,6 +219,7 @@ const OrdersList = () => {
                 <TableCell>{order.id}</TableCell>
                 <TableCell>{order.customer.fullName}</TableCell>
                 <TableCell>{order.customer.boilerSerial}</TableCell>
+                <TableCell>{order.boilerName}</TableCell>
                 <TableCell>{order.address}</TableCell>
                 <TableCell>{formatDate(order.createdDate, true)}</TableCell>
                 <TableCell>{order.serviceMan.fullName}</TableCell>

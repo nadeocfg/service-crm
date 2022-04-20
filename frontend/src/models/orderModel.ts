@@ -11,6 +11,7 @@ export interface OrderItemModel {
   comment: string;
   customerId: number;
   serviceManId: number;
+  boilerName: string;
   createdBy: {
     login: string;
     fullName: string;

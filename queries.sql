@@ -145,13 +145,13 @@ SELECT
   users."fullName" as "fullName",
   orders."status" as "orderStatus"
 FROM
-  "service-crm"."serviceManPaidOuts" as paids
+  "serviceManPaidOuts" as paids
 LEFT JOIN
-  "service-crm"."users" as users
+  "service-crm"."service-crm"."users" as users
 ON
   users.id = paids."userId"
 LEFT JOIN
-  "service-crm"."orders" as orders
+  "service-crm"."service-crm"."orders" as orders
 ON
   orders.id = paids."orderId"
 WHERE
@@ -159,7 +159,7 @@ WHERE
     SELECT
       status.id
     FROM
-      "service-crm"."dictOrderStatuses" as status
+      "service-crm"."service-crm"."dictOrderStatuses" as status
     WHERE
       status.code = 'DONE'
   )
@@ -169,6 +169,13 @@ LIMIT
   10
 OFFSET
   0;
+
+SELECT
+    *
+FROM
+     "service-crm".orders
+WHERE
+    status = 4;
 
 SELECT
   count(*) AS total
@@ -479,3 +486,9 @@ WHERE
   users."isActive" = true AND
   (LOWER(users."fullName") LIKE '%%' OR
   cash.id::text LIKE '%%')
+
+
+SELECT
+    *
+FROM
+    "service-crm"."serviceManPaidOuts" as cash;

@@ -784,7 +784,8 @@ const getOrders = async (
             status.code as "statusCode",
             customers."fullName",
             customers."boilerSerial",
-            users."fullName" as "serviceManFullName"
+            users."fullName" as "serviceManFullName",
+            boilers.name as "boilerName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
           LEFT JOIN
@@ -799,6 +800,10 @@ const getOrders = async (
             "${process.env.DB_NAME}"."users" as users
           ON
             orders."serviceManId" = users.id
+          LEFT JOIN
+            "${process.env.DB_NAME}"."dictBoilers" as boilers
+          ON
+            customers."boilerId" = boilers.id
           WHERE
             orders."isActive" = true AND
             (LOWER(customers."fullName") LIKE $3 OR
@@ -860,7 +865,8 @@ const getOrders = async (
             status.code as "statusCode",
             customers."fullName",
             customers."boilerSerial",
-            users."fullName" as "serviceManFullName"
+            users."fullName" as "serviceManFullName",
+            boilers.name as "boilerName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
           LEFT JOIN
@@ -875,6 +881,10 @@ const getOrders = async (
             "${process.env.DB_NAME}"."customers" as customers
           ON
             orders."customerId" = customers.id
+          LEFT JOIN
+            "${process.env.DB_NAME}"."dictBoilers" as boilers
+          ON
+            customers."boilerId" = boilers.id
           WHERE
             orders."serviceManId" = $3 AND
             orders."isActive" = true AND

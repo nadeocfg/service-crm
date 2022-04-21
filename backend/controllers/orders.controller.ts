@@ -811,6 +811,8 @@ const getOrders = async (
             LOWER(orders.address) LIKE $3 OR
             LOWER(users."fullName") LIKE $3 OR
             LOWER(customers."boilerSerial") LIKE $3 OR
+            LOWER(boilers.name) LIKE $3 OR
+            LOWER(status.name) LIKE $3 OR
             LOWER(orders.comment) LIKE $3)
           ORDER BY
             ${format('%I', sortBy)} ${format('%s', order)}
@@ -819,7 +821,7 @@ const getOrders = async (
           OFFSET
             $2;
         `,
-        [count, offset, `%${searchValue || ''}%`.toLowerCase()]
+        [count, offset, `%${searchValue}%`.toLowerCase()]
       );
 
       total = await db.query(
@@ -833,15 +835,25 @@ const getOrders = async (
           ON
             orders."customerId" = customers.id
           LEFT JOIN
+            "${process.env.DB_NAME}"."dictOrderStatuses" as status
+          ON
+            orders.status = status.id
+          LEFT JOIN
             "${process.env.DB_NAME}"."users" as users
           ON
             orders."serviceManId" = users.id
+          LEFT JOIN
+            "${process.env.DB_NAME}"."dictBoilers" as boilers
+          ON
+            customers."boilerId" = boilers.id
           WHERE
             orders."isActive" = true AND
             (LOWER(customers."fullName") LIKE $1 OR
             orders.id::text LIKE $1 OR
             LOWER(orders.address) LIKE $1 OR
             LOWER(users."fullName") LIKE $1 OR
+            LOWER(boilers.name) LIKE $1 OR
+            LOWER(status.name) LIKE $1 OR
             LOWER(orders.comment) LIKE $1);
         `,
         [`%${searchValue}%`.toLowerCase()]
@@ -869,6 +881,10 @@ const getOrders = async (
             boilers.name as "boilerName"
           FROM
             "${process.env.DB_NAME}"."orders" as orders
+            LEFT JOIN
+              "${process.env.DB_NAME}"."dictOrderStatuses" as status
+            ON
+              orders.status = status.id
           LEFT JOIN
             "${process.env.DB_NAME}"."dictOrderStatuses" as status
           ON
@@ -893,6 +909,8 @@ const getOrders = async (
             LOWER(orders.address) LIKE $4 OR
             LOWER(users."fullName") LIKE $4 OR
             LOWER(customers."boilerSerial") LIKE $4 OR
+            LOWER(boilers.name) LIKE $4 OR
+            LOWER(status.name) LIKE $4 OR
             LOWER(orders.comment) LIKE $4)
           ORDER BY
             ${format('%I', sortBy)} ${format('%s', order)}
@@ -911,6 +929,10 @@ const getOrders = async (
           FROM
             "${process.env.DB_NAME}"."orders" as orders
           LEFT JOIN
+            "${process.env.DB_NAME}"."dictOrderStatuses" as status
+          ON
+            orders.status = status.id
+          LEFT JOIN
             "${process.env.DB_NAME}"."customers" as customers
           ON
             orders."customerId" = customers.id
@@ -918,6 +940,10 @@ const getOrders = async (
             "${process.env.DB_NAME}"."users" as users
           ON
             orders."serviceManId" = users.id
+          LEFT JOIN
+            "${process.env.DB_NAME}"."dictBoilers" as boilers
+          ON
+            customers."boilerId" = boilers.id
           WHERE
             orders."serviceManId" = $1 AND
             orders."isActive" = true AND
@@ -925,6 +951,8 @@ const getOrders = async (
             orders.id::text LIKE $2 OR
             LOWER(orders.address) LIKE $2 OR
             LOWER(users."fullName") LIKE $2 OR
+            LOWER(boilers.name) LIKE $2 OR
+            LOWER(status.name) LIKE $2 OR
             LOWER(orders.comment) LIKE $2);
         `,
         [userId, `%${searchValue}%`.toLowerCase()]

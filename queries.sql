@@ -475,20 +475,76 @@ WHERE
 ---------------------------------------------------------------------------------
 
 SELECT
-  count(*) AS total
-FROM
-  "service-crm".cash as cash
-LEFT JOIN
-  "service-crm".users as users
-ON
-  users.id = cash."userId"
-WHERE
-  users."isActive" = true AND
-  (LOWER(users."fullName") LIKE '%%' OR
-  cash.id::text LIKE '%%')
-
+    orders.id,
+    orders.address,
+    orders."createdDate",
+    orders."updatedDate",
+    orders.comment,
+    orders."customerId",
+    orders."serviceManId",
+    orders."createdBy",
+    orders."phone",
+    status.name as "statusName",
+    status.code as "statusCode",
+    customers."fullName",
+    customers."boilerSerial",
+    users."fullName" as "serviceManFullName",
+    boilers.name as "boilerName"
+  FROM
+    "service-crm"."orders" as orders
+  LEFT JOIN
+    "service-crm"."dictOrderStatuses" as status
+  ON
+    orders.status = status.id
+  LEFT JOIN
+    "service-crm"."customers" as customers
+  ON
+    orders."customerId" = customers.id
+  LEFT JOIN
+    "service-crm"."users" as users
+  ON
+    orders."serviceManId" = users.id
+  LEFT JOIN
+    "service-crm"."dictBoilers" as boilers
+  ON
+    customers."boilerId" = boilers.id
+  WHERE
+    orders."isActive" = true AND
+    (LOWER(customers."fullName") LIKE 'соз' OR
+    orders.id::text LIKE 'соз' OR
+    LOWER(orders.address) LIKE 'соз' OR
+    LOWER(users."fullName") LIKE 'соз' OR
+    LOWER(customers."boilerSerial") LIKE 'соз' OR
+    LOWER(boilers.name) LIKE 'соз' OR
+    LOWER(status.name) LIKE 'соз' OR
+    LOWER(orders.comment) LIKE 'соз');
 
 SELECT
-    *
-FROM
-    "service-crm"."serviceManPaidOuts" as cash;
+    count(*) AS total
+  FROM
+    "service-crm"."orders"
+  LEFT JOIN
+    "service-crm"."customers" as customers
+  ON
+    orders."customerId" = customers.id
+  LEFT JOIN
+    "service-crm"."dictOrderStatuses" as status
+  ON
+    orders.status = status.id
+  LEFT JOIN
+    "service-crm"."users" as users
+  ON
+    orders."serviceManId" = users.id
+  LEFT JOIN
+    "service-crm"."dictBoilers" as boilers
+  ON
+    customers."boilerId" = boilers.id
+  WHERE
+    orders."isActive" = true AND
+    (LOWER(customers."fullName") LIKE 'создан' OR
+    orders.id::text LIKE 'создан' OR
+    LOWER(orders.address) LIKE 'создан' OR
+    LOWER(users."fullName") LIKE 'создан' OR
+    LOWER(boilers.name) LIKE 'создан' OR
+    LOWER(status.name) LIKE 'создан' OR
+    LOWER(orders.comment) LIKE 'создан');

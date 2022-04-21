@@ -136,7 +136,7 @@ const OrdersList = () => {
         <InputBase
           value={searchField}
           onChange={handleSearchChange}
-          placeholder="Введите параметры поиска (ФИО клиента, ID, Адрес, ФИО специалиста, Комментарий)"
+          placeholder="Введите параметры поиска (ФИО клиента, ID, Адрес, ФИО специалиста, Комментарий, Статус заказа, Наименование котла)"
           inputProps={{ 'aria-label': 'Введите параметры поиска' }}
         />
 

@@ -283,13 +283,14 @@ const updateOrder = async (
           "updatedDate" = NOW(),
           "serviceManId" = $3,
           phone = $6,
+          "visitPrice" = $7,
           comment = $4
         WHERE
           orders.id = $5
         RETURNING
           *;
       `,
-      [customer.id, address, serviceMan.id, comment, orderId, phone]
+      [customer.id, address, serviceMan.id, comment, orderId, phone, visitPrice]
     );
 
     const disableOldSoldParts = await db.query(

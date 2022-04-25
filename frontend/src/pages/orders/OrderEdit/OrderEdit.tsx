@@ -369,7 +369,7 @@ const OrderEdit = () => {
               onKeyUp={() =>
                 changeModal(getBoilers, 'Выберите котел', 'boiler')
               }
-              value={orderData.boiler?.name || ''}
+              value={orderData.customer?.boiler?.name || ''}
               required
             />
 

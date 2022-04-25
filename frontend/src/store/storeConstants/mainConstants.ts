@@ -1,3 +1,5 @@
 export const SET_LOADER = 'SET_LOADER';
 export const SET_DRAWER = 'SET_DRAWER';
 export const CLEAR_STORE = 'CLEAR_STORE';
+export const SET_DASHBOARD_ORDERS = 'SET_DASHBOARD_ORDERS';
+export const SET_DASHBOARD_CASH = 'SET_DASHBOARD_CASH';

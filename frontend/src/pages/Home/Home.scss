@@ -1,6 +1,7 @@
 .dashboard {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   width: 100%;
 
   &__item {
@@ -23,19 +24,15 @@
     width: 100%;
     text-align: right;
 
-    &:last-child {
-      margin-right: 0;
-    }
-
     h4 {
       margin-bottom: 0;
-      font-size: 12px;
+      font-size: 10px;
       text-transform: uppercase;
     }
 
     p {
       margin: 0;
-      font-size: 24px;
+      font-size: 20px;
     }
   }
 }
@@ -55,14 +52,14 @@
   .stats {
     &__item {
       width: auto;
-      margin-right: 16px;
+      margin: 0 4px;
 
       h4 {
         font-size: 16px;
       }
 
       p {
-        font-size: 48px;
+        font-size: 34px;
       }
     }
   }

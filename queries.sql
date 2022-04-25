@@ -548,3 +548,8 @@ SELECT
     LOWER(boilers.name) LIKE 'создан' OR
     LOWER(status.name) LIKE 'создан' OR
     LOWER(orders.comment) LIKE 'создан');
+
+SELECT
+    *
+FROM
+    "service-crm"."orders"

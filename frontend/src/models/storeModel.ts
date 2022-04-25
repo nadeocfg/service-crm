@@ -18,6 +18,19 @@ export interface StoreModel {
 export interface MainStoreModel {
   isLoading: boolean;
   isDrawerOpen: boolean;
+  dashboardOrders: {
+    count: string;
+    doneOrders: string;
+    wipOrders: string;
+    newOrders: string;
+    onHoldOrders: string;
+    canceledOrders: string;
+  };
+  dashboardCash: {
+    readySum: string;
+    notReadySum: string;
+    paidSum: string;
+  };
 }
 
 export interface UserStoreModel {

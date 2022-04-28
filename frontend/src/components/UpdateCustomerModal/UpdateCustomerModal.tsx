@@ -22,6 +22,7 @@ import Btn from '../Btn';
 import SelectModal from '../modals/SelectModal';
 import Transition from '../Transition';
 import EditIcon from '@material-ui/icons/Edit';
+import moment from 'moment';
 
 interface UpdateCustomerModalProps {
   pagination?: any;
@@ -49,6 +50,7 @@ export default function UpdateCustomerModal({
     phone2: '',
     boilerSerial: '',
     boiler: {},
+    purchaseDate: '',
   });
   const [selectModal, setSelectModal] = useState(false);
   const boilersList = useSelector(
@@ -68,6 +70,7 @@ export default function UpdateCustomerModal({
         phone: '',
         phone2: '',
         boiler: {},
+        purchaseDate: '',
       });
     }
 
@@ -92,6 +95,27 @@ export default function UpdateCustomerModal({
     event.preventDefault();
 
     dispatch(setLoader(true));
+
+    const date = moment(selectedCustomer.purchaseDate, 'DD/MM/YYYY').isValid();
+
+    if (!date) {
+      dispatch(setLoader(false));
+
+      dispatch({
+        type: ADD_NOTIFY,
+        payload: {
+          message: 'Неправильная дата',
+          type: 'error',
+        },
+      });
+
+      return false;
+    }
+
+    selectedCustomer.purchaseDate = moment(
+      selectedCustomer.purchaseDate,
+      'DD/MM/YYYY'
+    ).format('YYYY-MM-DD');
 
     api
       .post(`/api/customers/update`, selectedCustomer)
@@ -203,6 +227,18 @@ export default function UpdateCustomerModal({
               value={selectedCustomer.boiler?.name || ''}
               required
             />
+
+            <ReactInputMask
+              mask="99/99/9999"
+              value={selectedCustomer.purchaseDate}
+              onChange={handleChange('purchaseDate')}
+            >
+              <TextField
+                className="input form__field"
+                label="Дата покупки"
+                variant="outlined"
+              />
+            </ReactInputMask>
 
             <ReactInputMask
               mask="+7 (999) 999-99-99"

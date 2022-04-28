@@ -212,6 +212,14 @@ const Customers = () => {
                 <TableSort
                   sort={sort}
                   handleChangeSort={handleChangeSort}
+                  label="Дата покупки"
+                  sortBy="purchaseDate"
+                />
+              </TableCell>
+              <TableCell>
+                <TableSort
+                  sort={sort}
+                  handleChangeSort={handleChangeSort}
                   label="Телефон"
                   sortBy="phone"
                 />
@@ -258,6 +266,7 @@ const Customers = () => {
                 <TableCell>{customer.fullName}</TableCell>
                 <TableCell>{customer.boilerSerial}</TableCell>
                 <TableCell>{customer.boiler?.name || ''}</TableCell>
+                <TableCell>{customer.purchaseDate || ''}</TableCell>
                 <TableCell>{customer.phone}</TableCell>
                 <TableCell>{customer.phone2}</TableCell>
                 <TableCell>{customer.address}</TableCell>

@@ -18,6 +18,8 @@ import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
 import SelectModal from '../SelectModal';
 import { getAllBoilers } from '../../../store/actions/dictsActions';
 import { getCustomersList } from '../../../store/actions/customersActions';
+import moment from 'moment';
+import { setLoader } from '../../../store/actions/mainActions';
 
 interface CreateCustomerModalProps {
   btnTitle?: string;
@@ -68,10 +70,32 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
       });
     }
 
+    setLoader(true);
+
     const data = {
       ...createCustomerData,
       createdBy: currentUser.id,
     };
+
+    const date = moment(data.purchaseDate, 'DD/MM/YYYY').isValid();
+
+    if (!date) {
+      dispatch(setLoader(false));
+
+      dispatch({
+        type: ADD_NOTIFY,
+        payload: {
+          message: 'Неправильная дата',
+          type: 'error',
+        },
+      });
+
+      return false;
+    }
+
+    data.purchaseDate = moment(data.purchaseDate, 'DD/MM/YYYY').format(
+      'YYYY-MM-DD'
+    );
 
     api
       .post(`/api/customers/create`, data)
@@ -100,6 +124,9 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
             type: 'error',
           },
         });
+      })
+      .finally(() => {
+        setLoader(false);
       });
   };
 
@@ -173,6 +200,18 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
               value={createCustomerData.boiler?.name || ''}
               required
             />
+
+            <ReactInputMask
+              mask="99/99/9999"
+              value={createCustomerData.purchaseDate}
+              onChange={handleChange('purchaseDate')}
+            >
+              <TextField
+                className="input form__field"
+                label="Дата покупки"
+                variant="outlined"
+              />
+            </ReactInputMask>
 
             <ReactInputMask
               mask="+7 (999) 999-99-99"

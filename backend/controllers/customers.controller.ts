@@ -3,6 +3,7 @@ import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 import dotenv from 'dotenv';
 import format from 'pg-format';
+import moment from 'moment';
 
 dotenv.config();
 
@@ -60,6 +61,13 @@ const getCustomersList = async (
     );
 
     for (let i = 0; i < customers.rows.length; i += 1) {
+      if (customers.rows[i].purchaseDate) {
+        const formattedPurchaseDate = moment(
+          customers.rows[i].purchaseDate
+        ).format('DD/MM/YYYY');
+        customers.rows[i].purchaseDate = formattedPurchaseDate;
+      }
+
       const boiler = await db.query(
         `
           SELECT
@@ -106,6 +114,7 @@ const createCustomer = async (
       phone2,
       boilerSerial,
       boiler,
+      purchaseDate,
     } = request.body;
 
     const findExistingCustomer = await db.query(
@@ -122,8 +131,8 @@ const createCustomer = async (
     const insertCustomer = await db.query(
       `
         INSERT INTO
-          "${process.env.DB_NAME}".customers(address, email, "createdDate", "updatedDate", "createdBy", "fullName", phone, phone2, "boilerSerial", "boilerId")
-        VALUES($1, $2, NOW(), NOW(), $3, $4, $5, $6, $7, $8)
+          "${process.env.DB_NAME}".customers(address, email, "createdDate", "updatedDate", "createdBy", "fullName", phone, phone2, "boilerSerial", "boilerId", "purchaseDate")
+        VALUES($1, $2, NOW(), NOW(), $3, $4, $5, $6, $7, $8, $9)
         RETURNING
           *
         `,
@@ -136,6 +145,7 @@ const createCustomer = async (
         phone2,
         boilerSerial,
         boiler.id,
+        purchaseDate,
       ]
     );
 
@@ -177,6 +187,7 @@ const updateCustomer = async (
       phone2,
       boilerSerial,
       boiler,
+      purchaseDate,
     } = request.body;
 
     const query = `
@@ -191,9 +202,10 @@ const updateCustomer = async (
         phone2 = $6,
         "boilerSerial" = $7,
         "boilerId" = $8,
+        "purchaseDate" = $9,
         "updatedDate" = NOW()
       WHERE
-        id = $9
+        id = $10
       RETURNING
         *
     `;
@@ -207,6 +219,7 @@ const updateCustomer = async (
       phone2,
       boilerSerial,
       boiler.id,
+      purchaseDate,
       id,
     ]);
 

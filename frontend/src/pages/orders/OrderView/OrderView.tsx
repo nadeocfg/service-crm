@@ -319,6 +319,12 @@ const OrderView = () => {
             </ListItem>
             <ListItem>
               <ListItemText
+                primary={orderData.customer.purchaseDate || '~'}
+                secondary={'Дата покупки'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
                 primary={getPhoneLink(orderData.customer.phone)}
                 secondary={'Телефон 1'}
               />
@@ -337,7 +343,7 @@ const OrderView = () => {
             </ListItem>
             <ListItem>
               <ListItemText
-                primary={orderData.customer.boiler?.name || ''}
+                primary={orderData.customer.boiler?.name || '~'}
                 secondary={'Модель бойлера'}
               />
             </ListItem>

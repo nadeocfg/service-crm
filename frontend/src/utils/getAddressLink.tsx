@@ -1,6 +1,6 @@
 export const getAddressLink = (address?: string) => {
   if (!address) {
-    return '';
+    return '~';
   }
 
   return (

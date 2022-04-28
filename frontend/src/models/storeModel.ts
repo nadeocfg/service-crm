@@ -224,6 +224,7 @@ export interface CustomersStoreModel {
     phone2: string;
     boilerSerial: string;
     boiler: BoilerItemModel;
+    purchaseDate: string;
   };
 }
 
@@ -241,6 +242,7 @@ export interface CustomerItemModel {
   boilerSerial?: string;
   boilerId?: string;
   boiler?: BoilerItemModel;
+  purchaseDate?: string;
 }
 
 export interface OrderDataModel {

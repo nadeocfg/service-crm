@@ -10,4 +10,5 @@ export interface CustomerModel {
   phone2?: string;
   isActive: boolean;
   boilerSerial?: string;
+  purchaseDate?: string;
 }

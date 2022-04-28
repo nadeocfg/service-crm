@@ -26,6 +26,7 @@ grant all privileges on database "service-crm" to "service-crm";
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "service-crm" TO "service-crm";
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "service-crm" TO "service-crm";
+GRANT postgres to "service-crm";
 
 ---------------------------------------------------------------------------------
 
@@ -553,3 +554,4 @@ SELECT
     *
 FROM
     "service-crm"."orders"
+

@@ -19,6 +19,7 @@ const initialState: CustomersStoreModel = {
     phone2: '',
     boilerSerial: '',
     boiler: {},
+    purchaseDate: '',
   },
 };
 

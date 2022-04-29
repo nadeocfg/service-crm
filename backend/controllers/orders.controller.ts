@@ -3,6 +3,7 @@ import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 import dotenv from 'dotenv';
 import format from 'pg-format';
+import moment from 'moment';
 
 dotenv.config();
 
@@ -726,6 +727,9 @@ const getOrderById = async (
       jobTypes,
       customer: {
         ...customer.rows[0],
+        purchaseDate: moment(customer.rows[0].purchaseDate).format(
+          'DD/MM/YYYY'
+        ),
         boiler: boiler.rows[0],
       },
       serviceMan: serviceMan.rows[0],

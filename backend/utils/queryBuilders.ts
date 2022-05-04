@@ -16,6 +16,10 @@ const getSetString = (body: any) => {
       return false;
     }
 
+    if (key === 'tgAccount' && !body[key]) {
+      return false;
+    }
+
     if (
       (key === 'percentFromJob' ||
         key === 'percentFromParts' ||
@@ -33,6 +37,8 @@ const getSetString = (body: any) => {
   queryStr += queryArr.join(', ');
   queryStr += ', "updatedDate" = NOW() ';
   queryStr += `WHERE id = $${(counter += 1)}`;
+
+  console.log(queryStr);
 
   return queryStr;
 };

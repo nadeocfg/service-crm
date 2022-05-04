@@ -4,6 +4,7 @@ import db from '../config/db';
 import dotenv from 'dotenv';
 import format from 'pg-format';
 import moment from 'moment';
+import sendMessageToBot from '../utils/sendMessageToBot';
 
 dotenv.config();
 
@@ -150,7 +151,9 @@ const createOrder = async (
         SELECT
           users."percentFromVisit",
           users."percentFromParts",
-          users."percentFromJob"
+          users."percentFromJob",
+          users."fullName",
+          users."tgAccount"
         FROM
           "${process.env.DB_NAME}"."users" as users
         WHERE
@@ -195,6 +198,17 @@ const createOrder = async (
         serviceManVisitPaidOut,
         insertOrder.rows[0].id,
       ]
+    );
+
+    await sendMessageToBot(
+      `
+<b>Новая заявка №${insertOrder.rows[0].id}</b>
+
+Назначена на:
+${serviceManPercents.rows[0].fullName}(@${serviceManPercents.rows[0].tgAccount})
+Дата: ${moment(new Date()).format('DD.MM.YYYY HH:mm:ss')}
+    `,
+      '-686219980'
     );
 
     response.json(insertOrder.rows);
@@ -1163,6 +1177,18 @@ const executeAction = async (
       [orderId]
     );
 
+    const getStatusInfo = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."dictOrderStatuses" as status
+        WHERE
+          status.code = $1;
+      `,
+      [code]
+    );
+
     if (
       order.rows[0]?.serviceManId !== user?.id &&
       user?.roleCode !== 'SUPER_ADMIN' &&
@@ -1178,14 +1204,7 @@ const executeAction = async (
         UPDATE
           "${process.env.DB_NAME}"."orders" as orders
         SET
-          status = (
-            SELECT
-              status.id
-            FROM
-              "${process.env.DB_NAME}"."dictOrderStatuses" as status
-            WHERE
-              status.code = $1
-          ),
+          status = $1,
           "updatedDate" = NOW()
           ${code === 'DONE' ? ', "doneDate" = NOW()' : ''}
         WHERE
@@ -1193,7 +1212,7 @@ const executeAction = async (
         RETURNING
           *;
       `,
-      [code, orderId]
+      [getStatusInfo.rows[0].id, orderId]
     );
 
     // UPDATE CASH TABLE IF ORDER STATUS === 'DONE'
@@ -1266,18 +1285,11 @@ const executeAction = async (
       `
         INSERT INTO
           "${process.env.DB_NAME}"."ordersStatusHistory" ("orderId", "status", "comment", "createdBy")
-        VALUES($1, (
-          SELECT
-            status.id
-          FROM
-            "${process.env.DB_NAME}"."dictOrderStatuses" as status
-          WHERE
-            status.code = $2
-        ), $3, $4)
+        VALUES($1, $2, $3, $4)
         RETURNING
           *;
       `,
-      [orderId, code, comment, user?.id || 1]
+      [orderId, getStatusInfo.rows[0].id, comment, user?.id || 1]
     );
 
     // Return quantity, if code === 'CANCELED'
@@ -1312,6 +1324,17 @@ const executeAction = async (
         );
       }
     }
+
+    await sendMessageToBot(
+      `
+<b>Смена статуса завки №${orderId}</b>
+
+Новый статус: "${getStatusInfo.rows[0].name}"
+Комментарий: ${comment}
+Дата: ${moment(new Date()).format('DD.MM.YYYY HH:mm:ss')}
+    `,
+      '-686219980'
+    );
 
     response.json(changeStatus.rows);
   } catch (error: any) {

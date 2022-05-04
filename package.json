@@ -4,8 +4,9 @@
   "description": "CRM for service industry",
   "main": "server.ts",
   "scripts": {
-    "server": "nodemon ./backend/server.ts",
+    "server": "concurrently \"nodemon ./backend/server.ts\" \"npm run bot\"",
     "client": "npm start --prefix ./frontend",
+    "bot": "nodemon ./tg-bot/index.js",
     "start:dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {
@@ -25,6 +26,7 @@
     "@types/node": "^15.6.0",
     "@types/pg": "^8.6.0",
     "@types/pg-format": "^1.0.2",
+    "axios": "^0.27.2",
     "colors": "^1.4.0",
     "concurrently": "^6.1.0",
     "crypto-js": "^4.0.0",
@@ -32,6 +34,7 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.3",
+    "node-telegram-bot-api": "^0.57.0",
     "nodemon": "^2.0.7",
     "pg": "^8.6.0",
     "pg-format": "^1.0.4",

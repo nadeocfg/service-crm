@@ -208,7 +208,7 @@ const createOrder = async (
 ${serviceManPercents.rows[0].fullName}(@${serviceManPercents.rows[0].tgAccount})
 Дата: ${moment(new Date()).format('DD.MM.YYYY HH:mm:ss')}
     `,
-      '-686219980'
+      '-1001613758269'
     );
 
     response.json(insertOrder.rows);
@@ -1333,7 +1333,7 @@ const executeAction = async (
 Комментарий: ${comment}
 Дата: ${moment(new Date()).format('DD.MM.YYYY HH:mm:ss')}
     `,
-      '-686219980'
+      '-1001613758269'
     );
 
     response.json(changeStatus.rows);

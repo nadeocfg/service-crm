@@ -112,6 +112,14 @@ const CreateUserModal = ({ btnTitle }: CreateUserModalProps) => {
               required
             />
 
+            <TextField
+              className="input form__field"
+              label="Telegram аккаунт"
+              variant="outlined"
+              onChange={handleChange('tgAccount')}
+              value={createData.tgAccount}
+            />
+
             <ReactInputMask
               mask="+7 (999) 999-99-99"
               onChange={handleChange('phone')}

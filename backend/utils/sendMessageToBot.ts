@@ -16,9 +16,11 @@ const sendMessageToBot = async (text: string, chatId: string) => {
       data
     )
     .then((res) => {
+      // console.log(res.data);
       return true;
     })
     .catch((err) => {
+      // console.log(err.response.data);
       return false;
     });
 };

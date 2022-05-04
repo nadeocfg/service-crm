@@ -81,6 +81,7 @@ export interface CreateUserDataModel {
   percentFromJob?: number;
   percentFromParts?: number;
   percentFromVisit?: number;
+  tgAccount?: string;
 }
 
 export interface UsersItemModel {
@@ -97,6 +98,7 @@ export interface UsersItemModel {
   percentFromVisit?: number;
   roleName?: string;
   roleCode?: string;
+  tgAccount?: string;
 }
 
 export interface EditUserStoreModel {
@@ -114,6 +116,7 @@ export interface EditUserResponse {
   percentFromJob?: number | null;
   percentFromParts?: number | null;
   percentFromVisit?: number | null;
+  tgAccount?: string;
 }
 
 export interface DictsStoreModel {

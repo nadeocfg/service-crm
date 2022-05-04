@@ -179,6 +179,7 @@ const createUser = async (
       percentFromJob,
       percentFromParts,
       percentFromVisit,
+      tgAccount,
     } = request.body;
     const cryptedPass = password ? SHA256(password).toString() : '';
 
@@ -196,8 +197,8 @@ const createUser = async (
     const insertUser = await db.query(
       `
       INSERT INTO
-        "${process.env.DB_NAME}".users(login, "birthDay", password, phone, "createdDate", "updatedDate", "fullName", "roleId", "percentFromJob", "percentFromParts", "percentFromVisit")
-      VALUES($1, $2, $3, $4, NOW(), NOW(), $5, $6, $7, $8, $9)
+        "${process.env.DB_NAME}".users(login, "birthDay", password, phone, "createdDate", "updatedDate", "fullName", "roleId", "percentFromJob", "percentFromParts", "percentFromVisit", "tgAccount")
+      VALUES($1, $2, $3, $4, NOW(), NOW(), $5, $6, $7, $8, $9, $10)
       RETURNING
         id,
         login,
@@ -209,7 +210,8 @@ const createUser = async (
         "roleId",
         "percentFromJob",
         "percentFromParts",
-        "percentFromVisit"
+        "percentFromVisit",
+        "tgAccount"
       `,
       [
         login,
@@ -221,6 +223,7 @@ const createUser = async (
         percentFromJob,
         percentFromParts,
         percentFromVisit,
+        tgAccount,
       ]
     );
 
@@ -301,7 +304,8 @@ const updateUser = async (
         "roleId",
         "percentFromJob",
         "percentFromParts",
-        "percentFromVisit"
+        "percentFromVisit",
+        "tgAccount"
     `;
 
     const insertUser = await db.query(
@@ -398,6 +402,7 @@ const findUsers = async (
             "percentFromJob",
             "percentFromParts",
             "percentFromVisit",
+            "tgAccount",
             "isActive"
           FROM
             "${process.env.DB_NAME}".users
@@ -451,6 +456,7 @@ const findUsers = async (
           "percentFromJob",
           "percentFromParts",
           "percentFromVisit",
+          "tgAccount",
           "isActive",
           "roleName",
           "roleCode"
@@ -469,6 +475,7 @@ const findUsers = async (
             users."percentFromParts",
             users."percentFromVisit",
             users."isActive",
+            users."tgAccount" as "tgAccount",
             roles.name as "roleName",
             roles.code as "roleCode"
           FROM
@@ -542,7 +549,8 @@ const getUserById = async (
           "isActive",
           "percentFromJob",
           "percentFromParts",
-          "percentFromVisit"
+          "percentFromVisit",
+          "tgAccount"
         FROM
           "${process.env.DB_NAME}".users
         WHERE

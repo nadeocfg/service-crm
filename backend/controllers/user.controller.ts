@@ -308,8 +308,6 @@ const updateUser = async (
         "tgAccount"
     `;
 
-    console.log(values.filter((el) => !!el));
-
     const insertUser = await db.query(
       query,
       values.filter((el) => !!el)

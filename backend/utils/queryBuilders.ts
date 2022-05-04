@@ -17,7 +17,7 @@ const getSetString = (body: any) => {
     }
 
     if (key === 'tgAccount' && !body[key]) {
-      return false;
+      return queryArr.push(`"${key}" = null`);
     }
 
     if (
@@ -37,8 +37,6 @@ const getSetString = (body: any) => {
   queryStr += queryArr.join(', ');
   queryStr += ', "updatedDate" = NOW() ';
   queryStr += `WHERE id = $${(counter += 1)}`;
-
-  console.log(queryStr);
 
   return queryStr;
 };

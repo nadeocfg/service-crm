@@ -24,6 +24,8 @@ import OrderEdit from './pages/orders/OrderEdit';
 import PaidOuts from './pages/PaidOuts';
 import Settings from './pages/administration/Settings';
 import Cash from './pages/administration/Cash';
+import { RequestPage } from '@mui/icons-material';
+import RequestsReport from './pages/reports/RequestsReport';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -96,6 +98,9 @@ const App = () => {
               </Route>
               <Route exact path="/paids">
                 <PaidOuts />
+              </Route>
+              <Route exact path="/reports/requests-report">
+                <RequestsReport />
               </Route>
 
               {(userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') && (

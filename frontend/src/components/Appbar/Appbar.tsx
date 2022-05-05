@@ -21,7 +21,7 @@ import { changeDrawer } from '../../store/actions/mainActions';
 import { StoreModel } from '../../models/storeModel';
 import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
 import { useHistory, useLocation } from 'react-router';
-import { adminRoutes, routes } from '../../utils/routes';
+import { adminRoutes, reportsRoutes, routes } from '../../utils/routes';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { useState } from 'react';
@@ -35,6 +35,7 @@ import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 const Appbar = () => {
   const open = useSelector((state: StoreModel) => state.mainStore.isDrawerOpen);
@@ -45,9 +46,14 @@ const Appbar = () => {
   const history = useHistory();
   const location = useLocation();
   const [openSubMenu, setOpenSubMenu] = useState(false);
+  const [openReports, setOpenReports] = useState(false);
 
   const handleOpenSubmenu = () => {
     setOpenSubMenu(!openSubMenu);
+  };
+
+  const handleReportsMenu = () => {
+    setOpenReports(!openReports);
   };
 
   const handleChange = () => {
@@ -127,9 +133,56 @@ const Appbar = () => {
             </ListItem>
           ))}
 
+          <ListItem
+            button
+            onClick={handleReportsMenu}
+            className={
+              location.pathname === '/reports'
+                ? 'menu__item menu__item_selected'
+                : 'menu__item'
+            }
+          >
+            <ListItemIcon>
+              <AssessmentIcon />
+            </ListItemIcon>
+            <ListItemText primary="Отчеты" />
+            {openReports ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+
+          <Collapse in={openReports} unmountOnExit>
+            <List component="div" disablePadding className="menu__nested">
+              {reportsRoutes.map((route, index) => (
+                <ListItem
+                  key={index}
+                  button
+                  onClick={() => navigateTo(route.path)}
+                  selected={location.pathname === route.path}
+                  className={
+                    location.pathname === route.path
+                      ? 'menu__item menu__item_selected'
+                      : 'menu__item'
+                  }
+                >
+                  <ListItemIcon>
+                    {route.code === 'requestsReport' && <WorkIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={route.name} />
+                </ListItem>
+              ))}
+            </List>
+          </Collapse>
+
           {(userRoleCode === 'ADMIN' || userRoleCode === 'SUPER_ADMIN') && (
             <>
-              <ListItem button onClick={handleOpenSubmenu}>
+              <ListItem
+                button
+                onClick={handleOpenSubmenu}
+                className={
+                  location.pathname === '/administration'
+                    ? 'menu__item menu__item_selected'
+                    : 'menu__item'
+                }
+              >
                 <ListItemIcon>
                   <SettingsIcon />
                 </ListItemIcon>

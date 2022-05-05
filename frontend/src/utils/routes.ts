@@ -63,3 +63,11 @@ export const adminRoutes = [
     name: 'Касса',
   },
 ];
+
+export const reportsRoutes = [
+  {
+    path: '/reports/requests-report',
+    code: 'requestsReport',
+    name: 'Отчет по заявкам',
+  },
+];

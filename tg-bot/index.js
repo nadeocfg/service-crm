@@ -11,7 +11,14 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const resp = match[1];
 
-  console.log(chatId);
-
   bot.sendMessage(chatId, resp);
+});
+
+bot.onText(/me/gm, (msg) => {
+  const chatId = msg.chat.id;
+
+  bot.sendMessage(
+    chatId,
+    `chatId: ${msg.chat.id}, fname: ${msg.chat.first_name}, lname: ${msg.chat.last_name}, username: ${msg.chat.username}`
+  );
 });

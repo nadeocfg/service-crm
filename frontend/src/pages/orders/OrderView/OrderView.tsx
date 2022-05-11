@@ -347,6 +347,12 @@ const OrderView = () => {
                 secondary={'Модель бойлера'}
               />
             </ListItem>
+            <ListItem>
+              <ListItemText
+                primary={orderData.customer.boilerSerial || '~'}
+                secondary={'Серийный номер'}
+              />
+            </ListItem>
           </List>
         </CardContent>
       </Card>

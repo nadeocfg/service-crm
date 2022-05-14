@@ -185,6 +185,36 @@ const OrderView = () => {
     }
   };
 
+  const sendUpdateMessage = () => {
+    dispatch(setLoader(true));
+
+    const data = {
+      code: 'DONE',
+      orderId: params.id,
+      comment: 'test message',
+    };
+
+    api
+      .post(`/api/tg/update-order`, data)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        dispatch({
+          type: ADD_NOTIFY,
+          payload: {
+            message: err.response?.data?.description
+              ? err.response.data.description
+              : 'Ошибка',
+            type: 'error',
+          },
+        });
+      })
+      .finally(() => {
+        dispatch(setLoader(false));
+      });
+  };
+
   const executeAction = (event: React.FormEvent<any>) => {
     event.preventDefault();
 
@@ -428,6 +458,8 @@ const OrderView = () => {
                 {action.action}
               </Btn>
             ))}
+
+            {/* <Btn onClick={sendUpdateMessage}>test btn</Btn> */}
           </CardActions>
         </CardContent>
       </Card>

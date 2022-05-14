@@ -22,3 +22,12 @@ bot.onText(/me/gm, (msg) => {
     `chatId: ${msg.chat.id}, fname: ${msg.chat.first_name}, lname: ${msg.chat.last_name}, username: ${msg.chat.username}`
   );
 });
+
+bot.onText(/init/gm, (msg) => {
+  const chatId = msg.chat.id;
+
+  bot.sendMessage(
+    chatId,
+    `Отправьте это сообщение администратору системы:\n\nID чата: ${msg.chat.id}\nusername: ${msg.chat.username}`
+  );
+});

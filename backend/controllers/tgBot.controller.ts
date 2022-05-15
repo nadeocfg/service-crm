@@ -30,39 +30,74 @@ const sendUpdateOrderMessage = async (
       [code]
     );
 
+    const serviceManId = await db.query(
+      `
+        SELECT
+          orders."serviceManId"
+        FROM
+          "${process.env.DB_NAME}"."orders" as orders
+        WHERE
+          orders."id" = $1;
+      `,
+      [orderId]
+    );
+
+    const getUsers = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."users" as users
+        WHERE
+          users.id = $1 OR
+          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'ADMIN') OR
+          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'SUPER_ADMIN');
+      `,
+      [serviceManId.rows[0].serviceManId]
+    );
+
     const text = `<b>Смена статуса завки №${orderId}</b>\n\nНовый статус: "${
       getStatusInfo.rows[0].name
     }"\nКомментарий: ${comment}\nДата: ${moment(new Date())
       .utcOffset('+06:00')
       .format('DD.MM.YYYY HH:mm:ss')}\n`;
 
-    const data = {
-      chat_id: '213781013',
-      parse_mode: 'html',
-      text,
-    };
+    let result: any = [];
 
-    const result = await axios
-      .post(
-        `https://api.telegram.org/bot${process.env.TG_TOKEN}/sendMessage`,
-        data
-      )
-      .then((res) => {
-        return true;
-      })
-      .catch((err) => {
-        return err;
+    for (let i = 0; i < getUsers.rows.length; i += 1) {
+      result.push({
+        name: getUsers.rows[i].fullName,
+        sent: false,
       });
 
-    if (result !== true) {
-      throw result;
+      if (getUsers.rows[i].chatId) {
+        const data = {
+          chat_id: getUsers.rows[i].chatId,
+          parse_mode: 'html',
+          text,
+        };
+
+        const sendMessage = await axios
+          .post(
+            `https://api.telegram.org/bot${process.env.TG_TOKEN}/sendMessage`,
+            data
+          )
+          .then((res) => {
+            result[i].sent = true;
+            return true;
+          })
+          .catch((err) => {
+            result[i].sent = false;
+            return err;
+          });
+      }
     }
 
     response.json({
       result,
     });
   } catch (error: any) {
-    response.status(400).json(error.response.data);
+    response.status(400).json(error.response?.data || 'Неизвестная ошибка');
     next(`Error: ${error.message}`);
   }
 };

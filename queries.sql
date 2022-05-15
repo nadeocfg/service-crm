@@ -555,3 +555,11 @@ SELECT
 FROM
     "service-crm"."orders"
 
+SELECT
+  *
+FROM
+  "service-crm"."users" as users
+WHERE
+  users.id = 1 OR
+  users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'ADMIN') OR
+  users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'SUPER_ADMIN');

@@ -185,19 +185,21 @@ const OrderView = () => {
     }
   };
 
-  const sendUpdateMessage = () => {
-    dispatch(setLoader(true));
-
+  const sendUpdateMessage = (
+    code: string,
+    orderId: string | undefined,
+    comment: string
+  ) => {
     const data = {
-      code: 'DONE',
-      orderId: params.id,
-      comment: 'test message',
+      code,
+      orderId,
+      comment,
     };
 
-    api
+    return api
       .post(`/api/tg/update-order`, data)
       .then((res) => {
-        console.log(res);
+        return res;
       })
       .catch((err) => {
         dispatch({
@@ -209,6 +211,8 @@ const OrderView = () => {
             type: 'error',
           },
         });
+
+        return false;
       })
       .finally(() => {
         dispatch(setLoader(false));
@@ -240,7 +244,9 @@ const OrderView = () => {
 
     api
       .post(`/api/orders/execute-action`, data)
-      .then((res) => {
+      .then(async (res) => {
+        await sendUpdateMessage(code, params.id, modalData.comment);
+
         getOrderData();
         getOrderActions();
         getOrderStatusHistory();
@@ -267,8 +273,7 @@ const OrderView = () => {
             type: 'error',
           },
         });
-      })
-      .finally(() => {
+
         dispatch(setLoader(false));
       });
   };
@@ -458,8 +463,6 @@ const OrderView = () => {
                 {action.action}
               </Btn>
             ))}
-
-            {/* <Btn onClick={sendUpdateMessage}>test btn</Btn> */}
           </CardActions>
         </CardContent>
       </Card>

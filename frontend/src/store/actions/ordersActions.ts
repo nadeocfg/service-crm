@@ -61,6 +61,45 @@ export const getOrders =
     }
   };
 
+export const sendCreateOrderMessage =
+  (orderData: OrderDataModel) => async (dispatch: Dispatch<any>) => {
+    try {
+      api
+        .post(`/api/tg/create-order`, orderData)
+        .then((res) => {
+          dispatch({
+            type: ADD_NOTIFY,
+            payload: {
+              message: 'Сообщение отправлено',
+              type: 'success',
+            },
+          });
+        })
+        .catch((err) => {
+          dispatch({
+            type: ADD_NOTIFY,
+            payload: {
+              message: err.response?.data?.message
+                ? err.response.data.message
+                : 'Ошибка',
+              type: 'error',
+            },
+          });
+        });
+    } catch (error: any) {
+      dispatch({
+        type: ADD_NOTIFY,
+        payload: {
+          message:
+            error.response && error.response.data
+              ? error.response.data.message
+              : 'Ошибка',
+          type: 'error',
+        },
+      });
+    }
+  };
+
 export const createOrder =
   (orderData: OrderDataModel) => async (dispatch: Dispatch<any>) => {
     try {
@@ -76,6 +115,8 @@ export const createOrder =
               type: 'success',
             },
           });
+
+          dispatch(sendCreateOrderMessage(orderData));
 
           dispatch({
             type: CLEAR_ORDER_DATA,

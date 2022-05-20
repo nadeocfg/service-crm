@@ -206,7 +206,7 @@ const createOrder = async (
 
 Назначена на:
 ${serviceManPercents.rows[0].fullName}(@${serviceManPercents.rows[0].tgAccount})
-Дата: ${moment(new Date()).zone('+06:00').format('DD.MM.YYYY HH:mm:ss')}
+Дата: ${moment(new Date()).utcOffset('+06:00').format('DD.MM.YYYY HH:mm:ss')}
     `,
       '-1001613758269'
     );
@@ -1331,7 +1331,7 @@ const executeAction = async (
 
 Новый статус: "${getStatusInfo.rows[0].name}"
 Комментарий: ${comment}
-Дата: ${moment(new Date()).zone('+06:00').format('DD.MM.YYYY HH:mm:ss')}
+Дата: ${moment(new Date()).utcOffset('+06:00').format('DD.MM.YYYY HH:mm:ss')}
     `,
       '-1001613758269'
     );

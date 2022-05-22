@@ -16,8 +16,18 @@ const getSetString = (body: any) => {
       return false;
     }
 
-    if (key === 'tgAccount' && !body[key]) {
-      return queryArr.push(`"${key}" = null`);
+    if (
+      (key === 'tgAccount' && body[key] === 'null') ||
+      (key === 'tgAccount' && !body[key])
+    ) {
+      return queryArr.push(`"${key}" = ''`);
+    }
+
+    if (
+      (key === 'chatId' && !body[key]) ||
+      (key === 'chatId' && body[key] === 'null')
+    ) {
+      return queryArr.push(`"${key}" = ''`);
     }
 
     if (

@@ -82,6 +82,7 @@ export interface CreateUserDataModel {
   percentFromParts?: number;
   percentFromVisit?: number;
   tgAccount?: string;
+  chatId?: string;
 }
 
 export interface UsersItemModel {
@@ -117,6 +118,7 @@ export interface EditUserResponse {
   percentFromParts?: number | null;
   percentFromVisit?: number | null;
   tgAccount?: string;
+  chatId?: string;
 }
 
 export interface DictsStoreModel {

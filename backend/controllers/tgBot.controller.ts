@@ -111,7 +111,7 @@ const sendCreateOrderMessage = async (
   next: NextFunction
 ) => {
   try {
-    const { comment, orderId } = request.body;
+    const { comment, id } = request.body;
 
     const serviceManId = await db.query(
       `
@@ -123,7 +123,7 @@ const sendCreateOrderMessage = async (
         WHERE
           orders."id" = $1;
       `,
-      [orderId]
+      [id]
     );
 
     const getServiceMan = await db.query(

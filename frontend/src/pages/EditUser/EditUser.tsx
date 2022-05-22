@@ -106,6 +106,14 @@ const EditUser = () => {
             value={user.tgAccount}
           />
 
+          <TextField
+            className="input form__field"
+            label="Чат ID"
+            variant="outlined"
+            onChange={handleChange('chatId')}
+            value={user.chatId}
+          />
+
           <ReactInputMask
             mask="+7 (999) 999-99-99"
             onChange={handleChange('phone')}

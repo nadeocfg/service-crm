@@ -116,7 +116,7 @@ export const createOrder =
             },
           });
 
-          dispatch(sendCreateOrderMessage(orderData));
+          dispatch(sendCreateOrderMessage(res.data));
 
           dispatch({
             type: CLEAR_ORDER_DATA,

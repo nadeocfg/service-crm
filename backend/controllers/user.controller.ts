@@ -180,6 +180,7 @@ const createUser = async (
       percentFromParts,
       percentFromVisit,
       tgAccount,
+      chatId,
     } = request.body;
     const cryptedPass = password ? SHA256(password).toString() : '';
 
@@ -197,8 +198,8 @@ const createUser = async (
     const insertUser = await db.query(
       `
       INSERT INTO
-        "${process.env.DB_NAME}".users(login, "birthDay", password, phone, "createdDate", "updatedDate", "fullName", "roleId", "percentFromJob", "percentFromParts", "percentFromVisit", "tgAccount")
-      VALUES($1, $2, $3, $4, NOW(), NOW(), $5, $6, $7, $8, $9, $10)
+        "${process.env.DB_NAME}".users(login, "birthDay", password, phone, "createdDate", "updatedDate", "fullName", "roleId", "percentFromJob", "percentFromParts", "percentFromVisit", "chatId", "tgAccount")
+      VALUES($1, $2, $3, $4, NOW(), NOW(), $5, $6, $7, $8, $9, $10, $11)
       RETURNING
         id,
         login,
@@ -211,6 +212,7 @@ const createUser = async (
         "percentFromJob",
         "percentFromParts",
         "percentFromVisit",
+        "chatId",
         "tgAccount"
       `,
       [
@@ -223,6 +225,7 @@ const createUser = async (
         percentFromJob,
         percentFromParts,
         percentFromVisit,
+        chatId,
         tgAccount,
       ]
     );
@@ -305,12 +308,13 @@ const updateUser = async (
         "percentFromJob",
         "percentFromParts",
         "percentFromVisit",
+        "chatId",
         "tgAccount"
     `;
 
     const insertUser = await db.query(
       query,
-      values.filter((el) => !!el)
+      values.filter((el) => !!el && el !== 'null')
     );
 
     if (insertUser.rows.length === 0) {
@@ -550,6 +554,7 @@ const getUserById = async (
           "percentFromJob",
           "percentFromParts",
           "percentFromVisit",
+          "chatId",
           "tgAccount"
         FROM
           "${process.env.DB_NAME}".users

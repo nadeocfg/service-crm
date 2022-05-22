@@ -120,6 +120,14 @@ const CreateUserModal = ({ btnTitle }: CreateUserModalProps) => {
               value={createData.tgAccount}
             />
 
+            <TextField
+              className="input form__field"
+              label="Чат ID"
+              variant="outlined"
+              onChange={handleChange('chatId')}
+              value={createData.chatId}
+            />
+
             <ReactInputMask
               mask="+7 (999) 999-99-99"
               onChange={handleChange('phone')}

@@ -211,7 +211,7 @@ ${serviceManPercents.rows[0].fullName}(@${serviceManPercents.rows[0].tgAccount})
       '-1001613758269'
     );
 
-    response.json(insertOrder.rows);
+    response.json(insertOrder.rows[0]);
   } catch (error: any) {
     response.status(400).json({
       message: error.message,

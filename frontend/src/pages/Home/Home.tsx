@@ -50,7 +50,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* <div className="stats dashboard__item">
+        <div className="stats dashboard__item">
           <div className="stats__item">
             <h4>Будущие выплаты</h4>
             <p>{formatSum(cashInfo.notReadySum)}</p>
@@ -63,7 +63,7 @@ const Home = () => {
             <h4>Уже выплачено</h4>
             <p>{formatSum(cashInfo.paidSum)}</p>
           </div>
-        </div> */}
+        </div>
       </div>
     </>
   );

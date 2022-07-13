@@ -4,7 +4,6 @@ import db from '../config/db';
 import dotenv from 'dotenv';
 import format from 'pg-format';
 import moment from 'moment';
-import sendMessageToBot from '../utils/sendMessageToBot';
 
 dotenv.config();
 
@@ -198,17 +197,6 @@ const createOrder = async (
         serviceManVisitPaidOut,
         insertOrder.rows[0].id,
       ]
-    );
-
-    await sendMessageToBot(
-      `
-<b>Новая заявка №${insertOrder.rows[0].id}</b>
-
-Назначена на:
-${serviceManPercents.rows[0].fullName}(@${serviceManPercents.rows[0].tgAccount})
-Дата: ${moment(new Date()).utcOffset('+06:00').format('DD.MM.YYYY HH:mm:ss')}
-    `,
-      '-1001613758269'
     );
 
     response.json(insertOrder.rows[0]);
@@ -1324,17 +1312,6 @@ const executeAction = async (
         );
       }
     }
-
-    await sendMessageToBot(
-      `
-<b>Смена статуса завки №${orderId}</b>
-
-Новый статус: "${getStatusInfo.rows[0].name}"
-Комментарий: ${comment}
-Дата: ${moment(new Date()).utcOffset('+06:00').format('DD.MM.YYYY HH:mm:ss')}
-    `,
-      '-1001613758269'
-    );
 
     response.json(changeStatus.rows);
   } catch (error: any) {

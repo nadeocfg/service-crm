@@ -563,3 +563,17 @@ WHERE
   users.id = 1 OR
   users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'ADMIN') OR
   users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'SUPER_ADMIN');
+
+UPDATE
+  "service-crm"."orders" as orders
+SET
+  "status" = 4
+WHERE
+  orders.status = 6;
+
+-- CLEAR PAID OUTS
+DELETE FROM
+  "service-crm"."serviceManPaidOuts";
+
+DELETE FROM
+  "service-crm"."cashHistoryLog";

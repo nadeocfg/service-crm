@@ -191,7 +191,7 @@ const PaidOuts = () => {
               <TableCell>ФИО специалиста</TableCell>
               <TableCell>Номер заказа</TableCell>
               <TableCell>Сумма</TableCell>
-              <TableCell>Дата обновления</TableCell>
+              <TableCell>Дата завершения заказа</TableCell>
               <TableCell>Статус выплаты</TableCell>
               <TableCell>Статус</TableCell>
               <TableCell></TableCell>
@@ -205,7 +205,7 @@ const PaidOuts = () => {
                 <TableCell>{paidOut.orderId}</TableCell>
                 <TableCell>{formatSum(paidOut.sum)}</TableCell>
                 <TableCell>
-                  {formatDate(paidOut.updatedDate || '', true)}
+                  {formatDate(paidOut.doneDate || '', true)}
                 </TableCell>
                 <TableCell>
                   {paidOut.isPaid ? 'Переведена' : 'Не переведена'}

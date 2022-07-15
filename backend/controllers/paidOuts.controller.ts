@@ -143,6 +143,7 @@ const getPaidsByUser = async (
         orderId: item.orderId,
         userId: item.userId,
         fullName: item.fullName,
+        doneDate: item.doneDate,
         updatedDate: item.updatedDate,
         createdDate: item.createdDate,
         isPaid: item.isPaid,
@@ -167,7 +168,20 @@ const getPaidsByUser = async (
           SELECT
             count(*) AS total
           FROM
-            "${process.env.DB_NAME}"."serviceManPaidOuts";
+            "${process.env.DB_NAME}"."serviceManPaidOuts" as paids
+          LEFT JOIN
+            "${process.env.DB_NAME}"."orders" as orders
+          ON
+            orders.id = paids."orderId"
+          WHERE
+            orders."status" = (
+              SELECT
+                status.id
+              FROM
+                "${process.env.DB_NAME}"."dictOrderStatuses" as status
+              WHERE
+                status.code = 'DONE'
+            );
         `
       );
     } else {
@@ -176,9 +190,22 @@ const getPaidsByUser = async (
           SELECT
             count(*) AS total
           FROM
-            "${process.env.DB_NAME}"."serviceManPaidOuts"
+            "${process.env.DB_NAME}"."serviceManPaidOuts" as paids
+          LEFT JOIN
+            "${process.env.DB_NAME}"."orders" as orders
+          ON
+            orders.id = paids."orderId"
           WHERE
-            "userId" = $1;
+            "userId" = $1
+          AND
+            orders."status" = (
+              SELECT
+                status.id
+              FROM
+                "${process.env.DB_NAME}"."dictOrderStatuses" as status
+              WHERE
+                status.code = 'DONE'
+            );
         `,
         [userId]
       );

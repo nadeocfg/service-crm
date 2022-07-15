@@ -280,6 +280,7 @@ export interface PaidOutsItemModel {
   orderId: number;
   sum: number;
   updatedDate: string;
+  doneDate: string;
   userId: number;
   canBePaid: boolean;
 }

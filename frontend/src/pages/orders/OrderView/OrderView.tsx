@@ -185,7 +185,7 @@ const OrderView = () => {
     }
   };
 
-  const sendUpdateMessage = (
+  const sendUpdateStatusMessage = (
     code: string,
     orderId: string | undefined,
     comment: string
@@ -197,7 +197,7 @@ const OrderView = () => {
     };
 
     return api
-      .post(`/api/tg/update-order`, data)
+      .post(`/api/tg/update-order-status`, data)
       .then((res) => {
         return res;
       })
@@ -245,7 +245,7 @@ const OrderView = () => {
     api
       .post(`/api/orders/execute-action`, data)
       .then(async (res) => {
-        await sendUpdateMessage(code, params.id, modalData.comment);
+        await sendUpdateStatusMessage(code, params.id, modalData.comment);
 
         getOrderData();
         getOrderActions();

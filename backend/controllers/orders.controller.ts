@@ -460,7 +460,7 @@ const updateOrder = async (
       ]
     );
 
-    response.json(updateOrder.rows);
+    response.json(updateOrder.rows[0]);
   } catch (error: any) {
     response.status(400).json({
       message: error.message,

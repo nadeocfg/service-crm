@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Response } from 'express';
 import moment from 'moment';
 import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
@@ -7,10 +7,10 @@ import axios from 'axios';
 
 dotenv.config();
 
-// @desc   send update order message to telegram bot
-// @route  POST /api/tg/update-order
+// @desc   send update order status message to telegram bot
+// @route  POST /api/tg/update-order-status
 // @access Private
-const sendUpdateOrderMessage = async (
+const sendUpdateOrderStatusMessage = async (
   request: UserRequest,
   response: Response,
   next: NextFunction
@@ -63,6 +63,7 @@ const sendUpdateOrderMessage = async (
       .format('DD.MM.YYYY HH:mm:ss')}\n`;
 
     let result: any = [];
+    const url = `${request.protocol}://${request.headers['x-forwarded-for']}/${request.body.id}`;
 
     for (let i = 0; i < getUsers.rows.length; i += 1) {
       result.push({
@@ -74,6 +75,16 @@ const sendUpdateOrderMessage = async (
         const data = {
           chat_id: getUsers.rows[i].chatId,
           parse_mode: 'html',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: 'Показать заявку',
+                  url: url,
+                },
+              ],
+            ],
+          },
           text,
         };
 
@@ -161,6 +172,7 @@ const sendCreateOrderMessage = async (
       .format('DD.MM.YYYY HH:mm:ss')}`;
 
     let result: any = [];
+    const url = `${request.protocol}://${request.headers['x-forwarded-for']}/${request.body.id}`;
 
     for (let i = 0; i < getUsers.rows.length; i += 1) {
       result.push({
@@ -172,6 +184,16 @@ const sendCreateOrderMessage = async (
         const data = {
           chat_id: getUsers.rows[i].chatId,
           parse_mode: 'html',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: 'Показать заявку',
+                  url: url,
+                },
+              ],
+            ],
+          },
           text,
         };
 
@@ -200,4 +222,117 @@ const sendCreateOrderMessage = async (
   }
 };
 
-export { sendUpdateOrderMessage, sendCreateOrderMessage };
+// @desc   send update order message to telegram bot
+// @route  POST /api/tg/update-order
+// @access Private
+const sendUpdateOrderMessage = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { comment, id } = request.body;
+
+    const serviceManId = await db.query(
+      `
+        SELECT
+          orders."serviceManId",
+          orders."id"
+        FROM
+          "${process.env.DB_NAME}"."orders" as orders
+        WHERE
+          orders."id" = $1;
+      `,
+      [id]
+    );
+
+    const getServiceMan = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."users" as users
+        WHERE
+          users.id = $1;
+      `,
+      [serviceManId.rows[0].serviceManId]
+    );
+
+    const getUsers = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}"."users" as users
+        WHERE
+          users.id = $1 OR
+          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'ADMIN') OR
+          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'SUPER_ADMIN');
+      `,
+      [serviceManId.rows[0].serviceManId]
+    );
+
+    const text = `<b>Обновление заявки №${
+      serviceManId.rows[0].id
+    }</b>\n\nНазначена на:\n${getServiceMan.rows[0].fullName}(@${
+      getServiceMan.rows[0].tgAccount
+    })\nКомментарий: ${comment}\nДата: ${moment(new Date())
+      .utcOffset('+06:00')
+      .format('DD.MM.YYYY HH:mm:ss')}`;
+
+    let result: any = [];
+    const url = `${request.protocol}://${request.headers['x-forwarded-for']}/${request.body.id}`;
+
+    for (let i = 0; i < getUsers.rows.length; i += 1) {
+      result.push({
+        name: getUsers.rows[i].fullName,
+        sent: false,
+      });
+
+      if (getUsers.rows[i].chatId) {
+        const data = {
+          chat_id: getUsers.rows[i].chatId,
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: 'Показать заявку',
+                  url: url,
+                },
+              ],
+            ],
+          },
+          text,
+        };
+
+        const sendMessage = await axios
+          .post(
+            `https://api.telegram.org/bot${process.env.TG_TOKEN}/sendMessage`,
+            data
+          )
+          .then((res) => {
+            result[i].sent = true;
+            return true;
+          })
+          .catch((err) => {
+            result[i].sent = false;
+            return err;
+          });
+      }
+    }
+
+    response.json({
+      result,
+    });
+  } catch (error: any) {
+    response.status(400).json(error.response?.data || 'Неизвестная ошибка');
+    next(`Error: ${error.message}`);
+  }
+};
+
+export {
+  sendUpdateOrderStatusMessage,
+  sendCreateOrderMessage,
+  sendUpdateOrderMessage,
+};

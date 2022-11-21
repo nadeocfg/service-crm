@@ -100,6 +100,45 @@ export const sendCreateOrderMessage =
     }
   };
 
+export const sendUpdateOrderMessage =
+  (orderData: OrderDataModel) => async (dispatch: Dispatch<any>) => {
+    try {
+      api
+        .post(`/api/tg/update-order`, orderData)
+        .then(() => {
+          dispatch({
+            type: ADD_NOTIFY,
+            payload: {
+              message: 'Сообщение отправлено',
+              type: 'success',
+            },
+          });
+        })
+        .catch((err) => {
+          dispatch({
+            type: ADD_NOTIFY,
+            payload: {
+              message: err.response?.data?.message
+                ? err.response.data.message
+                : 'Ошибка',
+              type: 'error',
+            },
+          });
+        });
+    } catch (error: any) {
+      dispatch({
+        type: ADD_NOTIFY,
+        payload: {
+          message:
+            error.response && error.response.data
+              ? error.response.data.message
+              : 'Ошибка',
+          type: 'error',
+        },
+      });
+    }
+  };
+
 export const createOrder =
   (orderData: OrderDataModel) => async (dispatch: Dispatch<any>) => {
     try {
@@ -156,6 +195,8 @@ export const createOrder =
 
 export const updateOrder =
   (orderData: OrderDataModel) => async (dispatch: Dispatch<any>) => {
+    // return dispatch(sendUpdateOrderMessage(orderData));
+
     try {
       dispatch(setLoader(true));
 
@@ -169,6 +210,8 @@ export const updateOrder =
               type: 'success',
             },
           });
+
+          dispatch(sendUpdateOrderMessage(res.data));
 
           history.push('/orders');
         })

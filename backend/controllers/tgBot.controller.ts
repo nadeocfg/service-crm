@@ -63,7 +63,7 @@ const sendUpdateOrderStatusMessage = async (
       .format('DD.MM.YYYY HH:mm:ss')}\n`;
 
     let result: any = [];
-    const url = `${request.protocol}://${request.headers['x-forwarded-for']}/${request.body.id}`;
+    const url = `http://crm.z-star.kz/orders/view/${orderId}`;
 
     for (let i = 0; i < getUsers.rows.length; i += 1) {
       result.push({
@@ -172,7 +172,7 @@ const sendCreateOrderMessage = async (
       .format('DD.MM.YYYY HH:mm:ss')}`;
 
     let result: any = [];
-    const url = `${request.protocol}://${request.headers['x-forwarded-for']}/${request.body.id}`;
+    const url = `http://crm.z-star.kz/orders/view/${request.body.id}`;
 
     for (let i = 0; i < getUsers.rows.length; i += 1) {
       result.push({
@@ -281,7 +281,7 @@ const sendUpdateOrderMessage = async (
       .format('DD.MM.YYYY HH:mm:ss')}`;
 
     let result: any = [];
-    const url = `${request.protocol}://${request.headers['x-forwarded-for']}/${request.body.id}`;
+    const url = `http://crm.z-star.kz/orders/view/${id}`;
 
     for (let i = 0; i < getUsers.rows.length; i += 1) {
       result.push({

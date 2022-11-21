@@ -339,6 +339,14 @@ const OrderEdit = () => {
 
             <TextField
               className="input form__field"
+              label="Комментарий о клиенте"
+              variant="outlined"
+              value={orderData.customer?.comment || ''}
+              disabled
+            />
+
+            <TextField
+              className="input form__field"
               label="Адрес"
               variant="outlined"
               value={orderData.address}
@@ -384,7 +392,7 @@ const OrderEdit = () => {
 
             <TextField
               className="input form__field"
-              label="Комментарий"
+              label="Комментарий к заказу"
               variant="outlined"
               value={orderData.comment}
               onChange={handleChange('comment')}

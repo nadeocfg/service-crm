@@ -230,6 +230,7 @@ export interface CustomersStoreModel {
     boilerSerial: string;
     boiler: BoilerItemModel;
     purchaseDate: string;
+    comment: string;
   };
 }
 
@@ -248,6 +249,7 @@ export interface CustomerItemModel {
   boilerId?: string;
   boiler?: BoilerItemModel;
   purchaseDate?: string;
+  comment?: string;
 }
 
 export interface OrderDataModel {

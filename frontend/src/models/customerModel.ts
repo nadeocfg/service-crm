@@ -11,4 +11,5 @@ export interface CustomerModel {
   isActive: boolean;
   boilerSerial?: string;
   purchaseDate?: string;
+  comment?: string;
 }

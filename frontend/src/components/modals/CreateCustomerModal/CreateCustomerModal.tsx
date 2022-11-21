@@ -246,6 +246,14 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
               onChange={handleChange('address')}
               required
             />
+
+            <TextField
+              className="input form__field"
+              label="Комментарий"
+              variant="outlined"
+              value={createCustomerData.comment}
+              onChange={handleChange('comment')}
+            />
           </DialogContent>
           <DialogActions className="btn-container">
             <Btn classes="btn btn_white" onClick={handleChangeModal}>

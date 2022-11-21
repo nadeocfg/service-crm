@@ -256,6 +256,7 @@ const Customers = () => {
                   sortBy="updatedDate"
                 />
               </TableCell>
+              <TableCell>Комментарий</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
@@ -274,6 +275,7 @@ const Customers = () => {
                 <TableCell>
                   {formatDate(customer.updatedDate || '', true)}
                 </TableCell>
+                <TableCell>{customer.comment}</TableCell>
                 {(userRoleCode === 'SUPER_ADMIN' ||
                   userRoleCode === 'ADMIN') && (
                   <TableCell>

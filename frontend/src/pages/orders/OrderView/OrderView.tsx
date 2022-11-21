@@ -378,6 +378,12 @@ const OrderView = () => {
             </ListItem>
             <ListItem>
               <ListItemText
+                primary={orderData.customer.comment || '~'}
+                secondary={'Комментарий'}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText
                 primary={orderData.customer.boiler?.name || '~'}
                 secondary={'Модель бойлера'}
               />

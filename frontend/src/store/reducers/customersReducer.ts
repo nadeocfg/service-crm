@@ -20,6 +20,7 @@ const initialState: CustomersStoreModel = {
     boilerSerial: '',
     boiler: {},
     purchaseDate: '',
+    comment: '',
   },
 };
 

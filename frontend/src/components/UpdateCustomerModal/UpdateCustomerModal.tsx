@@ -51,6 +51,7 @@ export default function UpdateCustomerModal({
     boilerSerial: '',
     boiler: {},
     purchaseDate: '',
+    comment: '',
   });
   const [selectModal, setSelectModal] = useState(false);
   const boilersList = useSelector(
@@ -71,6 +72,7 @@ export default function UpdateCustomerModal({
         phone2: '',
         boiler: {},
         purchaseDate: '',
+        comment: '',
       });
     }
 
@@ -272,6 +274,14 @@ export default function UpdateCustomerModal({
               value={selectedCustomer.address}
               onChange={handleChange('address')}
               required
+            />
+
+            <TextField
+              className="input form__field"
+              label="Комментарий"
+              variant="outlined"
+              value={selectedCustomer.comment}
+              onChange={handleChange('comment')}
             />
 
             <FormControlLabel

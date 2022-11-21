@@ -115,6 +115,7 @@ const createCustomer = async (
       boilerSerial,
       boiler,
       purchaseDate,
+      comment,
     } = request.body;
 
     const findExistingCustomer = await db.query(
@@ -131,8 +132,8 @@ const createCustomer = async (
     const insertCustomer = await db.query(
       `
         INSERT INTO
-          "${process.env.DB_NAME}".customers(address, email, "createdDate", "updatedDate", "createdBy", "fullName", phone, phone2, "boilerSerial", "boilerId", "purchaseDate")
-        VALUES($1, $2, NOW(), NOW(), $3, $4, $5, $6, $7, $8, $9)
+          "${process.env.DB_NAME}".customers(address, email, "createdDate", "updatedDate", "createdBy", "fullName", phone, phone2, "boilerSerial", "boilerId", "purchaseDate", comment)
+        VALUES($1, $2, NOW(), NOW(), $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING
           *
         `,
@@ -146,6 +147,7 @@ const createCustomer = async (
         boilerSerial,
         boiler.id,
         purchaseDate,
+        comment,
       ]
     );
 
@@ -188,6 +190,7 @@ const updateCustomer = async (
       boilerSerial,
       boiler,
       purchaseDate,
+      comment,
     } = request.body;
 
     const query = `
@@ -203,6 +206,7 @@ const updateCustomer = async (
         "boilerSerial" = $7,
         "boilerId" = $8,
         "purchaseDate" = $9,
+        comment = $11,
         "updatedDate" = NOW()
       WHERE
         id = $10
@@ -221,6 +225,7 @@ const updateCustomer = async (
       boiler.id,
       purchaseDate,
       id,
+      comment,
     ]);
 
     if (updateQuery.rows.length === 0) {

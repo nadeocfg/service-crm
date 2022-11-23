@@ -203,6 +203,8 @@ export interface PartItemModel {
 
 export interface OrdersStoreModel {
   orders: OrderItemModel[];
+  pagination: PaginationModel;
+  sort: SortModel;
   total: number;
   searchValue: string;
   orderData: OrderDataModel;
@@ -221,6 +223,8 @@ export interface CustomersStoreModel {
   customers: CustomerItemModel[];
   total: number;
   searchValue: string;
+  pagination: PaginationModel;
+  sort: SortModel;
   createCustomerData: {
     address: string;
     email: string;
@@ -322,4 +326,15 @@ export interface CashListItemModel {
   notReadySum: number;
   paidSum: number;
   updatedDate: string;
+}
+
+export interface PaginationModel {
+  currentPage: number;
+  rowsPerPage: number;
+  rowsPerPageOptions: number[];
+}
+
+export interface SortModel {
+  name: string;
+  order: 'desc' | 'asc';
 }

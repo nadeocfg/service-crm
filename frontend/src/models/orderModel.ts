@@ -24,8 +24,3 @@ export interface OrderItemModel {
   customer: CustomerModel;
   serviceMan: UserModel;
 }
-
-export interface SortModel {
-  name: string;
-  order: 'desc' | 'asc';
-}

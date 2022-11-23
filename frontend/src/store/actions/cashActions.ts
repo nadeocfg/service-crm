@@ -1,6 +1,5 @@
 import { Dispatch } from 'react';
-import { SortModel } from '../../models/orderModel';
-import { CashListItemModel } from '../../models/storeModel';
+import { CashListItemModel, SortModel } from '../../models/storeModel';
 import api from '../../utils/axiosMiddleware';
 import { SET_CASH_LIST } from '../storeConstants/cashConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';

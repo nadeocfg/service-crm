@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import { OrderDataModel } from '../../models/storeModel';
+import { OrderDataModel, SortModel } from '../../models/storeModel';
 import api from '../../utils/axiosMiddleware';
 import {
   CLEAR_ORDER_DATA,
@@ -8,7 +8,6 @@ import {
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import { setLoader } from './mainActions';
 import history from '../../utils/history';
-import { SortModel } from '../../models/orderModel';
 
 export const getOrders =
   (

@@ -203,6 +203,7 @@ const DictParts = () => {
         page={pagination.currentPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage="Записей на страницу"
       />
 
       <Dialog

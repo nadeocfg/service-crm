@@ -4,12 +4,23 @@ import { CLEAR_STORE } from '../storeConstants/mainConstants';
 import {
   CLEAR_ORDER_DATA,
   SET_ORDERS,
+  SET_ORDERS_PAGINATION,
   SET_ORDERS_SEARCH_FIELD,
+  SET_ORDERS_SORT,
   SET_ORDER_DATA,
 } from '../storeConstants/ordersConstants';
 
 const initialState: OrdersStoreModel = {
   orders: [],
+  pagination: {
+    currentPage: 0,
+    rowsPerPage: 10,
+    rowsPerPageOptions: [10, 20, 50],
+  },
+  sort: {
+    name: 'id',
+    order: 'desc',
+  },
   total: 0,
   searchValue: '',
   orderData: {
@@ -62,6 +73,21 @@ const ordersReducer = (state = initialState, action: ReduxActionModel) => {
           boiler: {},
           visitPrice: 5000,
         },
+      };
+
+    case SET_ORDERS_PAGINATION:
+      return {
+        ...state,
+        pagination: {
+          ...state.pagination,
+          [action.payload.name]: action.payload.value,
+        },
+      };
+
+    case SET_ORDERS_SORT:
+      return {
+        ...state,
+        sort: action.payload,
       };
 
     case CLEAR_STORE:

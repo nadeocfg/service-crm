@@ -11,8 +11,11 @@ import {
 import { useState } from 'react';
 import ReactInputMask from 'react-input-mask';
 import { useDispatch, useSelector } from 'react-redux';
-import { SortModel } from '../../models/orderModel';
-import { CustomerItemModel, StoreModel } from '../../models/storeModel';
+import {
+  CustomerItemModel,
+  SortModel,
+  StoreModel,
+} from '../../models/storeModel';
 import { getCustomersList } from '../../store/actions/customersActions';
 import { getAllBoilers } from '../../store/actions/dictsActions';
 import { setLoader } from '../../store/actions/mainActions';

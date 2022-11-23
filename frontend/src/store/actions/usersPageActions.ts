@@ -1,7 +1,6 @@
 import moment from 'moment';
 import { Dispatch } from 'react';
-import { SortModel } from '../../models/orderModel';
-import { CreateUserDataModel } from '../../models/storeModel';
+import { CreateUserDataModel, SortModel } from '../../models/storeModel';
 import api from '../../utils/axiosMiddleware';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import {

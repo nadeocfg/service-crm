@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import { SortModel } from '../../models/orderModel';
+import { SortModel } from '../../models/storeModel';
 import api from '../../utils/axiosMiddleware';
 import { SET_CUSTOMERS_LIST } from '../storeConstants/customersConstants';
 import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';

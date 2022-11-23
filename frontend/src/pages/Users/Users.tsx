@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { StoreModel, UsersItemModel } from '../../models/storeModel';
+import { SortModel, StoreModel, UsersItemModel } from '../../models/storeModel';
 import { getUsers, setSearchField } from '../../store/actions/usersPageActions';
 import SearchIcon from '@material-ui/icons/Search';
 import EditIcon from '@material-ui/icons/Edit';
@@ -20,7 +20,6 @@ import { formatDate } from '../../utils/formatDate';
 import React, { useEffect, useState } from 'react';
 import CreateUserModal from '../../components/modals/CreateUserModal';
 import history from '../../utils/history';
-import { SortModel } from '../../models/orderModel';
 import TableSort from '../../components/TableSort';
 
 const Users = () => {
@@ -226,6 +225,7 @@ const Users = () => {
         page={pagination.currentPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage="Записей на страницу"
       />
     </>
   );

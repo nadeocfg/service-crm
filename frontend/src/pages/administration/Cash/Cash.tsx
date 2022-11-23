@@ -17,13 +17,16 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { CashListItemModel, StoreModel } from '../../../models/storeModel';
+import {
+  CashListItemModel,
+  SortModel,
+  StoreModel,
+} from '../../../models/storeModel';
 import SearchIcon from '@material-ui/icons/Search';
 import Btn from '../../../components/Btn';
 import React, { useEffect, useState } from 'react';
 import CreateCustomerModal from '../../../components/modals/CreateCustomerModal';
 import TableSort from '../../../components/TableSort';
-import { SortModel } from '../../../models/orderModel';
 import { SET_CASH_SEARCH_FIELD } from '../../../store/storeConstants/cashConstants';
 import {
   getCashList,
@@ -284,6 +287,7 @@ const Cash = () => {
         page={pagination.currentPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage="Записей на страницу"
       />
 
       <Dialog

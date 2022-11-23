@@ -1,5 +1,5 @@
 import { TableSortLabel } from '@material-ui/core';
-import { SortModel } from '../../models/orderModel';
+import { SortModel } from '../../models/storeModel';
 
 interface TableSortModel {
   label: string;

@@ -17,12 +17,16 @@ import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import Btn from '../../../components/Btn';
 import { formatDate } from '../../../utils/formatDate';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { getOrders } from '../../../store/actions/ordersActions';
 import AddIcon from '@material-ui/icons/Add';
 import history from '../../../utils/history';
-import { OrderItemModel, SortModel } from '../../../models/orderModel';
-import { SET_ORDERS_SEARCH_FIELD } from '../../../store/storeConstants/ordersConstants';
+import { OrderItemModel } from '../../../models/orderModel';
+import {
+  SET_ORDERS_PAGINATION,
+  SET_ORDERS_SEARCH_FIELD,
+  SET_ORDERS_SORT,
+} from '../../../store/storeConstants/ordersConstants';
 import TableSort from '../../../components/TableSort';
 
 const OrdersList = () => {
@@ -30,21 +34,16 @@ const OrdersList = () => {
   const searchField = useSelector(
     (store: StoreModel) => store.ordersStore.searchValue
   );
-  const [pagination, setPagination] = useState({
-    currentPage: 0,
-    rowsPerPage: 10,
-    rowsPerPageOptions: [10, 20, 50],
-  });
-  const [sort, setSort] = useState<SortModel>({
-    name: 'id',
-    order: 'desc',
-  });
 
   const userRoleCode = useSelector(
     (store: StoreModel) => store.userStore.authResponse.roleCode
   );
   const orders = useSelector((store: StoreModel) => store.ordersStore.orders);
   const total = useSelector((store: StoreModel) => store.ordersStore.total);
+  const pagination = useSelector(
+    (store: StoreModel) => store.ordersStore.pagination
+  );
+  const sort = useSelector((store: StoreModel) => store.ordersStore.sort);
 
   useEffect(() => {
     dispatch(
@@ -80,9 +79,12 @@ const OrdersList = () => {
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setPagination({
-      ...pagination,
-      rowsPerPage: +event.target.value,
+    dispatch({
+      type: SET_ORDERS_PAGINATION,
+      payload: {
+        name: 'rowsPerPage',
+        value: +event.target.value,
+      },
     });
 
     dispatch(
@@ -91,9 +93,12 @@ const OrdersList = () => {
   };
 
   const handleChangePage = (event: any, page: number) => {
-    setPagination({
-      ...pagination,
-      currentPage: page,
+    dispatch({
+      type: SET_ORDERS_PAGINATION,
+      payload: {
+        name: 'currentPage',
+        value: page,
+      },
     });
 
     dispatch(getOrders(page, pagination.rowsPerPage, searchField, sort));
@@ -112,9 +117,12 @@ const OrdersList = () => {
   };
 
   const handleChangeSort = (property: string) => {
-    setSort({
-      order: sort.order === 'desc' ? 'asc' : 'desc',
-      name: property,
+    dispatch({
+      type: SET_ORDERS_SORT,
+      payload: {
+        order: sort.order === 'desc' ? 'asc' : 'desc',
+        name: property,
+      },
     });
 
     dispatch(
@@ -259,6 +267,7 @@ const OrdersList = () => {
         page={pagination.currentPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage="Записей на страницу"
       />
     </>
   );

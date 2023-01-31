@@ -4,10 +4,10 @@
   "description": "CRM for service industry",
   "main": "server.ts",
   "scripts": {
-    "server": "concurrently \"nodemon ./backend/server.ts\" \"npm run bot\"",
-    "back": "nodemon ./backend/server.ts",
-    "client": "npm start --prefix ./frontend",
+    "server": "nodemon ./backend/server.ts",
     "bot": "nodemon ./tg-bot/index.js",
+    "client": "npm start --prefix ./frontend",
+    "backend": "concurrently \"npm run server\" \"npm run bot\"",
     "start:dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {

@@ -2,6 +2,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   IconButton,
   InputBase,
@@ -25,16 +26,17 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import Btn from '../../../components/Btn';
 import React, { useEffect, useState } from 'react';
-import CreateCustomerModal from '../../../components/modals/CreateCustomerModal';
 import TableSort from '../../../components/TableSort';
 import { SET_CASH_SEARCH_FIELD } from '../../../store/storeConstants/cashConstants';
 import {
   getCashList,
   payToServiceMan,
+  resetPaidSum,
 } from '../../../store/actions/cashActions';
 import { formatDate } from '../../../utils/formatDate';
 import { formatSum } from '../../../utils/formatSum';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import Transition from '../../../components/Transition';
 
 const Cash = () => {
@@ -63,6 +65,13 @@ const Cash = () => {
   }>({
     show: false,
     requestedAmount: 0,
+    cashItem: null,
+  });
+  const [resetModal, setResetModal] = useState<{
+    show: boolean;
+    cashItem: CashListItemModel | null;
+  }>({
+    show: false,
     cashItem: null,
   });
 
@@ -149,6 +158,37 @@ const Cash = () => {
     });
   };
 
+  const reset = () => {
+    dispatch(resetPaidSum(resetModal.cashItem?.id));
+
+    setResetModal((prev) => {
+      return {
+        ...prev,
+        show: false,
+        cashItem: null,
+      };
+    });
+  };
+
+  const handleChangeResetModal = (cashItem?: CashListItemModel) => {
+    if (cashItem) {
+      setResetModal((prev) => {
+        return {
+          ...prev,
+          show: !resetModal.show,
+          cashItem: cashItem,
+        };
+      });
+    } else {
+      setResetModal((prev) => {
+        return {
+          ...prev,
+          show: !resetModal.show,
+        };
+      });
+    }
+  };
+
   const handleChangeModal = (cashItem?: CashListItemModel) => {
     if (cashItem) {
       setCashModal({
@@ -189,8 +229,6 @@ const Cash = () => {
           placeholder="Введите параметры поиска (ID, ФИО, Серийный номер, Телефон, Адрес, Email)"
           inputProps={{ 'aria-label': 'Введите параметры поиска' }}
         />
-
-        <CreateCustomerModal />
       </div>
 
       <TableContainer component={Paper}>
@@ -263,13 +301,29 @@ const Cash = () => {
                   {(userRoleCode === 'ADMIN' ||
                     userRoleCode === 'SUPER_ADMIN') && (
                     <Tooltip title="Выплатить">
-                      <IconButton
-                        aria-label="view"
-                        onClick={() => handleChangeModal(cash)}
-                        disabled={cash.readySum <= 0}
-                      >
-                        <AttachMoneyIcon fontSize="inherit" />
-                      </IconButton>
+                      <span>
+                        <IconButton
+                          aria-label="view"
+                          onClick={() => handleChangeModal(cash)}
+                          disabled={cash.readySum <= 0}
+                        >
+                          <AttachMoneyIcon fontSize="inherit" />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  )}
+
+                  {userRoleCode === 'SUPER_ADMIN' && (
+                    <Tooltip title="Обнулить">
+                      <span>
+                        <IconButton
+                          aria-label="view"
+                          onClick={() => handleChangeResetModal(cash)}
+                          disabled={cash.paidSum <= 0}
+                        >
+                          <RotateLeftIcon fontSize="inherit" />
+                        </IconButton>
+                      </span>
                     </Tooltip>
                   )}
                 </TableCell>
@@ -321,6 +375,31 @@ const Cash = () => {
             disabled={cashModal.requestedAmount <= 0}
           >
             Выплатить
+          </Btn>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={resetModal.show}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => handleChangeResetModal(undefined)}
+      >
+        <DialogTitle>Подтвердите действие</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {`Вы действительно хотите обнулить выплаченную сумму для ${resetModal.cashItem?.fullName}`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions className="btn-container">
+          <Btn
+            classes="btn btn_white"
+            onClick={() => handleChangeResetModal(undefined)}
+          >
+            Отмена
+          </Btn>
+          <Btn classes="btn btn_danger" onClick={reset}>
+            Обнулить
           </Btn>
         </DialogActions>
       </Dialog>

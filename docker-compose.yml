@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: service-crm
+    image: service-crm
+    build:
+      context: .
+      target: production
+    ports:
+      - "80:80"

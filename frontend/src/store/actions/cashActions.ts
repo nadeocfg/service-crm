@@ -114,3 +114,66 @@ export const payToServiceMan =
       dispatch(setLoader(false));
     }
   };
+
+export const resetPaidSum =
+  (id?: number) => async (dispatch: Dispatch<any>) => {
+    if (!id) {
+      dispatch({
+        type: ADD_NOTIFY,
+        payload: {
+          message: 'Не найден ID пользователя',
+          type: 'error',
+        },
+      });
+      return;
+    }
+
+    try {
+      dispatch(setLoader(true));
+
+      const data = {
+        id,
+      };
+
+      api
+        .post(`/api/cash/reset-paid-sum`, data)
+        .then(() => {
+          dispatch({
+            type: ADD_NOTIFY,
+            payload: {
+              message: 'Выплаты успешно обнулены',
+              type: 'success',
+            },
+          });
+
+          dispatch(getCashList());
+        })
+        .catch((err) => {
+          dispatch({
+            type: ADD_NOTIFY,
+            payload: {
+              message: err.response?.data?.message
+                ? err.response.data.message
+                : 'Ошибка',
+              type: 'error',
+            },
+          });
+        })
+        .finally(() => {
+          dispatch(setLoader(false));
+        });
+    } catch (error: any) {
+      dispatch({
+        type: ADD_NOTIFY,
+        payload: {
+          message:
+            error.response && error.response.data
+              ? error.response.data.message
+              : 'Ошибка',
+          type: 'error',
+        },
+      });
+
+      dispatch(setLoader(false));
+    }
+  };

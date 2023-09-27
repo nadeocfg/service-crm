@@ -160,4 +160,57 @@ const payToServiceMan = async (
   }
 };
 
-export { getCashList, payToServiceMan };
+// @desc   Reset paid sum of user
+// @route  POST /api/cash/reset-paid-sum
+// @access Private
+const resetPaidSum = async (
+  request: UserRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = request.body;
+
+    const cashItem = await db.query(
+      `
+        SELECT
+          *
+        FROM
+          "${process.env.DB_NAME}".cash as cash
+        WHERE
+          cash.id = $1;
+      `,
+      [id]
+    );
+
+    if (cashItem.rows.length === 0) {
+      return response.status(404).json({
+        message: `Касса с id:${id} не найдена`,
+      });
+    }
+
+    const updateCashItem = await db.query(
+      `
+        UPDATE
+          "${process.env.DB_NAME}"."cash"
+        SET
+          "paidSum" = 0,
+          "updatedDate" = NOW()
+        WHERE
+          id = $1
+        RETURNING
+          *;
+      `,
+      [id]
+    );
+
+    return response.json(updateCashItem.rows[0]);
+  } catch (error: any) {
+    response.status(404).json({
+      message: error.message,
+    });
+    next(`Error: ${error.message}`);
+  }
+};
+
+export { getCashList, payToServiceMan, resetPaidSum };

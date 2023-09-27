@@ -1,3 +1,16 @@
 .input {
   width: 100%;
 }
+
+.MuiTable-root {
+  .MuiTableBody-root {
+    .MuiTableRow-root {
+      .MuiTableCell-root {
+        &:last-child {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+  }
+}

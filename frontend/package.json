@@ -2,8 +2,8 @@
   "name": "service-crm",
   "version": "0.1.0",
   "private": true,
-  "proxy1": "http://18.185.65.50/",
-  "proxy": "http://localhost:5000/",
+  "proxy1": "http://195.210.47.150:5000/",
+  "proxy": "http://127.0.0.1:5500/",
   "dependencies": {
     "@date-io/moment": "2.11.0",
     "@emotion/react": "^11.6.0",

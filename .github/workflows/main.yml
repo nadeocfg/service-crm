@@ -19,8 +19,7 @@ jobs:
           #cache: 'npm'
       - run: yarn
         working-directory: ./frontend
-      - run: yarn build
-        working-directory: ./frontend
+      - run: yarn build:client
       - name: ssh deploy on remote server
         uses: easingthemes/ssh-deploy@v2.1.4
         with:

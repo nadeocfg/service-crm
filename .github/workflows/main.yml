@@ -17,10 +17,9 @@ jobs:
         with:
           node-version: 16.x
           #cache: 'npm'
-      - run: npm install
+      - run: yarn
         working-directory: ./frontend
-      - run: REACT_APP_STAGE=production
-      - run: npm run build
+      - run: yarn build
         working-directory: ./frontend
       - name: ssh deploy on remote server
         uses: easingthemes/ssh-deploy@v2.1.4

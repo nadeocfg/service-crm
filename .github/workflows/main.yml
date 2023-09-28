@@ -1,0 +1,32 @@
+#FRONTEND 
+name: Build React App & Deploy to server
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x to Build
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        #cache: 'npm'
+    - run: cd ./frontend
+    - run: npm install
+    - run: REACT_APP_STAGE=production
+    - run: CI=false npm run build
+    - name: ssh deploy on remote server
+      uses: easingthemes/ssh-deploy@v2.1.4
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+        REMOTE_HOST: ${{ secrets.DB_HOST }}
+        REMOTE_USER: centos
+        REMOTE_PORT: 22
+        SOURCE: "build/"
+        TARGET: ${{ secrets.DEPLOY_TARGET }}

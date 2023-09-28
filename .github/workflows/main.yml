@@ -17,16 +17,24 @@ jobs:
         with:
           node-version: 16.x
           #cache: 'npm'
-      - run: cd /frontend
       - run: npm install
+        working-directory: ./frontend
       - run: REACT_APP_STAGE=production
       - run: npm run build
+        working-directory: ./frontend
       - name: ssh deploy on remote server
         uses: easingthemes/ssh-deploy@v2.1.4
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.DB_HOST }}
+          REMOTE_USER: centos
+          REMOTE_PORT: 22
+          SOURCE: './frontend/build/'
+          TARGET: ${{ secrets.DEPLOY_TARGET }}
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
           REMOTE_HOST: ${{ secrets.DB_HOST }}
           REMOTE_USER: centos
           REMOTE_PORT: 22
-          SOURCE: 'build/'
+          SOURCE: './frontend/build/'
           TARGET: ${{ secrets.DEPLOY_TARGET }}

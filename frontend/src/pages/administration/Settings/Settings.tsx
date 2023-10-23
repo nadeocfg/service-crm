@@ -5,6 +5,10 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreModel } from '../../../models/storeModel';
 import { SET_SETTINGS } from '../../../store/storeConstants/settingsConstants';
+import {
+  getSettings,
+  saveSettings,
+} from '../../../store/actions/settingsActions';
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -25,13 +29,16 @@ const Settings = () => {
       });
     };
 
-  const save = () => {
-    console.log('save');
+  const save = async () => {
+    await dispatch(saveSettings(settings));
+    await dispatch(getSettings());
   };
 
   return (
     <>
-      <h1>Настройки</h1>
+      <div className="search-row">
+        <h1>Настройки</h1>
+      </div>
 
       <Card>
         <CardContent className="settings">

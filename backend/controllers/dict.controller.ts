@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 import dotenv from 'dotenv';
+import { UserRequest } from '../../global';
 
 dotenv.config();
 

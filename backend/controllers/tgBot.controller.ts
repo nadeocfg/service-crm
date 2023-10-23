@@ -1,9 +1,9 @@
 import { NextFunction, Response } from 'express';
 import moment from 'moment';
-import { UserRequest } from '../../frontend/src/models/UserRequestModels';
 import db from '../config/db';
 import dotenv from 'dotenv';
 import axios from 'axios';
+import { UserRequest } from '../../global';
 
 dotenv.config();
 

@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-export type UserRequest = Request & {
+export interface UserRequest extends Request {
   user?: {
     id?: number;
     login?: string;
@@ -16,4 +16,4 @@ export type UserRequest = Request & {
     percentFromParts?: number;
     percentFromVisit?: number;
   };
-};
+}

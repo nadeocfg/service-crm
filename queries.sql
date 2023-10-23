@@ -577,3 +577,23 @@ DELETE FROM
 
 DELETE FROM
   "service-crm"."cashHistoryLog";
+
+update "service-crm".utils as u set -- postgres FTW
+  value = u2.value,
+  "updatedDate" = u2.updateDate
+from (values
+  (1, '12', now()),
+  (2, '32', now())
+) as u2(id, value, updateDate)
+where u2.id = u.id;
+
+UPDATE
+  "service-crm"."utils" as u set -- postgres FTW
+    value = u2.value,
+    "updatedDate" = u2.updateDate
+FROM
+  (values
+    (1, 23, NOW())
+  ) as u2(id, value, updateDate)
+WHERE
+  u2.id = u.id;

@@ -1,6 +1,5 @@
 import {
   IconButton,
-  InputBase,
   Paper,
   Table,
   TableBody,
@@ -12,14 +11,11 @@ import {
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreModel } from '../../../models/storeModel';
-import SearchIcon from '@material-ui/icons/Search';
 import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import Btn from '../../../components/Btn';
 import { formatDate } from '../../../utils/formatDate';
 import React, { useEffect } from 'react';
 import { getOrders } from '../../../store/actions/ordersActions';
-import AddIcon from '@material-ui/icons/Add';
 import history from '../../../utils/history';
 import { OrderItemModel } from '../../../models/orderModel';
 import {
@@ -28,6 +24,8 @@ import {
   SET_ORDERS_SORT,
 } from '../../../store/storeConstants/ordersConstants';
 import TableSort from '../../../components/TableSort';
+import { OrdersSearchPanel } from '../../../components/OrdersSearchPanel';
+import { Stack } from '@mui/material';
 
 const OrdersList = () => {
   const dispatch = useDispatch();
@@ -135,26 +133,13 @@ const OrdersList = () => {
 
   return (
     <>
-      <div className="search-row">
-        <Btn classes="btn btn_white" onClick={handleSearch}>
-          <SearchIcon />
-          Поиск
-        </Btn>
-
-        <InputBase
-          value={searchField}
-          onChange={handleSearchChange}
-          placeholder="Введите параметры поиска (ФИО клиента, ID, Адрес, ФИО специалиста, Комментарий, Статус заказа, Наименование котла)"
-          inputProps={{ 'aria-label': 'Введите параметры поиска' }}
-        />
-
-        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
-          <Btn classes="btn btn_primary" onClick={createOrderNav}>
-            <AddIcon />
-            Добавить
-          </Btn>
-        )}
-      </div>
+      <OrdersSearchPanel
+        addFunction={createOrderNav}
+        handleChangeSearch={handleSearchChange}
+        searchField={searchField}
+        label="Введите параметры поиска (ФИО клиента, ID, Адрес, ФИО специалиста, Комментарий, Статус заказа, Наименование котла)"
+        onSearch={handleSearch}
+      />
 
       <TableContainer component={Paper}>
         <Table>
@@ -234,24 +219,26 @@ const OrdersList = () => {
                 <TableCell>{order.statusName}</TableCell>
                 <TableCell>{order.comment}</TableCell>
                 <TableCell>
-                  <IconButton
-                    aria-label="view"
-                    onClick={() => viewOrder(order)}
-                  >
-                    <VisibilityIcon fontSize="inherit" />
-                  </IconButton>
+                  <Stack direction={'row'} alignItems={'center'}>
+                    <IconButton
+                      aria-label="view"
+                      onClick={() => viewOrder(order)}
+                    >
+                      <VisibilityIcon fontSize="inherit" />
+                    </IconButton>
 
-                  {(userRoleCode === 'SUPER_ADMIN' ||
-                    userRoleCode === 'ADMIN') &&
-                    order.statusCode !== 'DONE' &&
-                    order.statusCode !== 'CANCELED' && (
-                      <IconButton
-                        aria-label="edit"
-                        onClick={() => editOrder(order)}
-                      >
-                        <EditIcon fontSize="inherit" />
-                      </IconButton>
-                    )}
+                    {(userRoleCode === 'SUPER_ADMIN' ||
+                      userRoleCode === 'ADMIN') &&
+                      order.statusCode !== 'DONE' &&
+                      order.statusCode !== 'CANCELED' && (
+                        <IconButton
+                          aria-label="edit"
+                          onClick={() => editOrder(order)}
+                        >
+                          <EditIcon fontSize="inherit" />
+                        </IconButton>
+                      )}
+                  </Stack>
                 </TableCell>
               </TableRow>
             ))}

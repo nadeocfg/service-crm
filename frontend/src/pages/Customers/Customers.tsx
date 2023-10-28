@@ -28,6 +28,7 @@ import history from '../../utils/history';
 import { SET_ORDER_DATA } from '../../store/storeConstants/ordersConstants';
 import TableSort from '../../components/TableSort';
 import UpdateCustomerModal from '../../components/UpdateCustomerModal';
+import { Stack } from '@mui/material';
 
 const Customers = () => {
   const dispatch = useDispatch();
@@ -171,7 +172,7 @@ const Customers = () => {
   return (
     <>
       <div className="search-row">
-        <Btn classes="btn btn_white" onClick={handleSearch}>
+        <Btn className="btn btn_white" onClick={handleSearch}>
           <SearchIcon />
           Поиск
         </Btn>
@@ -283,24 +284,26 @@ const Customers = () => {
                   {formatDate(customer.updatedDate || '', true)}
                 </TableCell>
                 <TableCell>{customer.comment}</TableCell>
-                {(userRoleCode === 'SUPER_ADMIN' ||
-                  userRoleCode === 'ADMIN') && (
-                  <TableCell>
-                    <UpdateCustomerModal
-                      customer={customer}
-                      pagination={pagination}
-                      searchField={searchField}
-                      sort={sort}
-                    />
+                <TableCell>
+                  {(userRoleCode === 'SUPER_ADMIN' ||
+                    userRoleCode === 'ADMIN') && (
+                    <Stack direction={'row'} alignItems={'center'}>
+                      <UpdateCustomerModal
+                        customer={customer}
+                        pagination={pagination}
+                        searchField={searchField}
+                        sort={sort}
+                      />
 
-                    <IconButton
-                      aria-label="edit"
-                      onClick={() => createOrder(customer)}
-                    >
-                      <ShoppingCartIcon fontSize="inherit" />
-                    </IconButton>
-                  </TableCell>
-                )}
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => createOrder(customer)}
+                      >
+                        <ShoppingCartIcon fontSize="inherit" />
+                      </IconButton>
+                    </Stack>
+                  )}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

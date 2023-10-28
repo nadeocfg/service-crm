@@ -1,0 +1,16 @@
+.search-panel {
+  margin-bottom: 20px;
+}
+
+.filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px 0;
+
+  &__item {
+    flex-basis: 40%;
+    flex-grow: 1;
+  }
+}

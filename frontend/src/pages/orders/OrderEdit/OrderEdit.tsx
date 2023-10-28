@@ -425,7 +425,7 @@ const OrderEdit = () => {
 
           <CardContent className="form">
             <Btn
-              classes="btn btn_primary"
+              className="btn btn_primary"
               onClick={() =>
                 changeModal(getParts, 'Выберите запчасть', 'parts')
               }
@@ -489,7 +489,7 @@ const OrderEdit = () => {
 
           <CardContent className="form">
             <Btn
-              classes="btn btn_primary"
+              className="btn btn_primary"
               onClick={() =>
                 changeModal(getJobTypes, 'Выберите вид работы', 'jobTypes')
               }
@@ -591,10 +591,10 @@ const OrderEdit = () => {
           </CardContent>
 
           <CardActions className="btn-container">
-            <Btn classes="btn" onClick={goBack}>
+            <Btn className="btn" onClick={goBack}>
               Назад
             </Btn>
-            <Btn classes="btn btn_primary" type="submit">
+            <Btn className="btn btn_primary" type="submit">
               Сохранить
             </Btn>
           </CardActions>

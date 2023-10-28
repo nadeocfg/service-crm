@@ -29,6 +29,7 @@ import { formatSum } from '../../utils/formatSum';
 import api from '../../utils/axiosMiddleware';
 import { ADD_NOTIFY } from '../../store/storeConstants/snackbarConstants';
 import { setLoader } from '../../store/actions/mainActions';
+import { Stack } from '@mui/material';
 
 const PaidOuts = () => {
   const dispatch = useDispatch();
@@ -170,7 +171,7 @@ const PaidOuts = () => {
   return (
     <>
       <div className="search-row">
-        <Btn classes="btn btn_white" onClick={handleSearch}>
+        <Btn className="btn btn_white" onClick={handleSearch}>
           <SearchIcon />
           Поиск
         </Btn>
@@ -216,23 +217,25 @@ const PaidOuts = () => {
                     : 'Не готова к переводу'}
                 </TableCell>
                 <TableCell>
-                  <IconButton
-                    aria-label="view"
-                    onClick={() => viewOrder(paidOut.orderId)}
-                  >
-                    <VisibilityIcon fontSize="inherit" />
-                  </IconButton>
-                  {(userRoleCode === 'ADMIN' ||
-                    userRoleCode === 'SUPER_ADMIN') &&
-                    paidOut.canBePaid &&
-                    !paidOut.isPaid && (
-                      <IconButton
-                        aria-label="view"
-                        onClick={() => initPay(paidOut)}
-                      >
-                        <AttachMoneyIcon fontSize="inherit" />
-                      </IconButton>
-                    )}
+                  <Stack direction={'row'} alignItems={'center'}>
+                    <IconButton
+                      aria-label="view"
+                      onClick={() => viewOrder(paidOut.orderId)}
+                    >
+                      <VisibilityIcon fontSize="inherit" />
+                    </IconButton>
+                    {(userRoleCode === 'ADMIN' ||
+                      userRoleCode === 'SUPER_ADMIN') &&
+                      paidOut.canBePaid &&
+                      !paidOut.isPaid && (
+                        <IconButton
+                          aria-label="view"
+                          onClick={() => initPay(paidOut)}
+                        >
+                          <AttachMoneyIcon fontSize="inherit" />
+                        </IconButton>
+                      )}
+                  </Stack>
                 </TableCell>
               </TableRow>
             ))}
@@ -261,10 +264,10 @@ const PaidOuts = () => {
           paidModal.paidOut?.sum || 0
         )} на общий счет ${paidModal.paidOut?.fullName} ?`}</DialogTitle>
         <DialogActions className="btn-container">
-          <Btn classes="btn btn_white" onClick={handleChangeModal}>
+          <Btn className="btn btn_white" onClick={handleChangeModal}>
             Отмена
           </Btn>
-          <Btn classes="btn btn_primary" onClick={paid}>
+          <Btn className="btn btn_primary" onClick={paid}>
             Перевести
           </Btn>
         </DialogActions>

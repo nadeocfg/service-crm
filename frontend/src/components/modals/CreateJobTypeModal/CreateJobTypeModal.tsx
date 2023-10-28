@@ -70,7 +70,7 @@ const CreateJobTypeModal = () => {
 
   return (
     <>
-      <Btn classes="btn btn_primary" onClick={handleChangeModal}>
+      <Btn className="btn btn_primary" onClick={handleChangeModal}>
         <AddIcon />
         Добавить
       </Btn>
@@ -150,10 +150,10 @@ const CreateJobTypeModal = () => {
             />
           </DialogContent>
           <DialogActions className="btn-container">
-            <Btn classes="btn btn_white" onClick={handleChangeModal}>
+            <Btn className="btn btn_white" onClick={handleChangeModal}>
               Отмена
             </Btn>
-            <Btn classes="btn btn_primary" type="submit">
+            <Btn className="btn btn_primary" type="submit">
               Добавить
             </Btn>
           </DialogActions>

@@ -30,6 +30,18 @@
     }
   }
 
+  &_link {
+    padding: 0;
+    background: transparent;
+    color: var(--primary-color);
+    text-transform: none;
+    text-decoration: underline;
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
   &_success {
     background: var(--success-color);
     color: var(--white-color);

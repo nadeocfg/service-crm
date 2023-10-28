@@ -10,15 +10,6 @@
   }
 }
 
-.search-row {
-  display: flex;
-  flex-direction: column;
-
-  h1 {
-    margin: 16px 0;
-  }
-}
-
 .select-modal {
   height: 600px;
 
@@ -28,23 +19,34 @@
   }
 }
 
-@media (min-width: 600px) {
-  .btn-container {
-    flex-direction: row;
-    padding: 0 32px 16px 32px;
+.search-row {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
 
-    .MuiButtonBase-root.btn {
-      width: auto;
-
-      & + .btn {
-        margin-left: 8px;
-      }
-    }
+  .MuiInputBase-root {
+    flex-grow: 1;
+    width: 100%;
+    margin: 16px 0;
   }
 
+  h1 {
+    margin: 16px 0;
+  }
+}
+
+@media (min-width: 600px) {
   .search-row {
-    display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
     justify-content: space-between;
+
+    .MuiInputBase-root {
+      width: auto;
+      margin: 0 16px;
+    }
   }
 }

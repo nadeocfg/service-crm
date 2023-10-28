@@ -27,6 +27,7 @@ import Btn from '../../../components/Btn';
 import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
 import api from '../../../utils/axiosMiddleware';
 import CreatePartModal from '../../../components/modals/CreatePartModal';
+import { Stack } from '@mui/material';
 
 const DictParts = () => {
   const dispatch = useDispatch();
@@ -178,17 +179,19 @@ const DictParts = () => {
                 <TableCell>
                   {formatDate(part.updatedDate || '', true)}
                 </TableCell>
-                {(userRoleCode === 'SUPER_ADMIN' ||
-                  userRoleCode === 'ADMIN') && (
-                  <TableCell>
-                    <IconButton
-                      aria-label="edit"
-                      onClick={() => selectPart(part)}
-                    >
-                      <EditIcon fontSize="inherit" />
-                    </IconButton>
-                  </TableCell>
-                )}
+                <TableCell>
+                  {(userRoleCode === 'SUPER_ADMIN' ||
+                    userRoleCode === 'ADMIN') && (
+                    <Stack direction={'row'} alignItems={'center'}>
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => selectPart(part)}
+                      >
+                        <EditIcon fontSize="inherit" />
+                      </IconButton>
+                    </Stack>
+                  )}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -280,10 +283,10 @@ const DictParts = () => {
             />
           </DialogContent>
           <DialogActions className="btn-container">
-            <Btn classes="btn btn_white" onClick={handleChangeModal}>
+            <Btn className="btn btn_white" onClick={handleChangeModal}>
               Отмена
             </Btn>
-            <Btn classes="btn btn_primary" type="submit">
+            <Btn className="btn btn_primary" type="submit">
               Сохранить
             </Btn>
           </DialogActions>

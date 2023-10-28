@@ -52,7 +52,7 @@ export default function SignIn() {
               value={fields.password}
             />
 
-            <Btn classes="btn btn_primary btn_big" type="submit">
+            <Btn className="btn btn_primary btn_big" type="submit">
               Войти
             </Btn>
           </form>

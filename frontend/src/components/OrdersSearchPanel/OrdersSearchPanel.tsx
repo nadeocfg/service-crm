@@ -122,6 +122,24 @@ export const OrdersSearchPanel = ({
 
       <Collapse in={openFilter}>
         <div className="filter">
+          <FormControl className="filter__item">
+            <ReactInputMask
+              mask={'99-99-9999'}
+              value={selectedFilters.fromDate}
+              onChange={onSelect('fromDate')}
+            >
+              <TextField className="input" label="Дата от" variant="outlined" />
+            </ReactInputMask>
+          </FormControl>
+          <FormControl className="filter__item">
+            <ReactInputMask
+              mask={'99-99-9999'}
+              value={selectedFilters.toDate}
+              onChange={onSelect('toDate')}
+            >
+              <TextField className="input" label="Дата до" variant="outlined" />
+            </ReactInputMask>
+          </FormControl>
           {(userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') && (
             <FormControl className="filter__item">
               <TextField
@@ -149,24 +167,6 @@ export const OrdersSearchPanel = ({
               </TextField>
             </FormControl>
           )}
-          <FormControl className="filter__item">
-            <ReactInputMask
-              mask={'99-99-9999'}
-              value={selectedFilters.fromDate}
-              onChange={onSelect('fromDate')}
-            >
-              <TextField className="input" label="Дата от" variant="outlined" />
-            </ReactInputMask>
-          </FormControl>
-          <FormControl className="filter__item">
-            <ReactInputMask
-              mask={'99-99-9999'}
-              value={selectedFilters.toDate}
-              onChange={onSelect('toDate')}
-            >
-              <TextField className="input" label="Дата до" variant="outlined" />
-            </ReactInputMask>
-          </FormControl>
           <FormControl className="filter__item">
             <TextField
               select

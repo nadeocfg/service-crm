@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import { OrderDataModel, SortModel } from '../../models/storeModel';
+import { OrderDataModel } from '../../models/storeModel';
 import api from '../../utils/axiosMiddleware';
 import {
   CLEAR_ORDER_DATA,
@@ -9,21 +9,21 @@ import { ADD_NOTIFY } from '../storeConstants/snackbarConstants';
 import { setLoader } from './mainActions';
 import history from '../../utils/history';
 
+export interface SearchFilters {
+  searchValue?: string;
+  users?: string[];
+  statuses?: string[];
+  fromDate?: string;
+  toDate?: string;
+}
+
 export const getOrders =
-  (
-    page: number = 0,
-    count: number = 10,
-    searchField: string = '',
-    sort: SortModel = { name: 'id', order: 'desc' }
-  ) =>
-  async (dispatch: Dispatch<any>) => {
+  (searchString: string) => async (dispatch: Dispatch<any>) => {
     try {
       dispatch(setLoader(true));
 
       api
-        .get(
-          `/api/orders?page=${page}&count=${count}&searchValue=${searchField}&sort=${sort.name},${sort.order}`
-        )
+        .get(`/api/orders${searchString}`)
         .then((res) => {
           dispatch({
             type: SET_ORDERS,

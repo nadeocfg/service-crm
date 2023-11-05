@@ -150,7 +150,7 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
 
   return (
     <>
-      <Btn classes="btn btn_primary" onClick={handleChangeModal}>
+      <Btn className="btn btn_primary" onClick={handleChangeModal}>
         <AddIcon />
         {btnTitle || 'Добавить'}
       </Btn>
@@ -256,10 +256,10 @@ const CreateCustomerModal = ({ btnTitle }: CreateCustomerModalProps) => {
             />
           </DialogContent>
           <DialogActions className="btn-container">
-            <Btn classes="btn btn_white" onClick={handleChangeModal}>
+            <Btn className="btn btn_white" onClick={handleChangeModal}>
               Отмена
             </Btn>
-            <Btn classes="btn btn_primary" type="submit">
+            <Btn className="btn btn_primary" type="submit">
               Добавить
             </Btn>
           </DialogActions>

@@ -21,6 +21,7 @@ import React, { useEffect, useState } from 'react';
 import CreateUserModal from '../../components/modals/CreateUserModal';
 import history from '../../utils/history';
 import TableSort from '../../components/TableSort';
+import { Stack } from '@mui/material';
 
 const Users = () => {
   const dispatch = useDispatch();
@@ -115,7 +116,7 @@ const Users = () => {
   return (
     <>
       <div className="search-row">
-        <Btn classes="btn btn_white" onClick={handleSearch}>
+        <Btn className="btn btn_white" onClick={handleSearch}>
           <SearchIcon />
           Поиск
         </Btn>
@@ -200,17 +201,19 @@ const Users = () => {
                 <TableCell>
                   {formatDate(user.updatedDate || '', true)}
                 </TableCell>
-                {(userRoleCode === 'SUPER_ADMIN' ||
-                  userRoleCode === 'ADMIN') && (
-                  <TableCell>
-                    <IconButton
-                      aria-label="edit"
-                      onClick={() => editUser(user.id || index)}
-                    >
-                      <EditIcon fontSize="inherit" />
-                    </IconButton>
-                  </TableCell>
-                )}
+                <Stack direction={'row'} alignItems={'center'}>
+                  {(userRoleCode === 'SUPER_ADMIN' ||
+                    userRoleCode === 'ADMIN') && (
+                    <TableCell>
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => editUser(user.id || index)}
+                      >
+                        <EditIcon fontSize="inherit" />
+                      </IconButton>
+                    </TableCell>
+                  )}
+                </Stack>
               </TableRow>
             ))}
           </TableBody>

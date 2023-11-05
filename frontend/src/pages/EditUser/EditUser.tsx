@@ -189,10 +189,10 @@ const EditUser = () => {
         </CardContent>
 
         <CardActions className="btn-container">
-          <Btn classes="btn" onClick={goBack}>
+          <Btn className="btn" onClick={goBack}>
             Назад
           </Btn>
-          <Btn classes="btn btn_primary" type="submit">
+          <Btn className="btn btn_primary" type="submit">
             Сохранить
           </Btn>
         </CardActions>

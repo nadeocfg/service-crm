@@ -597,3 +597,109 @@ FROM
   ) as u2(id, value, updateDate)
 WHERE
   u2.id = u.id;
+
+-- GET ORDERS WITH FILTERS --
+SELECT
+    orders.id,
+    orders.address,
+    orders."createdDate",
+    orders."updatedDate",
+    orders.comment,
+    orders."customerId",
+    orders."serviceManId",
+    orders."createdBy",
+    orders."phone",
+    status.name as "statusName",
+    status.code as "statusCode",
+    customers."fullName",
+    customers."boilerSerial",
+    users."fullName" as "serviceManFullName",
+    boilers.name as "boilerName"
+  FROM
+    "service-crm"."orders" as orders
+  LEFT JOIN
+    "service-crm"."dictOrderStatuses" as status
+  ON
+    orders.status = status.id
+  LEFT JOIN
+    "service-crm"."customers" as customers
+  ON
+    orders."customerId" = customers.id
+  LEFT JOIN
+    "service-crm"."users" as users
+  ON
+    orders."serviceManId" = users.id
+  LEFT JOIN
+    "service-crm"."dictBoilers" as boilers
+  ON
+    customers."boilerId" = boilers.id
+  WHERE
+    orders."isActive" = true AND
+    orders."serviceManId" IN (36, 39) AND
+    (LOWER(customers."fullName") LIKE '%%' OR
+    orders.id::text LIKE '%%' OR
+    LOWER(orders.address) LIKE '%%' OR
+    LOWER(users."fullName") LIKE '%%' OR
+    LOWER(customers."boilerSerial") LIKE '%%' OR
+    LOWER(boilers.name) LIKE '%%' OR
+    LOWER(status.name) LIKE '%%' OR
+    LOWER(orders.comment) LIKE '%%')
+  ORDER BY
+    id DESC
+  LIMIT
+    10
+  OFFSET
+    0;
+
+SELECT
+          orders.id,
+          orders.address,
+          orders."createdDate",
+          orders."updatedDate",
+          orders.comment,
+          orders."customerId",
+          orders."serviceManId",
+          orders."createdBy",
+          orders."phone",
+          status.name as "statusName",
+          status.code as "statusCode",
+          customers."fullName",
+          customers."boilerSerial",
+          users."fullName" as "serviceManFullName",
+          boilers.name as "boilerName"
+        FROM
+          "service-crm"."orders" as orders
+        LEFT JOIN
+          "service-crm"."dictOrderStatuses" as status
+        ON
+          orders.status = status.id
+        LEFT JOIN
+          "service-crm"."customers" as customers
+        ON
+          orders."customerId" = customers.id
+        LEFT JOIN
+          "service-crm"."users" as users
+        ON
+          orders."serviceManId" = users.id
+        LEFT JOIN
+          "service-crm"."dictBoilers" as boilers
+        ON
+          customers."boilerId" = boilers.id
+        WHERE
+          orders."isActive" = true AND
+          (LOWER(customers."fullName") LIKE '%%' OR
+          orders.id::text LIKE '%%' OR
+          LOWER(orders.address) LIKE '%%' OR
+          LOWER(users."fullName") LIKE '%%' OR
+          LOWER(customers."boilerSerial") LIKE '%%' OR
+          LOWER(boilers.name) LIKE '%%' OR
+          LOWER(status.name) LIKE '%%' OR
+          LOWER(orders.comment) LIKE '%%')
+        ORDER BY
+          id ASC
+        LIMIT
+          10
+        OFFSET
+          0;
+
+SELECT * FROM "service-crm"."orders" as orders WHERE orders."createdDate" >= '2023-11-04' AND orders."createdDate" < '2023-11-05';

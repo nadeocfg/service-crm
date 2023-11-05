@@ -9,6 +9,7 @@ import {
   getSettings,
   saveSettings,
 } from '../../../store/actions/settingsActions';
+import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -31,6 +32,13 @@ const Settings = () => {
 
   const save = async () => {
     await dispatch(saveSettings(settings));
+    dispatch({
+      type: ADD_NOTIFY,
+      payload: {
+        message: 'Настройки успешно сохранены',
+        type: 'success',
+      },
+    });
     await dispatch(getSettings());
   };
 
@@ -57,7 +65,7 @@ const Settings = () => {
             </div>
           ))}
 
-          <Btn classes="btn btn_primary" onClick={save}>
+          <Btn className="btn btn_primary" onClick={save}>
             <SaveIcon />
             Сохранить
           </Btn>

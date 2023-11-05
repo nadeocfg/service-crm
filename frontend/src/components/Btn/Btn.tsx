@@ -1,28 +1,30 @@
-import { Button } from '@material-ui/core';
+import { Button, ButtonBaseProps } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 
-interface ButtonProps {
+interface ButtonProps extends ButtonBaseProps {
   children: any;
-  classes?: string;
+  className?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   href?: string;
   disabled?: boolean;
   target?: string;
   to?: any;
   type?: 'button' | 'submit' | 'reset' | undefined;
+  disableRipple?: boolean | undefined;
 }
 
 export default function Btn({
   to,
   children,
-  classes,
+  className,
   disabled,
   onClick,
   type,
+  disableRipple,
 }: ButtonProps) {
   if (to) {
     return (
-      <NavLink to={to} className={classes}>
+      <NavLink to={to} className={className}>
         {children}
       </NavLink>
     );
@@ -34,8 +36,9 @@ export default function Btn({
       disableElevation
       onClick={onClick}
       disabled={disabled}
-      className={classes}
+      className={className}
       type={type}
+      disableRipple={disableRipple}
     >
       {children}
     </Button>

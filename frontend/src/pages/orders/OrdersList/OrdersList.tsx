@@ -1,6 +1,5 @@
 import {
   IconButton,
-  InputBase,
   Paper,
   Table,
   TableBody,
@@ -12,14 +11,11 @@ import {
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreModel } from '../../../models/storeModel';
-import SearchIcon from '@material-ui/icons/Search';
 import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import Btn from '../../../components/Btn';
 import { formatDate } from '../../../utils/formatDate';
-import React, { useEffect } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { getOrders } from '../../../store/actions/ordersActions';
-import AddIcon from '@material-ui/icons/Add';
 import history from '../../../utils/history';
 import { OrderItemModel } from '../../../models/orderModel';
 import {
@@ -28,6 +24,9 @@ import {
   SET_ORDERS_SORT,
 } from '../../../store/storeConstants/ordersConstants';
 import TableSort from '../../../components/TableSort';
+import { OrdersSearchPanel } from '../../../components/OrdersSearchPanel';
+import { Stack } from '@mui/material';
+import { FilterProps } from '../../../components/OrdersSearchPanel/OrdersSearchPanel';
 
 const OrdersList = () => {
   const dispatch = useDispatch();
@@ -44,19 +43,26 @@ const OrdersList = () => {
     (store: StoreModel) => store.ordersStore.pagination
   );
   const sort = useSelector((store: StoreModel) => store.ordersStore.sort);
+  const [selectedFilters, setSelectedFilters] = useState<FilterProps>({
+    users: [],
+    statuses: [],
+    fromDate: '',
+    toDate: '',
+  });
 
   useEffect(() => {
-    dispatch(
-      getOrders(
-        pagination.currentPage,
-        pagination.rowsPerPage,
-        searchField,
-        sort
-      )
-    );
+    if (history.location.search) {
+      dispatch(getOrders(history.location.search));
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [history.location.search]);
+
+  useEffect(() => {
+    applyFilters();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.currentPage, pagination.rowsPerPage, sort.name, sort.order]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
@@ -65,15 +71,26 @@ const OrdersList = () => {
     });
   };
 
-  const handleSearch = () => {
-    dispatch(
-      getOrders(
-        pagination.currentPage,
-        pagination.rowsPerPage,
-        searchField,
-        sort
-      )
-    );
+  const applyFilters = () => {
+    const users = selectedFilters.users.map((user) => user.id).join(',');
+    const statuses = selectedFilters.statuses
+      .map((status) => status.id)
+      .join(',');
+
+    const searchParams = new URLSearchParams({
+      users,
+      statuses,
+      fromDate: selectedFilters.fromDate,
+      toDate: selectedFilters.toDate,
+      sort: `${sort.name},${sort.order}`,
+      searchField,
+      page: String(pagination.currentPage),
+      count: String(pagination.rowsPerPage),
+    }).toString();
+
+    history.replace({
+      search: searchParams,
+    });
   };
 
   const handleChangeRowsPerPage = (
@@ -86,10 +103,6 @@ const OrdersList = () => {
         value: +event.target.value,
       },
     });
-
-    dispatch(
-      getOrders(pagination.currentPage, +event.target.value, searchField, sort)
-    );
   };
 
   const handleChangePage = (event: any, page: number) => {
@@ -100,8 +113,6 @@ const OrdersList = () => {
         value: page,
       },
     });
-
-    dispatch(getOrders(page, pagination.rowsPerPage, searchField, sort));
   };
 
   const createOrderNav = () => {
@@ -124,37 +135,35 @@ const OrdersList = () => {
         name: property,
       },
     });
-
-    dispatch(
-      getOrders(pagination.currentPage, pagination.rowsPerPage, searchField, {
-        order: sort.order === 'desc' ? 'asc' : 'desc',
-        name: property,
-      })
-    );
   };
+
+  const onSelect =
+    (key: keyof typeof selectedFilters) =>
+    (
+      event: ChangeEvent<{
+        name?: string | undefined;
+        value: unknown;
+      }>
+    ) => {
+      setSelectedFilters((prev) => {
+        return {
+          ...prev,
+          [key]: event.target.value,
+        };
+      });
+    };
 
   return (
     <>
-      <div className="search-row">
-        <Btn classes="btn btn_white" onClick={handleSearch}>
-          <SearchIcon />
-          Поиск
-        </Btn>
-
-        <InputBase
-          value={searchField}
-          onChange={handleSearchChange}
-          placeholder="Введите параметры поиска (ФИО клиента, ID, Адрес, ФИО специалиста, Комментарий, Статус заказа, Наименование котла)"
-          inputProps={{ 'aria-label': 'Введите параметры поиска' }}
-        />
-
-        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
-          <Btn classes="btn btn_primary" onClick={createOrderNav}>
-            <AddIcon />
-            Добавить
-          </Btn>
-        )}
-      </div>
+      <OrdersSearchPanel
+        addFunction={createOrderNav}
+        handleChangeSearch={handleSearchChange}
+        searchField={searchField}
+        label="Введите параметры поиска (ФИО клиента, ID, Адрес, ФИО специалиста, Комментарий, Статус заказа, Наименование котла)"
+        onSearch={applyFilters}
+        selectedFilters={selectedFilters}
+        onSelect={onSelect}
+      />
 
       <TableContainer component={Paper}>
         <Table>
@@ -234,24 +243,26 @@ const OrdersList = () => {
                 <TableCell>{order.statusName}</TableCell>
                 <TableCell>{order.comment}</TableCell>
                 <TableCell>
-                  <IconButton
-                    aria-label="view"
-                    onClick={() => viewOrder(order)}
-                  >
-                    <VisibilityIcon fontSize="inherit" />
-                  </IconButton>
+                  <Stack direction={'row'} alignItems={'center'}>
+                    <IconButton
+                      aria-label="view"
+                      onClick={() => viewOrder(order)}
+                    >
+                      <VisibilityIcon fontSize="inherit" />
+                    </IconButton>
 
-                  {(userRoleCode === 'SUPER_ADMIN' ||
-                    userRoleCode === 'ADMIN') &&
-                    order.statusCode !== 'DONE' &&
-                    order.statusCode !== 'CANCELED' && (
-                      <IconButton
-                        aria-label="edit"
-                        onClick={() => editOrder(order)}
-                      >
-                        <EditIcon fontSize="inherit" />
-                      </IconButton>
-                    )}
+                    {(userRoleCode === 'SUPER_ADMIN' ||
+                      userRoleCode === 'ADMIN') &&
+                      order.statusCode !== 'DONE' &&
+                      order.statusCode !== 'CANCELED' && (
+                        <IconButton
+                          aria-label="edit"
+                          onClick={() => editOrder(order)}
+                        >
+                          <EditIcon fontSize="inherit" />
+                        </IconButton>
+                      )}
+                  </Stack>
                 </TableCell>
               </TableRow>
             ))}

@@ -30,6 +30,30 @@
     }
   }
 
+  &_link {
+    padding: 0;
+    background: transparent;
+    color: var(--primary-color);
+    text-transform: none;
+    // border-bottom: 1px solid var(--primary-color);
+    border-radius: 0;
+
+    &.active {
+      .MuiButton-label svg.MuiSvgIcon-root {
+        transform: rotate(180deg);
+      }
+    }
+
+    .MuiButton-label svg.MuiSvgIcon-root {
+      margin-right: 0;
+      transition: all 300ms ease;
+    }
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
   &_success {
     background: var(--success-color);
     color: var(--white-color);

@@ -463,7 +463,7 @@ const OrderView = () => {
             {actions.map((action, index) => (
               <Btn
                 key={index}
-                classes={getButtonClass(action.code)}
+                className={getButtonClass(action.code)}
                 onClick={() => onSelectAction(action)}
               >
                 {action.action}
@@ -523,10 +523,10 @@ const OrderView = () => {
           />
         </DialogContent>
         <DialogActions className="btn-container">
-          <Btn classes="btn btn_white" onClick={handleChangeModal}>
+          <Btn className="btn btn_white" onClick={handleChangeModal}>
             Отмена
           </Btn>
-          <Btn classes="btn btn_primary" onClick={executeAction}>
+          <Btn className="btn btn_primary" onClick={executeAction}>
             {action.action}
           </Btn>
         </DialogActions>

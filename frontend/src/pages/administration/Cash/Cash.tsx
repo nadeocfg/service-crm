@@ -218,7 +218,7 @@ const Cash = () => {
   return (
     <>
       <div className="search-row">
-        <Btn classes="btn btn_white" onClick={handleSearch}>
+        <Btn className="btn btn_white" onClick={handleSearch}>
           <SearchIcon />
           Поиск
         </Btn>
@@ -364,13 +364,13 @@ const Cash = () => {
         </DialogContent>
         <DialogActions className="btn-container">
           <Btn
-            classes="btn btn_white"
+            className="btn btn_white"
             onClick={() => handleChangeModal(undefined)}
           >
             Отмена
           </Btn>
           <Btn
-            classes="btn btn_primary"
+            className="btn btn_primary"
             onClick={pay}
             disabled={cashModal.requestedAmount <= 0}
           >
@@ -393,12 +393,12 @@ const Cash = () => {
         </DialogContent>
         <DialogActions className="btn-container">
           <Btn
-            classes="btn btn_white"
+            className="btn btn_white"
             onClick={() => handleChangeResetModal(undefined)}
           >
             Отмена
           </Btn>
-          <Btn classes="btn btn_danger" onClick={reset}>
+          <Btn className="btn btn_danger" onClick={reset}>
             Обнулить
           </Btn>
         </DialogActions>

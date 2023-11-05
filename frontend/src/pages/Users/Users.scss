@@ -1,41 +1,7 @@
-.search-row {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 20px;
-
-  * {
-    width: 100%;
-  }
-
-  .MuiInputBase-root {
-    flex-grow: 1;
-    margin: 16px 0;
-    // background: var(--white-color);
-  }
-}
-
 .MuiTable-root {
   .MuiTableHead-root {
     .MuiTableCell-root {
       font-weight: bold;
-    }
-  }
-}
-
-@media (min-width: 600px) {
-  .search-row {
-    flex-direction: row;
-    flex-wrap: nowrap;
-
-    * {
-      width: auto;
-    }
-
-    .MuiInputBase-root {
-      margin: 0 16px;
     }
   }
 }

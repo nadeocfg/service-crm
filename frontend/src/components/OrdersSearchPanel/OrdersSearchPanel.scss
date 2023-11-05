@@ -10,7 +10,15 @@
   padding: 16px 0;
 
   &__item {
-    flex-basis: 40%;
+    flex-basis: 100%;
     flex-grow: 1;
+  }
+}
+
+@media (min-width: 600px) {
+  .filter {
+    &__item {
+      flex-basis: 40%;
+    }
   }
 }

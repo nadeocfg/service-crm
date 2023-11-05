@@ -755,11 +755,45 @@ const getOrders = async (
   next: NextFunction
 ) => {
   try {
-    const { page, count, searchValue, sort = 'id,desc' } = request.query;
+    const {
+      page,
+      count,
+      searchValue,
+      users,
+      statuses,
+      fromDate,
+      toDate,
+      sort = 'id,desc',
+    } = request.query;
+
     const sortBy = (<string>sort).split(',')[0];
     const order = (<string>sort).split(',')[1];
     const roleCode = request.user?.roleCode || '';
     const userId = request.user?.id || '';
+    let formattedFromDate = fromDate;
+    let formattedToDate = toDate;
+    const formattedUsers = format(
+      '%L',
+      (users as string).split(',').map(Number)
+    );
+    const formattedStatuses = format(
+      '%L',
+      (statuses as string).split(',').map(Number)
+    );
+
+    if (formattedFromDate) {
+      const fromArr = ((fromDate ?? '') as string).split('-');
+      formattedFromDate = `${fromArr[2] ?? '2000'}-${fromArr[1] ?? '01'}-${
+        fromArr[0] ?? '01'
+      }`;
+    }
+
+    if (formattedToDate) {
+      const toArr = ((toDate ?? '') as string).split('-');
+      formattedToDate = `${toArr[2] ?? '3000'}-${toArr[1] ?? '01'}-${
+        toArr[0] ?? '01'
+      }`;
+    }
 
     let offset = 0;
 
@@ -775,61 +809,76 @@ const getOrders = async (
     let total = null;
 
     if (roleCode === 'ADMIN' || roleCode === 'SUPER_ADMIN') {
-      const getAllOrders = await db.query(
-        `
-          SELECT
-            orders.id,
-            orders.address,
-            orders."createdDate",
-            orders."updatedDate",
-            orders.comment,
-            orders."customerId",
-            orders."serviceManId",
-            orders."createdBy",
-            orders."phone",
-            status.name as "statusName",
-            status.code as "statusCode",
-            customers."fullName",
-            customers."boilerSerial",
-            users."fullName" as "serviceManFullName",
-            boilers.name as "boilerName"
-          FROM
-            "${process.env.DB_NAME}"."orders" as orders
-          LEFT JOIN
-            "${process.env.DB_NAME}"."dictOrderStatuses" as status
-          ON
-            orders.status = status.id
-          LEFT JOIN
-            "${process.env.DB_NAME}"."customers" as customers
-          ON
-            orders."customerId" = customers.id
-          LEFT JOIN
-            "${process.env.DB_NAME}"."users" as users
-          ON
-            orders."serviceManId" = users.id
-          LEFT JOIN
-            "${process.env.DB_NAME}"."dictBoilers" as boilers
-          ON
-            customers."boilerId" = boilers.id
-          WHERE
-            orders."isActive" = true AND
-            (LOWER(customers."fullName") LIKE $3 OR
-            orders.id::text LIKE $3 OR
-            LOWER(orders.address) LIKE $3 OR
-            LOWER(users."fullName") LIKE $3 OR
-            LOWER(customers."boilerSerial") LIKE $3 OR
-            LOWER(boilers.name) LIKE $3 OR
-            LOWER(status.name) LIKE $3 OR
-            LOWER(orders.comment) LIKE $3)
-          ORDER BY
-            ${format('%I', sortBy)} ${format('%s', order)}
-          LIMIT
-            $1
-          OFFSET
-            $2;
-        `,
-        [count, offset, `%${searchValue}%`.toLowerCase()]
-      );
+      const query = `
+        SELECT
+          orders.id,
+          orders.address,
+          orders."createdDate",
+          orders."updatedDate",
+          orders.comment,
+          orders."customerId",
+          orders."serviceManId",
+          orders."createdBy",
+          orders."phone",
+          status.name as "statusName",
+          status.code as "statusCode",
+          customers."fullName",
+          customers."boilerSerial",
+          users."fullName" as "serviceManFullName",
+          boilers.name as "boilerName"
+        FROM
+          "${process.env.DB_NAME}"."orders" as orders
+        LEFT JOIN
+          "${process.env.DB_NAME}"."dictOrderStatuses" as status
+        ON
+          orders.status = status.id
+        LEFT JOIN
+          "${process.env.DB_NAME}"."customers" as customers
+        ON
+          orders."customerId" = customers.id
+        LEFT JOIN
+          "${process.env.DB_NAME}"."users" as users
+        ON
+          orders."serviceManId" = users.id
+        LEFT JOIN
+          "${process.env.DB_NAME}"."dictBoilers" as boilers
+        ON
+          customers."boilerId" = boilers.id
+        WHERE
+          orders."isActive" = true AND
+          (LOWER(customers."fullName") LIKE $3 OR
+          orders.id::text LIKE $3 OR
+          LOWER(orders.address) LIKE $3 OR
+          LOWER(users."fullName") LIKE $3 OR
+          LOWER(customers."boilerSerial") LIKE $3 OR
+          LOWER(boilers.name) LIKE $3 OR
+          LOWER(status.name) LIKE $3 OR
+          LOWER(orders.comment) LIKE $3)
+          ${users ? `AND orders."serviceManId" IN (${formattedUsers})` : ''}
+          ${statuses ? `AND orders."status" IN (${formattedStatuses})` : ''}
+          ${
+            fromDate
+              ? `AND orders."createdDate" > ${format('%L', formattedFromDate)}`
+              : ''
+          }
+          ${
+            toDate
+              ? `AND orders."createdDate" < ${format('%L', formattedToDate)}`
+              : ''
+          }
+        ORDER BY
+          ${format('%I', sortBy)} ${format('%s', order)}
+        LIMIT
+          $1
+        OFFSET
+          $2;
+      `;
+
+      const getAllOrders = await db.query(query, [
+        count,
+        offset,
+        `%${((searchValue as string) ?? '').toLowerCase()}%`,
+      ]);
 
       total = await db.query(
         `
@@ -861,9 +910,24 @@ const getOrders = async (
             LOWER(users."fullName") LIKE $1 OR
             LOWER(boilers.name) LIKE $1 OR
             LOWER(status.name) LIKE $1 OR
-            LOWER(orders.comment) LIKE $1);
+            LOWER(orders.comment) LIKE $1)
+            ${users ? `AND orders."serviceManId" IN (${formattedUsers})` : ''}
+            ${statuses ? `AND orders."status" IN (${formattedStatuses})` : ''}
+            ${
+              fromDate
+                ? `AND orders."createdDate" > ${format(
+                    '%L',
+                    formattedFromDate
+                  )}`
+                : ''
+            }
+            ${
+              toDate
+                ? `AND orders."createdDate" < ${format('%L', formattedToDate)}`
+                : ''
+            }
         `,
-        [`%${searchValue}%`.toLowerCase()]
+        [`%${((searchValue as string) ?? '').toLowerCase()}%`]
       );
 
       orders = getAllOrders.rows;
@@ -915,6 +979,20 @@ const getOrders = async (
             LOWER(boilers.name) LIKE $4 OR
             LOWER(status.name) LIKE $4 OR
             LOWER(orders.comment) LIKE $4)
+            ${statuses ? `AND orders."status" IN (${formattedStatuses})` : ''}
+            ${
+              fromDate
+                ? `AND orders."createdDate" > ${format(
+                    '%L',
+                    formattedFromDate
+                  )}`
+                : ''
+            }
+            ${
+              toDate
+                ? `AND orders."createdDate" < ${format('%L', formattedToDate)}`
+                : ''
+            }
           ORDER BY
             ${format('%I', sortBy)} ${format('%s', order)}
           LIMIT
@@ -922,7 +1000,12 @@ const getOrders = async (
           OFFSET
             $2;
         `,
-        [count, offset, userId, `%${searchValue}%`.toLowerCase()]
+        [
+          count,
+          offset,
+          userId,
+          `%${((searchValue as string) ?? '').toLowerCase()}%`,
+        ]
       );
 
       total = await db.query(
@@ -956,9 +1039,23 @@ const getOrders = async (
             LOWER(users."fullName") LIKE $2 OR
             LOWER(boilers.name) LIKE $2 OR
             LOWER(status.name) LIKE $2 OR
-            LOWER(orders.comment) LIKE $2);
+            LOWER(orders.comment) LIKE $2)
+            ${statuses ? `AND orders."status" IN (${formattedStatuses})` : ''}
+            ${
+              fromDate
+                ? `AND orders."createdDate" > ${format(
+                    '%L',
+                    formattedFromDate
+                  )}`
+                : ''
+            }
+            ${
+              toDate
+                ? `AND orders."createdDate" < ${format('%L', formattedToDate)}`
+                : ''
+            }
         `,
-        [userId, `%${searchValue}%`.toLowerCase()]
+        [userId, `%${((searchValue as string) ?? '').toLowerCase()}%`]
       );
 
       orders = getUserOrders.rows;

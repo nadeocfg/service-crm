@@ -20,6 +20,7 @@ import './OrdersSearchPanel.scss';
 import { Stack } from '@mui/material';
 import { getUsers } from '../../store/actions/usersPageActions';
 import ReactInputMask from 'react-input-mask';
+import { ArrowDownward } from '@material-ui/icons';
 
 export interface OrdersSearchPanelProps {
   label?: string;
@@ -27,6 +28,20 @@ export interface OrdersSearchPanelProps {
   addFunction: () => void;
   onSearch: () => void;
   handleChangeSearch: (event: ChangeEvent<HTMLInputElement>) => void;
+  selectedFilters: FilterProps;
+  onSelect: (key: keyof FilterProps) => (
+    event: ChangeEvent<{
+      name?: string | undefined;
+      value: unknown;
+    }>
+  ) => void;
+}
+
+export interface FilterProps {
+  users: UsersItemModel[];
+  statuses: OrderStatusItemModel[];
+  fromDate: string;
+  toDate: string;
 }
 
 export const OrdersSearchPanel = ({
@@ -35,6 +50,8 @@ export const OrdersSearchPanel = ({
   onSearch,
   handleChangeSearch,
   addFunction,
+  selectedFilters,
+  onSelect,
 }: OrdersSearchPanelProps) => {
   const [openFilter, setOpenFilter] = useState(false);
   const dispatch = useDispatch();
@@ -47,17 +64,9 @@ export const OrdersSearchPanel = ({
   const statuses = useSelector(
     (store: StoreModel) => store.dictsStore.dictOrderStatuses.statuses
   );
-  const [selectedFilters, setSelectedFilters] = useState<{
-    users: UsersItemModel[];
-    statuses: OrderStatusItemModel[];
-    fromDate: string;
-    toDate: string;
-  }>({
-    users: [],
-    statuses: [],
-    fromDate: '',
-    toDate: '',
-  });
+  const userRole = useSelector(
+    (store: StoreModel) => store.userStore.authResponse.roleCode
+  );
 
   useEffect(() => {
     dispatch(getUsers(0, 50, undefined, '', 'SERVICE_MAN'));
@@ -74,22 +83,6 @@ export const OrdersSearchPanel = ({
   const changeFilter = () => {
     setOpenFilter(!openFilter);
   };
-
-  const onSelect =
-    (key: keyof typeof selectedFilters) =>
-    (
-      event: ChangeEvent<{
-        name?: string | undefined;
-        value: unknown;
-      }>
-    ) => {
-      setSelectedFilters((prev) => {
-        return {
-          ...prev,
-          [key]: event.target.value,
-        };
-      });
-    };
 
   return (
     <form className="search-panel" onSubmit={onSubmit}>
@@ -117,35 +110,62 @@ export const OrdersSearchPanel = ({
         direction={'row'}
         sx={{ justifyContent: { xs: 'center', sm: 'flex-end' } }}
       >
-        <Btn className="btn btn_link" disableRipple onClick={changeFilter}>
+        <Btn
+          className={`btn btn_link ${openFilter ? 'active' : ''}`}
+          disableRipple
+          onClick={changeFilter}
+        >
           Расширенный поиск
+          <ArrowDownward />
         </Btn>
       </Stack>
 
       <Collapse in={openFilter}>
         <div className="filter">
+          {(userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') && (
+            <FormControl className="filter__item">
+              <TextField
+                select
+                name="userRoles"
+                id="userRoles"
+                variant="outlined"
+                label="Выберите специалиста"
+                SelectProps={{
+                  multiple: true,
+                  value: selectedFilters.users,
+                  onChange: onSelect('users'),
+                  renderValue: () =>
+                    selectedFilters.users
+                      .map((user) => user.fullName)
+                      .join(', '),
+                }}
+                fullWidth
+              >
+                {serviceManList.map((user) => (
+                  <MenuItem key={user.id} value={user as string}>
+                    {user.fullName}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </FormControl>
+          )}
           <FormControl className="filter__item">
-            <TextField
-              select
-              name="userRoles"
-              id="userRoles"
-              variant="outlined"
-              label="Выберите специалиста"
-              SelectProps={{
-                multiple: true,
-                value: selectedFilters.users,
-                onChange: onSelect('users'),
-                renderValue: () =>
-                  selectedFilters.users.map((user) => user.fullName).join(', '),
-              }}
-              fullWidth
+            <ReactInputMask
+              mask={'99-99-9999'}
+              value={selectedFilters.fromDate}
+              onChange={onSelect('fromDate')}
             >
-              {serviceManList.map((user) => (
-                <MenuItem key={user.id} value={user as string}>
-                  {user.fullName}
-                </MenuItem>
-              ))}
-            </TextField>
+              <TextField className="input" label="Дата от" variant="outlined" />
+            </ReactInputMask>
+          </FormControl>
+          <FormControl className="filter__item">
+            <ReactInputMask
+              mask={'99-99-9999'}
+              value={selectedFilters.toDate}
+              onChange={onSelect('toDate')}
+            >
+              <TextField className="input" label="Дата до" variant="outlined" />
+            </ReactInputMask>
           </FormControl>
           <FormControl className="filter__item">
             <TextField
@@ -171,24 +191,6 @@ export const OrdersSearchPanel = ({
                 </MenuItem>
               ))}
             </TextField>
-          </FormControl>
-          <FormControl className="filter__item">
-            <ReactInputMask
-              mask={'99/99/9999'}
-              value={selectedFilters.fromDate}
-              onChange={onSelect('fromDate')}
-            >
-              <TextField className="input" label="Дата от" variant="outlined" />
-            </ReactInputMask>
-          </FormControl>
-          <FormControl className="filter__item">
-            <ReactInputMask
-              mask={'99/99/9999'}
-              value={selectedFilters.toDate}
-              onChange={onSelect('toDate')}
-            >
-              <TextField className="input" label="Дата до" variant="outlined" />
-            </ReactInputMask>
           </FormControl>
         </div>
       </Collapse>

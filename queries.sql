@@ -702,4 +702,5 @@ SELECT
         OFFSET
           0;
 
-SELECT * FROM "service-crm"."orders" as orders WHERE orders."createdDate" >= '2023-11-04' AND orders."createdDate" < '2023-11-05';
+SELECT * FROM "service-crm"."orders" as orders WHERE orders."createdDate" BETWEEN '2023-11-06' AND '2023-11-07';
+SELECT * FROM "service-crm"."orders" as orders WHERE orders."createdDate" >= '2023-11-07 00:00:00' AND orders."createdDate" <= '2023-11-07 23:59:59';

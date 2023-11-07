@@ -9,13 +9,9 @@ import {
 import Btn from '../Btn';
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  OrderStatusItemModel,
-  StoreModel,
-  UsersItemModel,
-} from '../../models/storeModel';
+import { StoreModel } from '../../models/storeModel';
 import './OrdersSearchPanel.scss';
 import { Stack } from '@mui/material';
 import { getUsers } from '../../store/actions/usersPageActions';
@@ -35,11 +31,13 @@ export interface OrdersSearchPanelProps {
       value: unknown;
     }>
   ) => void;
+  openFilter: boolean;
+  changeFilter: () => void;
 }
 
 export interface FilterProps {
-  users: UsersItemModel[];
-  statuses: OrderStatusItemModel[];
+  users: number[];
+  statuses: number[];
   fromDate: string;
   toDate: string;
 }
@@ -52,8 +50,9 @@ export const OrdersSearchPanel = ({
   addFunction,
   selectedFilters,
   onSelect,
+  openFilter,
+  changeFilter,
 }: OrdersSearchPanelProps) => {
-  const [openFilter, setOpenFilter] = useState(false);
   const dispatch = useDispatch();
   const userRoleCode = useSelector(
     (store: StoreModel) => store.userStore.authResponse.roleCode
@@ -78,10 +77,6 @@ export const OrdersSearchPanel = ({
     event.preventDefault();
 
     onSearch();
-  };
-
-  const changeFilter = () => {
-    setOpenFilter(!openFilter);
   };
 
   return (
@@ -144,8 +139,8 @@ export const OrdersSearchPanel = ({
             <FormControl className="filter__item">
               <TextField
                 select
-                name="userRoles"
-                id="userRoles"
+                name="users"
+                id="users"
                 variant="outlined"
                 label="Выберите специалиста"
                 SelectProps={{
@@ -153,14 +148,17 @@ export const OrdersSearchPanel = ({
                   value: selectedFilters.users,
                   onChange: onSelect('users'),
                   renderValue: () =>
-                    selectedFilters.users
+                    serviceManList
+                      .filter((user) =>
+                        selectedFilters.users.includes(user.id ?? -1)
+                      )
                       .map((user) => user.fullName)
                       .join(', '),
                 }}
                 fullWidth
               >
                 {serviceManList.map((user) => (
-                  <MenuItem key={user.id} value={user as string}>
+                  <MenuItem key={user.id} value={user.id}>
                     {user.fullName}
                   </MenuItem>
                 ))}
@@ -179,14 +177,17 @@ export const OrdersSearchPanel = ({
                 value: selectedFilters.statuses,
                 onChange: onSelect('statuses'),
                 renderValue: () =>
-                  selectedFilters.statuses
+                  statuses
+                    .filter((status) =>
+                      selectedFilters.statuses.includes(status.id ?? -1)
+                    )
                     .map((status) => status.name)
                     .join(', '),
               }}
               fullWidth
             >
               {statuses.map((status) => (
-                <MenuItem key={status.id} value={status as string}>
+                <MenuItem key={status.id} value={status.id}>
                   {status.name}
                 </MenuItem>
               ))}

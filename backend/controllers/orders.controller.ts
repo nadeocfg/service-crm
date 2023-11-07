@@ -758,7 +758,7 @@ const getOrders = async (
     const {
       page,
       count,
-      searchValue,
+      searchField,
       users,
       statuses,
       fromDate,
@@ -785,14 +785,14 @@ const getOrders = async (
       const fromArr = ((fromDate ?? '') as string).split('-');
       formattedFromDate = `${fromArr[2] ?? '2000'}-${fromArr[1] ?? '01'}-${
         fromArr[0] ?? '01'
-      }`;
+      } 00:00:00`;
     }
 
     if (formattedToDate) {
       const toArr = ((toDate ?? '') as string).split('-');
       formattedToDate = `${toArr[2] ?? '3000'}-${toArr[1] ?? '01'}-${
         toArr[0] ?? '01'
-      }`;
+      } 23:59:59`;
     }
 
     let offset = 0;
@@ -858,12 +858,12 @@ const getOrders = async (
           ${statuses ? `AND orders."status" IN (${formattedStatuses})` : ''}
           ${
             fromDate
-              ? `AND orders."createdDate" > ${format('%L', formattedFromDate)}`
+              ? `AND orders."createdDate" >= ${format('%L', formattedFromDate)}`
               : ''
           }
           ${
             toDate
-              ? `AND orders."createdDate" < ${format('%L', formattedToDate)}`
+              ? `AND orders."createdDate" <= ${format('%L', formattedToDate)}`
               : ''
           }
         ORDER BY
@@ -877,7 +877,7 @@ const getOrders = async (
       const getAllOrders = await db.query(query, [
         count,
         offset,
-        `%${((searchValue as string) ?? '').toLowerCase()}%`,
+        `%${((searchField as string) ?? '').toLowerCase()}%`,
       ]);
 
       total = await db.query(
@@ -915,7 +915,7 @@ const getOrders = async (
             ${statuses ? `AND orders."status" IN (${formattedStatuses})` : ''}
             ${
               fromDate
-                ? `AND orders."createdDate" > ${format(
+                ? `AND orders."createdDate" >= ${format(
                     '%L',
                     formattedFromDate
                   )}`
@@ -923,11 +923,11 @@ const getOrders = async (
             }
             ${
               toDate
-                ? `AND orders."createdDate" < ${format('%L', formattedToDate)}`
+                ? `AND orders."createdDate" <= ${format('%L', formattedToDate)}`
                 : ''
             }
         `,
-        [`%${((searchValue as string) ?? '').toLowerCase()}%`]
+        [`%${((searchField as string) ?? '').toLowerCase()}%`]
       );
 
       orders = getAllOrders.rows;
@@ -982,7 +982,7 @@ const getOrders = async (
             ${statuses ? `AND orders."status" IN (${formattedStatuses})` : ''}
             ${
               fromDate
-                ? `AND orders."createdDate" > ${format(
+                ? `AND orders."createdDate" >= ${format(
                     '%L',
                     formattedFromDate
                   )}`
@@ -990,7 +990,7 @@ const getOrders = async (
             }
             ${
               toDate
-                ? `AND orders."createdDate" < ${format('%L', formattedToDate)}`
+                ? `AND orders."createdDate" <= ${format('%L', formattedToDate)}`
                 : ''
             }
           ORDER BY
@@ -1004,7 +1004,7 @@ const getOrders = async (
           count,
           offset,
           userId,
-          `%${((searchValue as string) ?? '').toLowerCase()}%`,
+          `%${((searchField as string) ?? '').toLowerCase()}%`,
         ]
       );
 
@@ -1043,7 +1043,7 @@ const getOrders = async (
             ${statuses ? `AND orders."status" IN (${formattedStatuses})` : ''}
             ${
               fromDate
-                ? `AND orders."createdDate" > ${format(
+                ? `AND orders."createdDate" >= ${format(
                     '%L',
                     formattedFromDate
                   )}`
@@ -1051,11 +1051,11 @@ const getOrders = async (
             }
             ${
               toDate
-                ? `AND orders."createdDate" < ${format('%L', formattedToDate)}`
+                ? `AND orders."createdDate" <= ${format('%L', formattedToDate)}`
                 : ''
             }
         `,
-        [userId, `%${((searchValue as string) ?? '').toLowerCase()}%`]
+        [userId, `%${((searchField as string) ?? '').toLowerCase()}%`]
       );
 
       orders = getUserOrders.rows;

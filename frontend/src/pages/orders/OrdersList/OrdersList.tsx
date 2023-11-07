@@ -33,7 +33,6 @@ const OrdersList = () => {
   const searchField = useSelector(
     (store: StoreModel) => store.ordersStore.searchValue
   );
-
   const userRoleCode = useSelector(
     (store: StoreModel) => store.userStore.authResponse.roleCode
   );
@@ -49,9 +48,11 @@ const OrdersList = () => {
     fromDate: '',
     toDate: '',
   });
+  const [isInitialRender, setIsInitialRender] = useState(true);
+  const [openFilter, setOpenFilter] = useState(false);
 
   useEffect(() => {
-    if (history.location.search) {
+    if (history.location.search && !isInitialRender) {
       dispatch(getOrders(history.location.search));
     }
 
@@ -59,7 +60,18 @@ const OrdersList = () => {
   }, [history.location.search]);
 
   useEffect(() => {
-    applyFilters();
+    if (history.location.search) {
+      setFiltersFromUrl(history.location.search);
+    }
+    setIsInitialRender(false);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInitialRender) {
+      applyFilters();
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.currentPage, pagination.rowsPerPage, sort.name, sort.order]);
@@ -72,10 +84,8 @@ const OrdersList = () => {
   };
 
   const applyFilters = () => {
-    const users = selectedFilters.users.map((user) => user.id).join(',');
-    const statuses = selectedFilters.statuses
-      .map((status) => status.id)
-      .join(',');
+    const users = selectedFilters.users.join(',');
+    const statuses = selectedFilters.statuses.join(',');
 
     const searchParams = new URLSearchParams({
       users,
@@ -91,6 +101,102 @@ const OrdersList = () => {
     history.replace({
       search: searchParams,
     });
+  };
+
+  const setFiltersFromUrl = (searchParams: string) => {
+    const arr: string[] = searchParams.substring(1).split('&');
+    const filters: Record<string, string> = {};
+
+    for (const filter of arr) {
+      const [key, value] = filter.split('=');
+      filters[key] = value;
+    }
+
+    if (filters.count) {
+      dispatch({
+        type: SET_ORDERS_PAGINATION,
+        payload: {
+          name: 'rowsPerPage',
+          value: +filters.count,
+        },
+      });
+    }
+
+    if (filters.page) {
+      dispatch({
+        type: SET_ORDERS_PAGINATION,
+        payload: {
+          name: 'currentPage',
+          value: +filters.page,
+        },
+      });
+    }
+
+    if (filters.fromDate) {
+      setSelectedFilters((prev) => {
+        return {
+          ...prev,
+          fromDate: filters.fromDate,
+        };
+      });
+    }
+
+    if (filters.toDate) {
+      setSelectedFilters((prev) => {
+        return {
+          ...prev,
+          toDate: filters.toDate,
+        };
+      });
+    }
+
+    if (filters.searchField) {
+      dispatch({
+        type: SET_ORDERS_SEARCH_FIELD,
+        payload: filters.searchField,
+      });
+    }
+
+    if (filters.sort) {
+      const [key, direction] = filters.sort.split('%2C');
+
+      dispatch({
+        type: SET_ORDERS_SORT,
+        payload: {
+          order: direction,
+          name: key,
+        },
+      });
+    }
+
+    if (filters.users) {
+      const users = filters.users.split('%2C').map((userId) => {
+        return Number(userId);
+      });
+
+      setSelectedFilters((prev) => {
+        return {
+          ...prev,
+          users: users,
+        };
+      });
+    }
+
+    if (filters.statuses) {
+      const statuses = filters.statuses.split('%2C').map((statusId) => {
+        return Number(statusId);
+      });
+
+      setSelectedFilters((prev) => {
+        return {
+          ...prev,
+          statuses,
+        };
+      });
+    }
+
+    changeFilter();
+    applyFilters();
   };
 
   const handleChangeRowsPerPage = (
@@ -153,9 +259,15 @@ const OrdersList = () => {
       });
     };
 
+  const changeFilter = () => {
+    setOpenFilter(!openFilter);
+  };
+
   return (
     <>
       <OrdersSearchPanel
+        openFilter={openFilter}
+        changeFilter={changeFilter}
         addFunction={createOrderNav}
         handleChangeSearch={handleSearchChange}
         searchField={searchField}

@@ -68,6 +68,7 @@ export const OrdersSearchPanel = ({
   );
 
   useEffect(() => {
+    onSearch();
     dispatch(getUsers(0, 50, undefined, '', 'SERVICE_MAN'));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -196,7 +196,7 @@ const OrdersList = () => {
     }
 
     changeFilter();
-    applyFilters();
+    dispatch(getOrders(searchParams));
   };
 
   const handleChangeRowsPerPage = (

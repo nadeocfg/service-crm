@@ -69,3 +69,9 @@ Before installation you need to prepare Postgresql server with db(db dump includ
 - Boilers
 - Parts
 - Order statuses
+
+### Server requirements
+
+- Installed Nodejs 16+;
+- Installed ts-node(`npm install -g ts-node` - without this library, you not be able to run server.ts);
+- Installed PostgreSQL server;

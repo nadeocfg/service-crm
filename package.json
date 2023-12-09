@@ -10,8 +10,8 @@
     "build:client": "npm run build --prefix ./frontend",
     "bot": "nodemon ./tg-bot/index.js",
     "start:dev": "concurrently \"npm run server\" \"npm run client\"",
-    "back:prod": "./backend/server.ts",
-    "bot:prod": "./tg-bot/index.js"
+    "back:prod": "node ./backend/server.ts",
+    "bot:prod": "node ./tg-bot/index.js"
   },
   "repository": {
     "type": "git",

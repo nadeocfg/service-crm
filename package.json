@@ -9,7 +9,9 @@
     "client": "npm start --prefix ./frontend",
     "build:client": "npm run build --prefix ./frontend",
     "bot": "nodemon ./tg-bot/index.js",
-    "start:dev": "concurrently \"npm run server\" \"npm run client\""
+    "start:dev": "concurrently \"npm run server\" \"npm run client\"",
+    "back:prod": "./backend/server.ts",
+    "bot:prod": "./tg-bot/index.js"
   },
   "repository": {
     "type": "git",

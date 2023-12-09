@@ -5,11 +5,11 @@
   "type": "module",
   "main": "server.ts",
   "scripts": {
-    "server": "concurrently \"nodemon ./backend/server.ts\" \"npm run bot\"",
-    "back": "nodemon ./backend/server.ts",
+    "server": "concurrently \"npm run back\" \"npm run bot\"",
+    "back": "ts-node-esm ./backend/server.ts",
     "client": "npm start --prefix ./frontend",
     "build:client": "npm run build --prefix ./frontend",
-    "bot": "nodemon ./tg-bot/index.js",
+    "bot": "node ./tg-bot/index.js",
     "start:dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {

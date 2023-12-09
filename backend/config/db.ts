@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import pg from 'pg';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -11,7 +11,7 @@ console.log({
   database: process.env.DB_NAME,
 });
 
-const pool = new Pool({
+const pool = new pg.Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   host: process.env.DB_HOST,

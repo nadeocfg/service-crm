@@ -1,5 +1,5 @@
-import { SHA256 } from 'crypto-js';
-import { NextFunction, Request, Response } from 'express';
+import cryptojs from 'crypto-js';
+import express from 'express';
 import db from '../config/db';
 import generateJwt from '../utils/generateToken';
 import getSetString from '../utils/queryBuilders';
@@ -13,13 +13,13 @@ dotenv.config();
 // @route  POST /api/users/auth
 // @access Public
 const authUser = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
+  request: express.Request,
+  response: express.Response,
+  next: express.NextFunction
 ) => {
   try {
     const { login, password } = request.body;
-    const cryptedPass = password ? SHA256(password).toString() : '';
+    const cryptedPass = password ? cryptojs.SHA256(password).toString() : '';
 
     const currentUser = await db.query(
       `
@@ -86,9 +86,9 @@ const authUser = async (
 // @route  GET /api/users/all-active
 // @access Private
 const getAllActiveUsers = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
+  request: express.Request,
+  response: express.Response,
+  next: express.NextFunction
 ) => {
   try {
     const allUsers = await db.query(
@@ -125,9 +125,9 @@ const getAllActiveUsers = async (
 // @route  GET /api/users/all-inactive
 // @access Private
 const getAllInactiveUsers = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
+  request: express.Request,
+  response: express.Response,
+  next: express.NextFunction
 ) => {
   try {
     const allUsers = await db.query(
@@ -165,8 +165,8 @@ const getAllInactiveUsers = async (
 // @access Private
 const createUser = async (
   request: UserRequest,
-  response: Response,
-  next: NextFunction
+  response: express.Response,
+  next: express.NextFunction
 ) => {
   try {
     const {
@@ -182,7 +182,7 @@ const createUser = async (
       tgAccount,
       chatId,
     } = request.body;
-    const cryptedPass = password ? SHA256(password).toString() : '';
+    const cryptedPass = password ? cryptojs.SHA256(password).toString() : '';
 
     const findExistingUser = await db.query(
       `SELECT id FROM "${process.env.DB_NAME}".users WHERE login = $1`,
@@ -244,13 +244,13 @@ const createUser = async (
 // @access Private
 const updateUser = async (
   request: UserRequest,
-  response: Response,
-  next: NextFunction
+  response: express.Response,
+  next: express.NextFunction
 ) => {
   try {
     const { password } = request.body;
     const userId = request.params.id;
-    const cryptedPass = password ? SHA256(password).toString() : '';
+    const cryptedPass = password ? cryptojs.SHA256(password).toString() : '';
 
     if (
       request.user &&
@@ -337,8 +337,8 @@ const updateUser = async (
 // @access Private
 const getUserByToken = async (
   request: UserRequest,
-  response: Response,
-  next: NextFunction
+  response: express.Response,
+  next: express.NextFunction
 ) => {
   try {
     response.status(200);
@@ -359,8 +359,8 @@ const getUserByToken = async (
 // @access Private
 const findUsers = async (
   request: UserRequest,
-  response: Response,
-  next: NextFunction
+  response: express.Response,
+  next: express.NextFunction
 ) => {
   try {
     const {
@@ -535,8 +535,8 @@ const findUsers = async (
 // @access Private
 const getUserById = async (
   request: UserRequest,
-  response: Response,
-  next: NextFunction
+  response: express.Response,
+  next: express.NextFunction
 ) => {
   try {
     const { id } = request.params;

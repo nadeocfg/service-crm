@@ -704,3 +704,17 @@ SELECT
 
 SELECT * FROM "service-crm"."orders" as orders WHERE orders."createdDate" BETWEEN '2023-11-06' AND '2023-11-07';
 SELECT * FROM "service-crm"."orders" as orders WHERE orders."createdDate" >= '2023-11-07 00:00:00' AND orders."createdDate" <= '2023-11-07 23:59:59';
+
+
+SELECT
+  statuses.code,
+  orders."serviceManId"
+FROM
+  "service-crm".orders as orders
+LEFT JOIN
+  "service-crm"."dictOrderStatuses" as statuses
+ON
+  orders.status = statuses.id
+WHERE
+  orders.id = 4754 AND
+  orders."isActive" = true;

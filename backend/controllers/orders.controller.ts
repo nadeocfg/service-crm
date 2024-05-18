@@ -251,9 +251,10 @@ const updateOrder = async (
     const checkStatus = await db.query(
       `
         SELECT
-          statuses.code
+          statuses.code,
+          orders."serviceManId"
         FROM
-          "${process.env.DB_NAME}".orders
+          "${process.env.DB_NAME}".orders as orders
         LEFT JOIN
           "${process.env.DB_NAME}"."dictOrderStatuses" as statuses
         ON
@@ -266,6 +267,16 @@ const updateOrder = async (
     );
 
     for (let i = 0; i < checkStatus.rows.length; i += 1) {
+      if (
+        request.user?.roleCode !== 'SUPER_ADMIN' &&
+        request.user?.roleCode !== 'ADMIN' &&
+        checkStatus.rows[i].serviceManId !== request.user?.id
+      ) {
+        return response.status(400).json({
+          message: `Current user do not have permission to edit this order`,
+        });
+      }
+
       if (
         checkStatus.rows[i].code === 'DONE' ||
         checkStatus.rows[i].code === 'CANCELED'

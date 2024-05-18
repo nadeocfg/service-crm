@@ -364,7 +364,8 @@ const OrdersList = () => {
                     </IconButton>
 
                     {(userRoleCode === 'SUPER_ADMIN' ||
-                      userRoleCode === 'ADMIN') &&
+                      userRoleCode === 'ADMIN' ||
+                      userRoleCode === 'SERVICE_MAN') &&
                       order.statusCode !== 'DONE' &&
                       order.statusCode !== 'CANCELED' && (
                         <IconButton

@@ -4,8 +4,6 @@ name: Build React App & Deploy to server
 on:
   push:
     branches: [master]
-  pull_request:
-    branches: [master]
 
 jobs:
   build-and-deploy:

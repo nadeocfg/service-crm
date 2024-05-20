@@ -38,6 +38,9 @@ import { getTotalSum } from '../../../utils/getOrderSum';
 import ReactInputMask from 'react-input-mask';
 
 const OrderEdit = () => {
+  const userRoleCode = useSelector(
+    (store: StoreModel) => store.userStore.authResponse.roleCode
+  );
   const [fetchFunction, setFetchFunction] = React.useState<any>(() => () => {});
   const [modalProps, setModalProps] = useState({
     title: '',
@@ -326,6 +329,9 @@ const OrderEdit = () => {
               }
               value={orderData.customer?.fullName || ''}
               required
+              disabled={
+                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+              }
             />
 
             <TextField
@@ -352,12 +358,18 @@ const OrderEdit = () => {
               value={orderData.address}
               onChange={handleChange('address')}
               required
+              disabled={
+                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+              }
             />
 
             <ReactInputMask
               mask="+7 (999) 999-99-99"
               onChange={handleChange('phone')}
               value={orderData.phone}
+              disabled={
+                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+              }
             >
               <TextField
                 className="input form__field"
@@ -379,6 +391,9 @@ const OrderEdit = () => {
               }
               value={orderData.customer?.boiler?.name || ''}
               required
+              disabled={
+                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+              }
             />
 
             <TextField
@@ -388,6 +403,9 @@ const OrderEdit = () => {
               value={orderData.visitPrice}
               type="number"
               onChange={handleChange('visitPrice')}
+              disabled={
+                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+              }
             />
 
             <TextField
@@ -396,6 +414,9 @@ const OrderEdit = () => {
               variant="outlined"
               value={orderData.comment}
               onChange={handleChange('comment')}
+              disabled={
+                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+              }
             />
           </CardContent>
         </Card>
@@ -416,6 +437,9 @@ const OrderEdit = () => {
               }
               value={orderData.serviceMan?.fullName || ''}
               required
+              disabled={
+                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+              }
             />
           </CardContent>
         </Card>

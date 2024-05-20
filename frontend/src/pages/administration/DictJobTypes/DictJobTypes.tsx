@@ -28,6 +28,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import api from '../../../utils/axiosMiddleware';
 import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
 import { Stack } from '@mui/material';
+import { UserRolesEnum } from '../../../models/userModel';
 
 const DictBoilers = () => {
   const dispatch = useDispatch();
@@ -143,9 +144,8 @@ const DictBoilers = () => {
       <div className="search-row">
         <h1>Виды работ</h1>
 
-        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
-          <CreateJobTypeModal />
-        )}
+        {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+          userRoleCode === UserRolesEnum.ADMIN) && <CreateJobTypeModal />}
       </div>
 
       <TableContainer component={Paper}>
@@ -176,8 +176,8 @@ const DictBoilers = () => {
                 <TableCell>{job.daysOfGuarantee}</TableCell>
                 <TableCell>{formatDate(job.updatedDate || '', true)}</TableCell>
                 <TableCell>
-                  {(userRoleCode === 'SUPER_ADMIN' ||
-                    userRoleCode === 'ADMIN') && (
+                  {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+                    userRoleCode === UserRolesEnum.ADMIN) && (
                     <Stack direction={'row'} alignItems={'center'}>
                       <IconButton
                         aria-label="edit"

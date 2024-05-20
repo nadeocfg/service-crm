@@ -13,3 +13,9 @@ export interface UserModel {
   percentFromParts?: number;
   percentFromVisit?: number;
 }
+
+export const enum UserRolesEnum {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  ADMIN = 'ADMIN',
+  SERVICE_MAN = 'SERVICE_MAN',
+}

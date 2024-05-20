@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import format from 'pg-format';
 import moment from 'moment';
 import { UserRequest } from '../../global';
+import { UserRolesEnum } from '../../frontend/src/models/userModel';
+import { OrderStatusEnum } from '../../frontend/src/models/orderModel';
 
 dotenv.config();
 
@@ -81,7 +83,7 @@ const createOrder = async (
         RETURNING
           *;
       `,
-      [insertOrder.rows[0].id, 'CREATED', comment, createdBy]
+      [insertOrder.rows[0].id, OrderStatusEnum.CREATED, comment, createdBy]
     );
 
     let partsTotal: number = 0;
@@ -268,8 +270,8 @@ const updateOrder = async (
 
     for (let i = 0; i < checkStatus.rows.length; i += 1) {
       if (
-        request.user?.roleCode !== 'SUPER_ADMIN' &&
-        request.user?.roleCode !== 'ADMIN' &&
+        request.user?.roleCode !== UserRolesEnum.SUPER_ADMIN &&
+        request.user?.roleCode !== UserRolesEnum.ADMIN &&
         checkStatus.rows[i].serviceManId !== request.user?.id
       ) {
         return response.status(400).json({
@@ -278,8 +280,8 @@ const updateOrder = async (
       }
 
       if (
-        checkStatus.rows[i].code === 'DONE' ||
-        checkStatus.rows[i].code === 'CANCELED'
+        checkStatus.rows[i].code === OrderStatusEnum.DONE ||
+        checkStatus.rows[i].code === OrderStatusEnum.CANCELED
       ) {
         return response.status(400).json({
           message: `Order cannot be edit on status DONE or CANCELED`,
@@ -532,8 +534,8 @@ const getOrderById = async (
 
     if (
       getOrderById.rows[0]?.serviceManId !== user?.id &&
-      user?.roleCode !== 'SUPER_ADMIN' &&
-      user?.roleCode !== 'ADMIN'
+      user?.roleCode !== UserRolesEnum.SUPER_ADMIN &&
+      user?.roleCode !== UserRolesEnum.ADMIN
     ) {
       return response.status(401).json({
         message: 'Нет доступа к заказу',
@@ -819,7 +821,10 @@ const getOrders = async (
     let orders = [];
     let total = null;
 
-    if (roleCode === 'ADMIN' || roleCode === 'SUPER_ADMIN') {
+    if (
+      roleCode === UserRolesEnum.ADMIN ||
+      roleCode === UserRolesEnum.SUPER_ADMIN
+    ) {
       const query = `
         SELECT
           orders.id,
@@ -1199,14 +1204,14 @@ const getOrderActions = async (
       [id]
     );
 
-    if (order.rows[0]?.statusCode === 'DONE') {
+    if (order.rows[0]?.statusCode === OrderStatusEnum.DONE) {
       return response.json([]);
     }
 
     if (
       order.rows[0]?.serviceManId !== user?.id &&
-      user?.roleCode !== 'SUPER_ADMIN' &&
-      user?.roleCode !== 'ADMIN'
+      user?.roleCode !== UserRolesEnum.SUPER_ADMIN &&
+      user?.roleCode !== UserRolesEnum.ADMIN
     ) {
       return response.status(401).json({
         message: 'Нет доступа к изменению статуса',
@@ -1230,9 +1235,9 @@ const getOrderActions = async (
     );
 
     if (
-      availableStatuses.rows[0]?.availableOn === 'SERVICE_DONE' &&
-      user?.roleCode !== 'SUPER_ADMIN' &&
-      user?.roleCode !== 'ADMIN'
+      availableStatuses.rows[0]?.availableOn === OrderStatusEnum.SERVICE_DONE &&
+      user?.roleCode !== UserRolesEnum.SUPER_ADMIN &&
+      user?.roleCode !== UserRolesEnum.ADMIN
     ) {
       return response.json([]);
     }
@@ -1287,8 +1292,8 @@ const executeAction = async (
 
     if (
       order.rows[0]?.serviceManId !== user?.id &&
-      user?.roleCode !== 'SUPER_ADMIN' &&
-      user?.roleCode !== 'ADMIN'
+      user?.roleCode !== UserRolesEnum.SUPER_ADMIN &&
+      user?.roleCode !== UserRolesEnum.ADMIN
     ) {
       return response.status(401).json({
         message: 'Нет доступа к изменению статуса',
@@ -1302,7 +1307,7 @@ const executeAction = async (
         SET
           status = $1,
           "updatedDate" = NOW()
-          ${code === 'DONE' ? ', "doneDate" = NOW()' : ''}
+          ${code === OrderStatusEnum.DONE ? ', "doneDate" = NOW()' : ''}
         WHERE
           orders.id = $2
         RETURNING
@@ -1311,8 +1316,8 @@ const executeAction = async (
       [getStatusInfo.rows[0].id, orderId]
     );
 
-    // UPDATE CASH TABLE IF ORDER STATUS === 'DONE'
-    if (code === 'DONE') {
+    // UPDATE CASH TABLE IF ORDER STATUS === OrderStatusEnum.DONE
+    if (code === OrderStatusEnum.DONE) {
       const paidOutSum = await db.query(
         `
           SELECT
@@ -1388,8 +1393,8 @@ const executeAction = async (
       [orderId, getStatusInfo.rows[0].id, comment, user?.id || 1]
     );
 
-    // Return quantity, if code === 'CANCELED'
-    if (code === 'CANCELED') {
+    // Return quantity, if code === OrderStatusEnum.CANCELED
+    if (code === OrderStatusEnum.CANCELED) {
       const disableOldSoldParts = await db.query(
         `
           SELECT

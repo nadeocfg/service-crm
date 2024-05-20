@@ -17,6 +17,7 @@ import { Stack } from '@mui/material';
 import { getUsers } from '../../store/actions/usersPageActions';
 import ReactInputMask from 'react-input-mask';
 import { ArrowDownward } from '@material-ui/icons';
+import { UserRolesEnum } from '../../models/userModel';
 
 export interface OrdersSearchPanelProps {
   label?: string;
@@ -69,7 +70,7 @@ export const OrdersSearchPanel = ({
 
   useEffect(() => {
     onSearch();
-    dispatch(getUsers(0, 50, undefined, '', 'SERVICE_MAN'));
+    dispatch(getUsers(0, 50, undefined, '', UserRolesEnum.SERVICE_MAN));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -95,7 +96,8 @@ export const OrdersSearchPanel = ({
           inputProps={{ 'aria-label': label }}
         />
 
-        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
+        {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+          userRoleCode === UserRolesEnum.ADMIN) && (
           <Btn className="btn btn_primary" onClick={addFunction}>
             <AddIcon />
             Добавить
@@ -136,7 +138,8 @@ export const OrdersSearchPanel = ({
               <TextField className="input" label="Дата до" variant="outlined" />
             </ReactInputMask>
           </FormControl>
-          {(userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') && (
+          {(userRole === UserRolesEnum.ADMIN ||
+            userRole === UserRolesEnum.SUPER_ADMIN) && (
             <FormControl className="filter__item">
               <TextField
                 select

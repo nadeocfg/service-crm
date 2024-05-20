@@ -4,6 +4,7 @@ import db from '../config/db';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import { UserRequest } from '../../global';
+import { UserRolesEnum } from '../../frontend/src/models/userModel';
 
 dotenv.config();
 
@@ -50,8 +51,8 @@ const sendUpdateOrderStatusMessage = async (
           "${process.env.DB_NAME}"."users" as users
         WHERE
           users.id = $1 OR
-          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'ADMIN') OR
-          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'SUPER_ADMIN');
+          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = '${UserRolesEnum.ADMIN}') OR
+          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = '${UserRolesEnum.SUPER_ADMIN}');
       `,
       [serviceManId.rows[0].serviceManId]
     );
@@ -157,8 +158,8 @@ const sendCreateOrderMessage = async (
           "${process.env.DB_NAME}"."users" as users
         WHERE
           users.id = $1 OR
-          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'ADMIN') OR
-          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'SUPER_ADMIN');
+          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = '${UserRolesEnum.ADMIN}') OR
+          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = '${UserRolesEnum.SUPER_ADMIN}');
       `,
       [serviceManId.rows[0].serviceManId]
     );
@@ -266,8 +267,8 @@ const sendUpdateOrderMessage = async (
           "${process.env.DB_NAME}"."users" as users
         WHERE
           users.id = $1 OR
-          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'ADMIN') OR
-          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = 'SUPER_ADMIN');
+          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = '${UserRolesEnum.ADMIN}') OR
+          users."roleId" = (SELECT id FROM "service-crm"."dictRoles" WHERE code = '${UserRolesEnum.SUPER_ADMIN}');
       `,
       [serviceManId.rows[0].serviceManId]
     );

@@ -1,15 +1,17 @@
+import { OrderStatusEnum } from "../../frontend/src/models/orderModel";
+
 export const checkAvailableStatuses = (currentStatus: string) => {
   if (!checkAvailableStatuses) {
     return [];
   }
 
   switch (currentStatus) {
-    case 'CREATED': {
-      return ['IN_PROGRESS'];
+    case OrderStatusEnum.CREATED: {
+      return [OrderStatusEnum.IN_PROGRESS];
     }
 
-    case 'IN_PROGRESS': {
-      return ['CANCELED', 'DONE'];
+    case OrderStatusEnum.IN_PROGRESS: {
+      return [OrderStatusEnum.CANCELED, OrderStatusEnum.DONE];
     }
 
     default: {

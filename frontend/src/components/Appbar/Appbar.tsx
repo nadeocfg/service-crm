@@ -35,6 +35,7 @@ import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+import { UserRolesEnum } from '../../models/userModel';
 
 const Appbar = () => {
   const open = useSelector((state: StoreModel) => state.mainStore.isDrawerOpen);
@@ -127,7 +128,8 @@ const Appbar = () => {
             </ListItem>
           ))}
 
-          {(userRoleCode === 'ADMIN' || userRoleCode === 'SUPER_ADMIN') && (
+          {(userRoleCode === UserRolesEnum.ADMIN ||
+            userRoleCode === UserRolesEnum.SUPER_ADMIN) && (
             <>
               <ListItem button onClick={handleOpenSubmenu}>
                 <ListItemIcon>

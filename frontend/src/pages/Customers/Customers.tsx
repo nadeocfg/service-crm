@@ -29,6 +29,7 @@ import { SET_ORDER_DATA } from '../../store/storeConstants/ordersConstants';
 import TableSort from '../../components/TableSort';
 import UpdateCustomerModal from '../../components/UpdateCustomerModal';
 import { Stack } from '@mui/material';
+import { UserRolesEnum } from '../../models/userModel';
 
 const Customers = () => {
   const dispatch = useDispatch();
@@ -285,8 +286,8 @@ const Customers = () => {
                 </TableCell>
                 <TableCell>{customer.comment}</TableCell>
                 <TableCell>
-                  {(userRoleCode === 'SUPER_ADMIN' ||
-                    userRoleCode === 'ADMIN') && (
+                  {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+                    userRoleCode === UserRolesEnum.ADMIN) && (
                     <Stack direction={'row'} alignItems={'center'}>
                       <UpdateCustomerModal
                         customer={customer}

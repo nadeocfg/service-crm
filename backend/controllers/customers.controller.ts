@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import format from 'pg-format';
 import moment from 'moment';
 import { UserRequest } from '../../global';
+import { UserRolesEnum } from '../../frontend/src/models/userModel';
 
 dotenv.config();
 
@@ -171,8 +172,8 @@ const updateCustomer = async (
   try {
     if (
       request.user &&
-      request.user.roleCode !== 'ADMIN' &&
-      request.user.roleCode !== 'SUPER_ADMIN'
+      request.user.roleCode !== UserRolesEnum.ADMIN &&
+      request.user.roleCode !== UserRolesEnum.SUPER_ADMIN
     ) {
       return response.status(401).json({
         message: `Current user don't have permission to this request`,

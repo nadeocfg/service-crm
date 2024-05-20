@@ -40,6 +40,8 @@ import { OrderActionModel } from '../../../models/orderActionModel';
 import Btn from '../../../components/Btn';
 import Transition from '../../../components/Transition';
 import UpdateCustomerModal from '../../../components/UpdateCustomerModal';
+import { UserRolesEnum } from '../../../models/userModel';
+import { OrderStatusEnum } from '../../../models/orderModel';
 
 const OrderView = () => {
   const dispatch = useDispatch();
@@ -167,15 +169,15 @@ const OrderView = () => {
 
   const getButtonClass = (code: string) => {
     switch (code) {
-      case 'DONE': {
+      case OrderStatusEnum.DONE: {
         return 'btn btn_success';
       }
 
-      case 'CANCELED': {
+      case OrderStatusEnum.CANCELED: {
         return 'btn btn_danger';
       }
 
-      case 'IN_PROGRESS': {
+      case OrderStatusEnum.IN_PROGRESS: {
         return 'btn btn_success';
       }
 
@@ -334,7 +336,8 @@ const OrderView = () => {
         <CardHeader
           title={`Данные о клиенте:`}
           action={
-            userRole === 'ADMIN' || userRole === 'SUPER_ADMIN' ? (
+            userRole === UserRolesEnum.ADMIN ||
+            userRole === UserRolesEnum.SUPER_ADMIN ? (
               <UpdateCustomerModal
                 customer={orderData.customer}
                 callback={getOrderData}

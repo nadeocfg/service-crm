@@ -24,3 +24,12 @@ export interface OrderItemModel {
   customer: CustomerModel;
   serviceMan: UserModel;
 }
+
+export const enum OrderStatusEnum {
+  CREATED = 'CREATED',
+  DONE = 'DONE',
+  IN_PROGRESS = 'IN_PROGRESS',
+  ON_HOLD = 'ON_HOLD',
+  CANCELED = 'CANCELED',
+  SERVICE_DONE = 'SERVICE_DONE'
+}

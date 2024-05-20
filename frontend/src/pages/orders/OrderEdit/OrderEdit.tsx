@@ -36,6 +36,7 @@ import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
 import { formatSum } from '../../../utils/formatSum';
 import { getTotalSum } from '../../../utils/getOrderSum';
 import ReactInputMask from 'react-input-mask';
+import { UserRolesEnum } from '../../../models/userModel';
 
 const OrderEdit = () => {
   const userRoleCode = useSelector(
@@ -209,7 +210,9 @@ const OrderEdit = () => {
   };
 
   const getServiceMan = (searchValue: string) => {
-    dispatch(getUsers(0, 20, undefined, searchValue, 'SERVICE_MAN'));
+    dispatch(
+      getUsers(0, 20, undefined, searchValue, UserRolesEnum.SERVICE_MAN)
+    );
 
     setCurrentSearch('serviceMan');
   };
@@ -330,7 +333,8 @@ const OrderEdit = () => {
               value={orderData.customer?.fullName || ''}
               required
               disabled={
-                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+                userRoleCode !== UserRolesEnum.SUPER_ADMIN &&
+                userRoleCode !== UserRolesEnum.ADMIN
               }
             />
 
@@ -359,7 +363,8 @@ const OrderEdit = () => {
               onChange={handleChange('address')}
               required
               disabled={
-                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+                userRoleCode !== UserRolesEnum.SUPER_ADMIN &&
+                userRoleCode !== UserRolesEnum.ADMIN
               }
             />
 
@@ -368,7 +373,8 @@ const OrderEdit = () => {
               onChange={handleChange('phone')}
               value={orderData.phone}
               disabled={
-                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+                userRoleCode !== UserRolesEnum.SUPER_ADMIN &&
+                userRoleCode !== UserRolesEnum.ADMIN
               }
             >
               <TextField
@@ -392,7 +398,8 @@ const OrderEdit = () => {
               value={orderData.customer?.boiler?.name || ''}
               required
               disabled={
-                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+                userRoleCode !== UserRolesEnum.SUPER_ADMIN &&
+                userRoleCode !== UserRolesEnum.ADMIN
               }
             />
 
@@ -404,7 +411,8 @@ const OrderEdit = () => {
               type="number"
               onChange={handleChange('visitPrice')}
               disabled={
-                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+                userRoleCode !== UserRolesEnum.SUPER_ADMIN &&
+                userRoleCode !== UserRolesEnum.ADMIN
               }
             />
 
@@ -415,7 +423,8 @@ const OrderEdit = () => {
               value={orderData.comment}
               onChange={handleChange('comment')}
               disabled={
-                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+                userRoleCode !== UserRolesEnum.SUPER_ADMIN &&
+                userRoleCode !== UserRolesEnum.ADMIN
               }
             />
           </CardContent>
@@ -438,7 +447,8 @@ const OrderEdit = () => {
               value={orderData.serviceMan?.fullName || ''}
               required
               disabled={
-                userRoleCode !== 'SUPER_ADMIN' && userRoleCode !== 'ADMIN'
+                userRoleCode !== UserRolesEnum.SUPER_ADMIN &&
+                userRoleCode !== UserRolesEnum.ADMIN
               }
             />
           </CardContent>

@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { formatDate } from '../../../utils/formatDate';
 import { StoreModel } from '../../../models/storeModel';
 import CreateOrderStatusModal from '../../../components/modals/CreateOrderStatusModal';
+import { UserRolesEnum } from '../../../models/userModel';
 
 const DictOrderStatuses = () => {
   const statuses = useSelector(
@@ -25,9 +26,8 @@ const DictOrderStatuses = () => {
       <div className="search-row">
         <h1>Статусы заказов</h1>
 
-        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
-          <CreateOrderStatusModal />
-        )}
+        {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+          userRoleCode === UserRolesEnum.ADMIN) && <CreateOrderStatusModal />}
       </div>
 
       <TableContainer component={Paper}>

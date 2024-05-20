@@ -17,7 +17,7 @@ import { formatDate } from '../../../utils/formatDate';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { getOrders } from '../../../store/actions/ordersActions';
 import history from '../../../utils/history';
-import { OrderItemModel } from '../../../models/orderModel';
+import { OrderItemModel, OrderStatusEnum } from '../../../models/orderModel';
 import {
   SET_ORDERS_PAGINATION,
   SET_ORDERS_SEARCH_FIELD,
@@ -27,6 +27,7 @@ import TableSort from '../../../components/TableSort';
 import { OrdersSearchPanel } from '../../../components/OrdersSearchPanel';
 import { Stack } from '@mui/material';
 import { FilterProps } from '../../../components/OrdersSearchPanel/OrdersSearchPanel';
+import { UserRolesEnum } from '../../../models/userModel';
 
 const OrdersList = () => {
   const dispatch = useDispatch();
@@ -363,11 +364,11 @@ const OrdersList = () => {
                       <VisibilityIcon fontSize="inherit" />
                     </IconButton>
 
-                    {(userRoleCode === 'SUPER_ADMIN' ||
-                      userRoleCode === 'ADMIN' ||
-                      userRoleCode === 'SERVICE_MAN') &&
-                      order.statusCode !== 'DONE' &&
-                      order.statusCode !== 'CANCELED' && (
+                    {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+                      userRoleCode === UserRolesEnum.ADMIN ||
+                      userRoleCode === UserRolesEnum.SERVICE_MAN) &&
+                      order.statusCode !== OrderStatusEnum.DONE &&
+                      order.statusCode !== OrderStatusEnum.CANCELED && (
                         <IconButton
                           aria-label="edit"
                           onClick={() => editOrder(order)}

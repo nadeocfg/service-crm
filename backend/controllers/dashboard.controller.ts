@@ -2,6 +2,8 @@ import { NextFunction, Response } from 'express';
 import db from '../config/db';
 import dotenv from 'dotenv';
 import { UserRequest } from '../../global';
+import { UserRolesEnum } from '../../frontend/src/models/userModel';
+import { OrderStatusEnum } from '../../frontend/src/models/orderModel';
 
 dotenv.config();
 
@@ -15,8 +17,8 @@ const getOrdersInfo = async (
 ) => {
   try {
     const isAdmin =
-      request.user?.roleCode === 'ADMIN' ||
-      request.user?.roleCode === 'SUPER_ADMIN';
+      request.user?.roleCode === UserRolesEnum.ADMIN ||
+      request.user?.roleCode === UserRolesEnum.SUPER_ADMIN;
 
     const ordersCount = isAdmin
       ? await db.query(
@@ -52,7 +54,7 @@ const getOrdersInfo = async (
           "${process.env.DB_NAME}".orders
         WHERE
           orders."isActive" = true AND
-          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = 'SERVICE_DONE');
+          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = '${OrderStatusEnum.SERVICE_DONE}');
           ;
       `,
           []
@@ -66,7 +68,7 @@ const getOrdersInfo = async (
         WHERE
           orders."isActive" = true AND
           orders."serviceManId" = $1 AND
-          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = 'SERVICE_DONE');
+          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = '${OrderStatusEnum.SERVICE_DONE}');
       `,
           [request.user?.id]
         );
@@ -80,7 +82,7 @@ const getOrdersInfo = async (
           "${process.env.DB_NAME}".orders
         WHERE
           orders."isActive" = true AND
-          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = 'IN_PROGRESS');
+          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = '${OrderStatusEnum.IN_PROGRESS}');
           ;
       `,
           []
@@ -94,7 +96,7 @@ const getOrdersInfo = async (
         WHERE
           orders."isActive" = true AND
           orders."serviceManId" = $1 AND
-          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = 'IN_PROGRESS');
+          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = '${OrderStatusEnum.IN_PROGRESS}');
       `,
           [request.user?.id]
         );
@@ -108,7 +110,7 @@ const getOrdersInfo = async (
           "${process.env.DB_NAME}".orders
         WHERE
           orders."isActive" = true AND
-          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = 'CREATED');
+          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = '${OrderStatusEnum.CREATED}');
           ;
       `,
           []
@@ -122,7 +124,7 @@ const getOrdersInfo = async (
         WHERE
           orders."isActive" = true AND
           orders."serviceManId" = $1 AND
-          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = 'CREATED');
+          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = '${OrderStatusEnum.CREATED}');
       `,
           [request.user?.id]
         );
@@ -136,7 +138,7 @@ const getOrdersInfo = async (
           "${process.env.DB_NAME}".orders
         WHERE
           orders."isActive" = true AND
-          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = 'CANCELED');
+          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = '${OrderStatusEnum.CANCELED}');
           ;
       `,
           []
@@ -150,7 +152,7 @@ const getOrdersInfo = async (
         WHERE
           orders."isActive" = true AND
           orders."serviceManId" = $1 AND
-          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = 'CANCELED');
+          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = '${OrderStatusEnum.CANCELED}');
       `,
           [request.user?.id]
         );
@@ -164,7 +166,7 @@ const getOrdersInfo = async (
           "${process.env.DB_NAME}".orders
         WHERE
           orders."isActive" = true AND
-          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = 'ON_HOLD');
+          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = '${OrderStatusEnum.ON_HOLD}');
           ;
       `,
           []
@@ -178,7 +180,7 @@ const getOrdersInfo = async (
         WHERE
           orders."isActive" = true AND
           orders."serviceManId" = $1 AND
-          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = 'ON_HOLD');
+          orders.status = (SELECT id FROM "${process.env.DB_NAME}"."dictOrderStatuses" WHERE code = '${OrderStatusEnum.ON_HOLD}');
       `,
           [request.user?.id]
         );
@@ -209,8 +211,8 @@ const getCashInfo = async (
 ) => {
   try {
     const isAdmin =
-      request.user?.roleCode === 'ADMIN' ||
-      request.user?.roleCode === 'SUPER_ADMIN';
+      request.user?.roleCode === UserRolesEnum.ADMIN ||
+      request.user?.roleCode === UserRolesEnum.SUPER_ADMIN;
 
     if (isAdmin) {
       const readySum = await db.query(

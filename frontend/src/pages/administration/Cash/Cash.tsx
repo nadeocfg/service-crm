@@ -38,6 +38,7 @@ import { formatSum } from '../../../utils/formatSum';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import Transition from '../../../components/Transition';
+import { UserRolesEnum } from '../../../models/userModel';
 
 const Cash = () => {
   const dispatch = useDispatch();
@@ -298,8 +299,8 @@ const Cash = () => {
                   {formatDate(cash.updatedDate || '', true)}
                 </TableCell>
                 <TableCell>
-                  {(userRoleCode === 'ADMIN' ||
-                    userRoleCode === 'SUPER_ADMIN') && (
+                  {(userRoleCode === UserRolesEnum.ADMIN ||
+                    userRoleCode === UserRolesEnum.SUPER_ADMIN) && (
                     <Tooltip title="Выплатить">
                       <span>
                         <IconButton
@@ -313,7 +314,7 @@ const Cash = () => {
                     </Tooltip>
                   )}
 
-                  {userRoleCode === 'SUPER_ADMIN' && (
+                  {userRoleCode === UserRolesEnum.SUPER_ADMIN && (
                     <Tooltip title="Обнулить">
                       <span>
                         <IconButton

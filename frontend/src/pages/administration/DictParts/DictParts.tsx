@@ -28,6 +28,7 @@ import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
 import api from '../../../utils/axiosMiddleware';
 import CreatePartModal from '../../../components/modals/CreatePartModal';
 import { Stack } from '@mui/material';
+import { UserRolesEnum } from '../../../models/userModel';
 
 const DictParts = () => {
   const dispatch = useDispatch();
@@ -143,9 +144,8 @@ const DictParts = () => {
       <div className="search-row">
         <h1>Запчасти</h1>
 
-        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
-          <CreatePartModal />
-        )}
+        {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+          userRoleCode === UserRolesEnum.ADMIN) && <CreatePartModal />}
       </div>
 
       <TableContainer component={Paper}>
@@ -180,8 +180,8 @@ const DictParts = () => {
                   {formatDate(part.updatedDate || '', true)}
                 </TableCell>
                 <TableCell>
-                  {(userRoleCode === 'SUPER_ADMIN' ||
-                    userRoleCode === 'ADMIN') && (
+                  {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+                    userRoleCode === UserRolesEnum.ADMIN) && (
                     <Stack direction={'row'} alignItems={'center'}>
                       <IconButton
                         aria-label="edit"

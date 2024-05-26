@@ -28,6 +28,7 @@ import Btn from '../../../components/Btn';
 import { ADD_NOTIFY } from '../../../store/storeConstants/snackbarConstants';
 import api from '../../../utils/axiosMiddleware';
 import { Stack } from '@mui/material';
+import { UserRolesEnum } from '../../../models/userModel';
 
 const DictBoilers = () => {
   const dispatch = useDispatch();
@@ -137,9 +138,8 @@ const DictBoilers = () => {
       <div className="search-row">
         <h1>Отопительные котлы</h1>
 
-        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
-          <CreateBoilerModal />
-        )}
+        {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+          userRoleCode === UserRolesEnum.ADMIN) && <CreateBoilerModal />}
       </div>
 
       <TableContainer component={Paper}>
@@ -175,8 +175,8 @@ const DictBoilers = () => {
                   {formatDate(boiler.updatedDate || '', true)}
                 </TableCell>
                 <TableCell>
-                  {(userRoleCode === 'SUPER_ADMIN' ||
-                    userRoleCode === 'ADMIN') && (
+                  {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+                    userRoleCode === UserRolesEnum.ADMIN) && (
                     <Stack direction={'row'} alignItems={'center'}>
                       <IconButton
                         aria-label="edit"

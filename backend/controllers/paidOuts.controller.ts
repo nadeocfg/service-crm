@@ -3,6 +3,8 @@ import db from '../config/db';
 import dotenv from 'dotenv';
 import moment from 'moment';
 import { UserRequest } from '../../global';
+import { UserRolesEnum } from '../../frontend/src/models/userModel';
+import { OrderStatusEnum } from '../../frontend/src/models/orderModel';
 
 dotenv.config();
 
@@ -37,8 +39,8 @@ const getPaidsByUser = async (
     let getPaidsByUser = null;
 
     if (
-      request.user?.roleCode === 'ADMIN' ||
-      request.user?.roleCode === 'SUPER_ADMIN'
+      request.user?.roleCode === UserRolesEnum.ADMIN ||
+      request.user?.roleCode === UserRolesEnum.SUPER_ADMIN
     ) {
       getPaidsByUser = await db.query(
         `
@@ -63,7 +65,7 @@ const getPaidsByUser = async (
               FROM
                 "${process.env.DB_NAME}"."dictOrderStatuses" as status
               WHERE
-                status.code = 'DONE'
+                status.code = '${OrderStatusEnum.DONE}'
             )
             ${
               searchValue
@@ -104,7 +106,7 @@ const getPaidsByUser = async (
               FROM
                 "${process.env.DB_NAME}"."dictOrderStatuses" as status
               WHERE
-                status.code = 'DONE'
+                status.code = '${OrderStatusEnum.DONE}'
             )
             ${
               searchValue
@@ -160,8 +162,8 @@ const getPaidsByUser = async (
     let total = null;
 
     if (
-      request.user?.roleCode === 'ADMIN' ||
-      request.user?.roleCode === 'SUPER_ADMIN'
+      request.user?.roleCode === UserRolesEnum.ADMIN ||
+      request.user?.roleCode === UserRolesEnum.SUPER_ADMIN
     ) {
       total = await db.query(
         `
@@ -180,7 +182,7 @@ const getPaidsByUser = async (
               FROM
                 "${process.env.DB_NAME}"."dictOrderStatuses" as status
               WHERE
-                status.code = 'DONE'
+                status.code = '${OrderStatusEnum.DONE}'
             );
         `
       );
@@ -204,7 +206,7 @@ const getPaidsByUser = async (
               FROM
                 "${process.env.DB_NAME}"."dictOrderStatuses" as status
               WHERE
-                status.code = 'DONE'
+                status.code = '${OrderStatusEnum.DONE}'
             );
         `,
         [userId]

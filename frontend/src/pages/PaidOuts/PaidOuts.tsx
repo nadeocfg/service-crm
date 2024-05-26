@@ -30,6 +30,7 @@ import api from '../../utils/axiosMiddleware';
 import { ADD_NOTIFY } from '../../store/storeConstants/snackbarConstants';
 import { setLoader } from '../../store/actions/mainActions';
 import { Stack } from '@mui/material';
+import { UserRolesEnum } from '../../models/userModel';
 
 const PaidOuts = () => {
   const dispatch = useDispatch();
@@ -224,8 +225,8 @@ const PaidOuts = () => {
                     >
                       <VisibilityIcon fontSize="inherit" />
                     </IconButton>
-                    {(userRoleCode === 'ADMIN' ||
-                      userRoleCode === 'SUPER_ADMIN') &&
+                    {(userRoleCode === UserRolesEnum.ADMIN ||
+                      userRoleCode === UserRolesEnum.SUPER_ADMIN) &&
                       paidOut.canBePaid &&
                       !paidOut.isPaid && (
                         <IconButton

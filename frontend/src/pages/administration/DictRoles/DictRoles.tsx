@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { formatDate } from '../../../utils/formatDate';
 import { StoreModel } from '../../../models/storeModel';
 import CreateRoleModal from '../../../components/modals/CreateRoleModal';
+import { UserRolesEnum } from '../../../models/userModel';
 
 const DictRoles = () => {
   const roles = useSelector(
@@ -25,9 +26,8 @@ const DictRoles = () => {
       <div className="search-row">
         <h1>Роли</h1>
 
-        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
-          <CreateRoleModal />
-        )}
+        {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+          userRoleCode === UserRolesEnum.ADMIN) && <CreateRoleModal />}
       </div>
 
       <TableContainer component={Paper}>

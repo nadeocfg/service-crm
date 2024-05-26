@@ -33,6 +33,7 @@ import { formatSum } from '../../../utils/formatSum';
 import { getTotalSum } from '../../../utils/getOrderSum';
 import { SET_ORDER_DATA } from '../../../store/storeConstants/ordersConstants';
 import ReactInputMask from 'react-input-mask';
+import { UserRolesEnum } from '../../../models/userModel';
 
 const CreateOrder = () => {
   const [fetchFunction, setFetchFunction] = React.useState<any>(() => () => {});
@@ -194,7 +195,9 @@ const CreateOrder = () => {
   };
 
   const getServiceMan = (searchValue: string) => {
-    dispatch(getUsers(0, 20, undefined, searchValue, 'SERVICE_MAN'));
+    dispatch(
+      getUsers(0, 20, undefined, searchValue, UserRolesEnum.SERVICE_MAN)
+    );
 
     setCurrentSearch('serviceMan');
   };

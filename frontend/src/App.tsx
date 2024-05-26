@@ -24,6 +24,7 @@ import OrderEdit from './pages/orders/OrderEdit';
 import PaidOuts from './pages/PaidOuts';
 import Settings from './pages/administration/Settings';
 import Cash from './pages/administration/Cash';
+import { UserRolesEnum } from './models/userModel';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -98,7 +99,8 @@ const App = () => {
                 <PaidOuts />
               </Route>
 
-              {(userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') && (
+              {(userRole === UserRolesEnum.ADMIN ||
+                userRole === UserRolesEnum.SUPER_ADMIN) && (
                 <>
                   <Route exact path="/administration/roles">
                     <DictRoles />

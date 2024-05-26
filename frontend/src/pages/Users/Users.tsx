@@ -22,6 +22,7 @@ import CreateUserModal from '../../components/modals/CreateUserModal';
 import history from '../../utils/history';
 import TableSort from '../../components/TableSort';
 import { Stack } from '@mui/material';
+import { UserRolesEnum } from '../../models/userModel';
 
 const Users = () => {
   const dispatch = useDispatch();
@@ -128,9 +129,8 @@ const Users = () => {
           inputProps={{ 'aria-label': 'Введите параметры поиска' }}
         />
 
-        {(userRoleCode === 'SUPER_ADMIN' || userRoleCode === 'ADMIN') && (
-          <CreateUserModal />
-        )}
+        {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+          userRoleCode === UserRolesEnum.ADMIN) && <CreateUserModal />}
       </div>
 
       <TableContainer component={Paper}>
@@ -202,8 +202,8 @@ const Users = () => {
                   {formatDate(user.updatedDate || '', true)}
                 </TableCell>
                 <Stack direction={'row'} alignItems={'center'}>
-                  {(userRoleCode === 'SUPER_ADMIN' ||
-                    userRoleCode === 'ADMIN') && (
+                  {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+                    userRoleCode === UserRolesEnum.ADMIN) && (
                     <TableCell>
                       <IconButton
                         aria-label="edit"

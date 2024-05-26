@@ -25,11 +25,13 @@ import {
 import { getCustomersList } from '../../store/actions/customersActions';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import history from '../../utils/history';
-import { SET_ORDER_DATA } from '../../store/storeConstants/ordersConstants';
+import { SET_ORDERS_SEARCH_FIELD, SET_ORDER_DATA } from '../../store/storeConstants/ordersConstants';
 import TableSort from '../../components/TableSort';
 import UpdateCustomerModal from '../../components/UpdateCustomerModal';
 import { Stack } from '@mui/material';
 import { UserRolesEnum } from '../../models/userModel';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import { Link } from 'react-router-dom';
 
 const Customers = () => {
   const dispatch = useDispatch();
@@ -286,24 +288,42 @@ const Customers = () => {
                 </TableCell>
                 <TableCell>{customer.comment}</TableCell>
                 <TableCell>
-                  {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
-                    userRoleCode === UserRolesEnum.ADMIN) && (
-                    <Stack direction={'row'} alignItems={'center'}>
-                      <UpdateCustomerModal
-                        customer={customer}
-                        pagination={pagination}
-                        searchField={searchField}
-                        sort={sort}
-                      />
+                  <Stack direction={'row'} alignItems={'center'}>
+                    <Link
+                      to={`/orders`}
+                    >
+                    <IconButton
+                      aria-label="edit"
+                      onClick={() => {
+                        dispatch({
+                          type: SET_ORDERS_SEARCH_FIELD,
+                          payload: customer.boilerSerial,
+                        });
+                      }}
+                    >
+                      <FormatListNumberedIcon fontSize="inherit" />
+                    </IconButton>
+                    </Link>
 
-                      <IconButton
-                        aria-label="edit"
-                        onClick={() => createOrder(customer)}
-                      >
-                        <ShoppingCartIcon fontSize="inherit" />
-                      </IconButton>
-                    </Stack>
-                  )}
+                    {(userRoleCode === UserRolesEnum.SUPER_ADMIN ||
+                      userRoleCode === UserRolesEnum.ADMIN) && (
+                      <Stack direction={'row'} alignItems={'center'}>
+                        <UpdateCustomerModal
+                          customer={customer}
+                          pagination={pagination}
+                          searchField={searchField}
+                          sort={sort}
+                        />
+
+                        <IconButton
+                          aria-label="edit"
+                          onClick={() => createOrder(customer)}
+                        >
+                          <ShoppingCartIcon fontSize="inherit" />
+                        </IconButton>
+                      </Stack>
+                    )}
+                  </Stack>
                 </TableCell>
               </TableRow>
             ))}
